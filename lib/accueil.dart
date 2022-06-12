@@ -20,14 +20,18 @@ class MonAccueil extends StatefulWidget {
 }
 
 class _MonAccueilState extends State<MonAccueil> {
+  final List<String> list = ['Séance de couple', 'Séance individuelle', 'Protocole 1', 'Protocole 2'];
+  String selectedValue = '';
 
   @override
   Widget build(BuildContext context) {
+    selectedValue = list[0];
     return ListView(
       physics: const BouncingScrollPhysics(),
       padding: const EdgeInsets.only(
         left: 20,
         top: 70,
+        right: 20,
       ),
       children: [
         Column(
@@ -62,13 +66,12 @@ class _MonAccueilState extends State<MonAccueil> {
 
 
         const SizedBox(
-          height: 25,
+          height: 15,
         ),
 
         Row(
           children: const [
             Expanded(
-              flex: 8,
               child: TextField(
                 obscureText: true,
                 decoration: InputDecoration(
@@ -77,20 +80,19 @@ class _MonAccueilState extends State<MonAccueil> {
                 ),
               ),
             ),
-            Expanded(
-              flex: 2,
-              child: IconButton(
-                onPressed: null,
-                icon: Icon(Icons.search)
-              ),
-            ),
           ],
+        ),
+
+
+        const SizedBox(
+          height: 15,
         ),
 
 
         SizedBox(
           height: 250,
           child: Card(
+            borderOnForeground: true,
             child: ListView(
               scrollDirection: Axis.vertical,
               shrinkWrap: true,
@@ -101,11 +103,16 @@ class _MonAccueilState extends State<MonAccueil> {
                     title: Text('Thomas Simon $count'),
                     leading: const Icon(Icons.account_circle_sharp),
                     onTap: () {},
-
                   ),
               ],
             ),
           ),
+        ),
+
+
+        ElevatedButton(
+          onPressed: () {},
+          child: const Text("Ajouter"),
         ),
 
 
@@ -123,6 +130,51 @@ class _MonAccueilState extends State<MonAccueil> {
             letterSpacing: 0.4,
           ),
         ),
+
+        /*Row(
+          children: [
+            DropdownButtonFormField(
+              value: selectedValue,
+              items: list.map((typeActe) {
+                return DropdownMenuItem(
+                  value: typeActe,
+                  child: Text(typeActe),
+                );
+              }).toList(),
+              onChanged: (String? val) {
+                setState(() {
+                  if(val != null) {
+                    selectedValue = val;
+                  }
+                });
+              },
+            ),
+
+
+            const SizedBox(
+              width: 25,
+            ),
+
+
+            ElevatedButton.icon(
+                onPressed: null,
+                label: const Text("Ajouter"),
+                icon: const Icon(Icons.add),
+            ),
+
+
+            const SizedBox(
+              width: 25,
+            ),
+
+
+            ElevatedButton.icon(
+              onPressed: null,
+              label: const Text("Modifier"),
+              icon: const Icon(Icons.app_registration_outlined),
+            ),
+          ],
+        ),*/
 
 
       ],
