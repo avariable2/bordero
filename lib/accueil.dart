@@ -20,7 +20,6 @@ class MonAccueil extends StatefulWidget {
 }
 
 class _MonAccueilState extends State<MonAccueil> {
-  Map<int, bool> checkboxCheck = <int, bool>{};
 
   @override
   Widget build(BuildContext context) {
@@ -66,33 +65,48 @@ class _MonAccueilState extends State<MonAccueil> {
           height: 25,
         ),
 
-
-        Card(
-          child: ListView(
-            scrollDirection: Axis.vertical,
-            shrinkWrap: true,
-            addAutomaticKeepAlives: false,
-            children: [
-              for (int count in List.generate(20, (index) => index + 1))
-                ListTile(
-                  title: Text('Client $count'),
-                  leading: const Icon(Icons.account_circle_sharp),
-                  selected: checkboxCheck[count]  ?? false,
-                  trailing: Checkbox(
-                    activeColor: Theme.of(context).primaryColor,
-                    value: checkboxCheck[count]  ?? false,
-                    onChanged: (value) {
-                      // update value
-                      setState(() {
-                        checkboxCheck[count] = value!;
-                      });
-                    },
-                  )
+        Row(
+          children: const [
+            Expanded(
+              flex: 8,
+              child: TextField(
+                obscureText: true,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: 'Nom patient',
                 ),
-            ],
-          ),
+              ),
+            ),
+            Expanded(
+              flex: 2,
+              child: IconButton(
+                onPressed: null,
+                icon: Icon(Icons.search)
+              ),
+            ),
+          ],
         ),
 
+
+        SizedBox(
+          height: 250,
+          child: Card(
+            child: ListView(
+              scrollDirection: Axis.vertical,
+              shrinkWrap: true,
+              addAutomaticKeepAlives: false,
+              children: [
+                for (int count in List.generate(20, (index) => index + 1))
+                  ListTile(
+                    title: Text('Thomas Simon $count'),
+                    leading: const Icon(Icons.account_circle_sharp),
+                    onTap: () {},
+
+                  ),
+              ],
+            ),
+          ),
+        ),
 
 
         const SizedBox(
@@ -104,11 +118,13 @@ class _MonAccueilState extends State<MonAccueil> {
           "Type d'actes",
           style: TextStyle(
             fontSize: 24,
-            //fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.bold,
             inherit: true,
             letterSpacing: 0.4,
           ),
         ),
+
+
       ],
     );
     }
