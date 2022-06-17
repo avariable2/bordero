@@ -1,3 +1,4 @@
+import 'package:app_psy/color_schemes.g.dart';
 import 'package:flutter/material.dart';
 
 class Accueil extends StatelessWidget {
@@ -20,12 +21,9 @@ class MonAccueil extends StatefulWidget {
 }
 
 class _MonAccueilState extends State<MonAccueil> {
-  final List<String> list = ['Séance de couple', 'Séance individuelle', 'Protocole 1', 'Protocole 2'];
-  String selectedValue = '';
 
   @override
   Widget build(BuildContext context) {
-    selectedValue = list[0];
     return ListView(
       physics: const BouncingScrollPhysics(),
       padding: const EdgeInsets.only(
@@ -90,7 +88,7 @@ class _MonAccueilState extends State<MonAccueil> {
 
 
         SizedBox(
-          height: 250,
+          height: 200,
           child: Card(
             borderOnForeground: true,
             child: ListView(
@@ -110,9 +108,18 @@ class _MonAccueilState extends State<MonAccueil> {
         ),
 
 
-        ElevatedButton(
-          onPressed: () {},
-          child: const Text("Ajouter"),
+        ElevatedButton.icon(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute<void>(
+                builder: (BuildContext context) => FullScreenDialog(),
+                fullscreenDialog: true,
+              ),
+            );
+          },
+          icon: const Icon(Icons.add),
+          label: const Text("Ajouter"),
         ),
 
 
@@ -131,53 +138,72 @@ class _MonAccueilState extends State<MonAccueil> {
           ),
         ),
 
-        /*Row(
-          children: [
-            DropdownButtonFormField(
-              value: selectedValue,
-              items: list.map((typeActe) {
-                return DropdownMenuItem(
-                  value: typeActe,
-                  child: Text(typeActe),
-                );
-              }).toList(),
-              onChanged: (String? val) {
-                setState(() {
-                  if(val != null) {
-                    selectedValue = val;
-                  }
-                });
-              },
+        const SizedBox(
+          height: 15,
+        ),
+
+
+        SizedBox(
+          height: 200,
+          child: Card(
+            borderOnForeground: true,
+            child: ListView(
+              scrollDirection: Axis.vertical,
+              shrinkWrap: true,
+              addAutomaticKeepAlives: false,
+              children: [
+                for (int count in List.generate(20, (index) => index + 1))
+                  ListTile(
+                    title: Text('Thomas Simon $count'),
+                    leading: const Icon(Icons.work_outline),
+                    onTap: () {},
+                  ),
+              ],
             ),
+          ),
+        ),
 
-
-            const SizedBox(
-              width: 25,
-            ),
-
-
-            ElevatedButton.icon(
-                onPressed: null,
-                label: const Text("Ajouter"),
-                icon: const Icon(Icons.add),
-            ),
-
-
-            const SizedBox(
-              width: 25,
-            ),
-
-
-            ElevatedButton.icon(
-              onPressed: null,
-              label: const Text("Modifier"),
-              icon: const Icon(Icons.app_registration_outlined),
-            ),
-          ],
-        ),*/
-
+        ElevatedButton.icon(
+          onPressed: () {},
+          icon: const Icon(Icons.add),
+          label: const Text("Ajouter"),
+        ),
 
       ],
     );
     }
+}
+
+class FullScreenDialog extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        actions: [
+          IconButton(onPressed: () {},
+            icon: const Icon(Icons.save_outlined),
+          ),
+        ],
+        title: const Text('Création client'),
+      ),
+      body: Form(
+        child:
+        Wrap(alignment:WrapAlignment.spaceAround , children: const [
+          Expanded(
+            child: TextField(
+              decoration: InputDecoration( hintText: "TextField 1"),
+            ),
+          ),
+          SizedBox(
+            width: 20,
+          ),
+          Expanded(
+            child: TextField(
+              decoration: InputDecoration(hintText: "TextField 2"),
+            ),
+          ),
+        ]),
+      ),
+    );
+  }
 }
