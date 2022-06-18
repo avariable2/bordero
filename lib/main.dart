@@ -16,6 +16,10 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           colorScheme: lightColorScheme,
         ),
+        darkTheme: ThemeData(
+          colorScheme: darkColorScheme,
+        ),
+
         home: const NavigationExample()
     );
   }
@@ -60,7 +64,7 @@ class _NavigationExampleState extends State<NavigationExample> {
           NavigationDestination(
             selectedIcon: Icon(Icons.settings_sharp),
             icon: Icon(Icons.settings_outlined),
-            label: 'Paramètre',
+            label: 'Paramètres',
           )
         ],
       ),

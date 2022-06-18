@@ -1,6 +1,8 @@
 import 'package:app_psy/color_schemes.g.dart';
 import 'package:flutter/material.dart';
 
+import 'form_client.dart';
+
 class Accueil extends StatelessWidget {
   const Accueil({Key? key}) : super(key: key);
 
@@ -169,6 +171,20 @@ class _MonAccueilState extends State<MonAccueil> {
           label: const Text("Ajouter"),
         ),
 
+
+        const SizedBox(
+          height: 15,
+        ),
+
+
+        const SizedBox(
+          height: 200,
+          child: Card(
+            borderOnForeground: true,
+            child: Text("Actuellement la premiere version du chemin nous attends."),
+          )
+        )
+
       ],
     );
     }
@@ -187,22 +203,8 @@ class FullScreenDialog extends StatelessWidget {
         title: const Text('Création client'),
       ),
       body: Form(
-        child:
-        Wrap(alignment:WrapAlignment.spaceAround , children: const [
-          Expanded(
-            child: TextField(
-              decoration: InputDecoration( hintText: "TextField 1"),
-            ),
-          ),
-          SizedBox(
-            width: 20,
-          ),
-          Expanded(
-            child: TextField(
-              decoration: InputDecoration(hintText: "TextField 2"),
-            ),
-          ),
-        ]),
+        child: Container(
+            child: MyCustomForm()) ,
       ),
     );
   }
