@@ -27,7 +27,9 @@ class MyCustomFormState extends State<MyCustomForm> {
     return SingleChildScrollView(
       child: Form(
         key: _formKey,
-        child: Column(
+        child:
+
+        Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
 
@@ -35,7 +37,7 @@ class MyCustomFormState extends State<MyCustomForm> {
 
             Row(children: [
               Expanded(child:
-              Padding(padding: const EdgeInsets.only( top:10, left: 8),
+              Padding(padding: const EdgeInsets.only( top:10, left: 8, bottom: 10),
                 child: TextFormField(
                   decoration: const InputDecoration(
                       border: OutlineInputBorder(),
@@ -58,7 +60,7 @@ class MyCustomFormState extends State<MyCustomForm> {
               ),
 
               Expanded(
-                child: Padding(padding: const EdgeInsets.only( top:10 ,right: 8, left: 8),
+                child: Padding(padding: const EdgeInsets.only( top:10 ,right: 8, left: 8, bottom: 10),
                   child: TextFormField(
                     decoration: const InputDecoration(
                         border: OutlineInputBorder(),
@@ -76,6 +78,8 @@ class MyCustomFormState extends State<MyCustomForm> {
               ),
             ],
             ),
+
+            const Divider(),
 
 
             /* PARTIE Adresse, code postal et ville */
@@ -103,7 +107,7 @@ class MyCustomFormState extends State<MyCustomForm> {
 
             Row(children: [
               Expanded(child:
-              Padding(padding: const EdgeInsets.only(top:10, right: 8, left: 8),
+              Padding(padding: const EdgeInsets.only(top:10, right: 8, left: 8, bottom: 10),
                 child:
                 TextFormField(
                   decoration: const InputDecoration(
@@ -127,7 +131,7 @@ class MyCustomFormState extends State<MyCustomForm> {
 
               Expanded(
                 child:
-                Padding(padding: const EdgeInsets.only(top:10, right: 8, left: 8),
+                Padding(padding: const EdgeInsets.only(top:10, right: 8, left: 8, bottom: 10),
                   child:
                   TextFormField(
                     decoration: const InputDecoration(
@@ -147,7 +151,9 @@ class MyCustomFormState extends State<MyCustomForm> {
             ],
             ),
 
-            /* Numero de téléphone */
+            const Divider(),
+
+            /* PARTIE Numero de téléphone et EMAIl */
 
 
             Padding(padding: const EdgeInsets.only(top:10, right: 8, left: 8),
@@ -167,7 +173,7 @@ class MyCustomFormState extends State<MyCustomForm> {
               ),
             ),
 
-            Padding(padding: const EdgeInsets.only(top:10, right: 8, left: 8),
+            Padding(padding: const EdgeInsets.only(top:10, right: 8, left: 8, bottom: 10),
               child:
               TextFormField(
                 decoration: const InputDecoration(

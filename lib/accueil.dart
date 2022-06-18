@@ -1,4 +1,3 @@
-import 'package:app_psy/color_schemes.g.dart';
 import 'package:flutter/material.dart';
 
 import 'form_client.dart';
@@ -115,7 +114,7 @@ class _MonAccueilState extends State<MonAccueil> {
             Navigator.push(
               context,
               MaterialPageRoute<void>(
-                builder: (BuildContext context) => FullScreenDialog(),
+                builder: (BuildContext context) => const FullScreenDialog(),
                 fullscreenDialog: true,
               ),
             );
@@ -191,6 +190,8 @@ class _MonAccueilState extends State<MonAccueil> {
 }
 
 class FullScreenDialog extends StatelessWidget {
+  const FullScreenDialog({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -202,10 +203,7 @@ class FullScreenDialog extends StatelessWidget {
         ],
         title: const Text('Création client'),
       ),
-      body: Form(
-        child: Container(
-            child: MyCustomForm()) ,
-      ),
+      body: const MyCustomForm(),
     );
   }
 }
