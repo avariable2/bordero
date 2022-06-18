@@ -101,7 +101,7 @@ class MyCustomFormState extends State<MyCustomForm> {
             /* PARTIE Adresse, code postal et ville */
 
 
-            Padding(padding: const EdgeInsets.only(top:10, right: 8, left: 8),
+            Padding(padding: const EdgeInsets.only(right: 8, left: 8),
               child:
               TextFormField(
                 decoration: const InputDecoration(
@@ -170,7 +170,7 @@ class MyCustomFormState extends State<MyCustomForm> {
             /* PARTIE Numero de téléphone et EMAIl */
 
 
-            Padding(padding: const EdgeInsets.only(top:10, right: 8, left: 8),
+            Padding(padding: const EdgeInsets.only( right: 8, left: 8),
               child:
               TextFormField(
                 decoration: const InputDecoration(
