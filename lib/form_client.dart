@@ -33,6 +33,24 @@ class MyCustomFormState extends State<MyCustomForm> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
 
+            const SizedBox(
+              height: 15,
+            ),
+
+            Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: const [
+                  Expanded(flex: 1, child: Icon(Icons.info_outline)),
+                  Expanded(flex: 4, child: Text('''Toutes les informations sont nécessaire pour la création d'un client.'''), ),
+                ],
+            ),
+
+            const SizedBox(
+              height: 15,
+            ),
+
+            const Divider(),
+
             /* PARTIE NOM ET PRENOM */
 
             Row(children: [
@@ -78,8 +96,6 @@ class MyCustomFormState extends State<MyCustomForm> {
               ),
             ],
             ),
-
-            const Divider(),
 
 
             /* PARTIE Adresse, code postal et ville */
@@ -151,8 +167,6 @@ class MyCustomFormState extends State<MyCustomForm> {
             ],
             ),
 
-            const Divider(),
-
             /* PARTIE Numero de téléphone et EMAIl */
 
 
@@ -173,7 +187,7 @@ class MyCustomFormState extends State<MyCustomForm> {
               ),
             ),
 
-            Padding(padding: const EdgeInsets.only(top:10, right: 8, left: 8, bottom: 10),
+            Padding(padding: const EdgeInsets.only(top:10, right: 8, left: 8),
               child:
               TextFormField(
                 decoration: const InputDecoration(
@@ -188,6 +202,10 @@ class MyCustomFormState extends State<MyCustomForm> {
                   return null;
                 },
               ),
+            ),
+
+            const SizedBox(
+              height: 20,
             ),
 
 
