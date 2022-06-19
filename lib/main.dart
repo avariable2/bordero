@@ -14,9 +14,6 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
         title: "Caleum",
         theme: ThemeData(
-          colorScheme: lightColorScheme,
-        ),
-        darkTheme: ThemeData(
           colorScheme: darkColorScheme,
         ),
 
