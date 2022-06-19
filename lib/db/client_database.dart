@@ -93,8 +93,9 @@ class ClientDatabase {
   Future<List<Client>> readAllClient() async {
     final db = await instance.database;
 
-    const orderBy = '${ClientChamps.nom} ASC';
-    final result = await db.query(tableClient, orderBy: orderBy);
+    //const orderBy = '${ClientChamps.nom} ASC';
+    //final result = await db.query(tableClient, orderBy: orderBy);
+    final result = await db.query(tableClient);
 
     return result.map((json) => Client.fromJson(json)).toList();
   }
@@ -120,9 +121,5 @@ class ClientDatabase {
     );
   }
 
-  Future close() async {
-    final db = await instance.database;
 
-    db.close();
-  }
 }
