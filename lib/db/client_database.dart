@@ -87,7 +87,7 @@ class ClientDatabase {
       whereArgs: [nom, prenom],
     );
 
-    return maps.isEmpty ? false : true;
+    return maps.isEmpty ? false : true; // Si c'est vide pas de user
   }
 
   Future<List<Client>> readAllClient() async {

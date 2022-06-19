@@ -196,11 +196,6 @@ class FullScreenDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        actions: [
-          IconButton(onPressed: () {},
-            icon: const Icon(Icons.save_outlined),
-          ),
-        ],
         title: const Text('Création client'),
       ),
       body: const MyCustomForm(),

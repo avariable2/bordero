@@ -1,6 +1,5 @@
 import 'package:app_psy/db/client_database.dart';
 import 'package:email_validator/email_validator.dart';
-//import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'model/client.dart';
@@ -35,7 +34,7 @@ class MyCustomFormState extends State<MyCustomForm> {
   final controllerChampNumero = TextEditingController();
   final controllerChampEmail = TextEditingController();
 
-  void showDialogValidInsert() {
+  void afficherDialogConfirmationCreationDoublon() {
     showDialog(
         context: context,
         builder: (BuildContext context) =>
@@ -50,7 +49,7 @@ class MyCustomFormState extends State<MyCustomForm> {
                 TextButton(
                   onPressed: () {
                     Navigator.pop(context, 'OK');
-                    insertClientInDatabase();
+                    insertionClientDansBDD();
                   },
                   child: const Text("Oui"),),
               ],
@@ -59,7 +58,7 @@ class MyCustomFormState extends State<MyCustomForm> {
     );
   }
 
-  Future<void> insertClientInDatabase() async {
+  Future<void> insertionClientDansBDD() async {
     Client c = Client(
         nom: controllerChampNom.text,
         prenom: controllerChampPrenom.text,
@@ -85,18 +84,15 @@ class MyCustomFormState extends State<MyCustomForm> {
     });
   }
 
+  /// Methode asynchrone pour verifier que l'utilisateur n'est pas déjà présent dans la base de donnée.
   Future<void> checkIfUserIsAlreadySet() async {
     await ClientDatabase.instance.readIfClientIsAlreadySet(controllerChampNom.text, controllerChampPrenom.text)
         .then((value) => {
           if (value) {
-            showDialogValidInsert()
-
+            // Il y'a un doublon
+            afficherDialogConfirmationCreationDoublon()
           } else {
-            // on fait rien
-
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Le pelo existe pas')),
-            )
+            insertionClientDansBDD()
           }
     });
   }
