@@ -53,6 +53,7 @@ class ClientDatabase {
     try {
       result = await db.insert(tableClient, client.toJson());
     } catch(e) {
+      // ignore_for_file: avoid_print
       print("0 success for create client");
     }
 
@@ -74,6 +75,19 @@ class ClientDatabase {
     } else {
       return null;
     }
+  }
+
+  Future<bool> readIfClientIsAlreadySet(String nom, String prenom) async {
+    final db = await instance.database;
+
+    final maps = await db.query(
+      tableClient,
+      columns: ClientChamps.values,
+      where: '${ClientChamps.nom} = ? AND ${ClientChamps.prenom} = ?',
+      whereArgs: [nom, prenom],
+    );
+
+    return maps.isEmpty ? false : true;
   }
 
   Future<List<Client>> readAllClient() async {

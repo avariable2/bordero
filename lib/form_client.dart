@@ -1,5 +1,6 @@
 import 'package:app_psy/db/client_database.dart';
 import 'package:email_validator/email_validator.dart';
+//import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'model/client.dart';
@@ -33,6 +34,72 @@ class MyCustomFormState extends State<MyCustomForm> {
   final controllerChampVille = TextEditingController();
   final controllerChampNumero = TextEditingController();
   final controllerChampEmail = TextEditingController();
+
+  void showDialogValidInsert() {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) =>
+            AlertDialog(
+              title: const Text("Ce client existe déjà !"),
+              content: const Text("Voulez-vous vraiment l'ajouter (il se peut que 2 clients possède le meme nom et prenom)."),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context, 'Cancel'),
+                  child: const Text("Non"),
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context, 'OK');
+                    insertClientInDatabase();
+                  },
+                  child: const Text("Oui"),),
+              ],
+              elevation: 24.0,
+            ),
+    );
+  }
+
+  Future<void> insertClientInDatabase() async {
+    Client c = Client(
+        nom: controllerChampNom.text,
+        prenom: controllerChampPrenom.text,
+        adresse: controllerChampAdresse.text,
+        codePostal: controllerChampCodePostal.text,
+        ville: controllerChampVille.text,
+        numeroTelephone: controllerChampNumero.text,
+        email: controllerChampEmail.text
+    );
+
+
+    await ClientDatabase.instance.create(c).then((value) => {
+      // Le client a bien été enregistrer
+      if (value) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('${controllerChampPrenom.text.toUpperCase()} à bien été ajouté')),
+        )
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Oups ! Une erreur sait produite =(')),
+        )
+      }
+    });
+  }
+
+  Future<void> checkIfUserIsAlreadySet() async {
+    await ClientDatabase.instance.readIfClientIsAlreadySet(controllerChampNom.text, controllerChampPrenom.text)
+        .then((value) => {
+          if (value) {
+            showDialogValidInsert()
+
+          } else {
+            // on fait rien
+
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Le pelo existe pas')),
+            )
+          }
+    });
+  }
 
   @override
   void dispose() {
@@ -265,29 +332,7 @@ class MyCustomFormState extends State<MyCustomForm> {
                     const SnackBar(content: Text('Traitement des données ...')),
                   );
 
-                  Client c = Client(
-                      nom: controllerChampNom.text,
-                      prenom: controllerChampPrenom.text,
-                      adresse: controllerChampAdresse.text,
-                      codePostal: controllerChampCodePostal.text,
-                      ville: controllerChampVille.text,
-                      numeroTelephone: controllerChampNumero.text,
-                      email: controllerChampEmail.text
-                  );
-
-                  await ClientDatabase.instance.create(c).then((value) => {
-                    // Le client a bien été enregistrer
-                    if (value) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('${controllerChampPrenom.text.toUpperCase()} à bien été ajouté')),
-                      )
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Oups ! Une erreur sait produite =(')),
-                      )
-                    }
-                  });
-
+                  checkIfUserIsAlreadySet();
                 }
               },
               child: const Text('Enregistrer'),

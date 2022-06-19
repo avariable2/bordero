@@ -66,7 +66,7 @@ class _NavigationExampleState extends State<NavigationExample> {
         ],
       ),
       body: <Widget>[
-        Accueil(),
+        const Accueil(),
         Container(
           color: Colors.green,
           alignment: Alignment.center,
