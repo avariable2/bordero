@@ -36,12 +36,12 @@ class ClientDatabase {
     ${ClientChamps.codePostal} $stringType,
     ${ClientChamps.ville} $stringType,
     ${ClientChamps.numeroTelephone} $stringType,
-    ${ClientChamps.email} $stringType,
+    ${ClientChamps.email} $stringType
     )
     ''');
   }
 
-  Future<Client> create(Client client) async {
+  Future<bool> create(Client client) async {
     final db = await instance.database;
 
     // -- POSSIBLE de le faire a la main soit même --
@@ -49,9 +49,14 @@ class ClientDatabase {
     // final columns = '${ClientChamps.id}, ${ClientChamps.nom}, ${ClientChamps.prenom}, ... ';
     // final values = '${json[ClientChamps.id]}, ${json[ClientChamps.nom]}, ${json[ClientChamps.prenom]}, ...';
     // final id = await db.rawInsert('INSERT INTO table_name ($columns) VALUES ($values)');
+    int result = 0;
+    try {
+      result = await db.insert(tableClient, client.toJson());
+    } catch(e) {
+      print("0 success for create client");
+    }
 
-    final id = await db.insert(tableClient, client.toJson());
-    return client.copy(id: id);
+    return result > 0 ? true : false;
   }
 
   Future<Client?> readClient(int id) async {

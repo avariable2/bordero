@@ -1,5 +1,3 @@
-import 'dart:html';
-
 const String tableClient = 'client';
 
 class ClientChamps {

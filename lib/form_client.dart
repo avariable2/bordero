@@ -1,5 +1,8 @@
+import 'package:app_psy/db/client_database.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
+
+import 'model/client.dart';
 
 
 // Create a Form widget.
@@ -21,6 +24,28 @@ class MyCustomFormState extends State<MyCustomForm> {
   // Note: This is a GlobalKey<FormState>,
   // not a GlobalKey<MyCustomFormState>.
   final _formKey = GlobalKey<FormState>();
+
+  // Permet de recuperer les champs à la fin
+  final controllerChampNom = TextEditingController();
+  final controllerChampPrenom = TextEditingController();
+  final controllerChampAdresse = TextEditingController();
+  final controllerChampCodePostal = TextEditingController();
+  final controllerChampVille = TextEditingController();
+  final controllerChampNumero = TextEditingController();
+  final controllerChampEmail = TextEditingController();
+
+  @override
+  void dispose() {
+    // Clean up the controller when the widget is disposed.
+    controllerChampNom.dispose();
+    controllerChampPrenom.dispose();
+    controllerChampAdresse.dispose();
+    controllerChampCodePostal.dispose();
+    controllerChampVille.dispose();
+    controllerChampNumero.dispose();
+    controllerChampEmail.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -58,6 +83,7 @@ class MyCustomFormState extends State<MyCustomForm> {
               Expanded(child:
               Padding(padding: const EdgeInsets.only( top:10, left: 8, bottom: 10),
                 child: TextFormField(
+                  controller: controllerChampNom,
                   keyboardType: TextInputType.name,
                   decoration: const InputDecoration(
                       border: OutlineInputBorder(),
@@ -82,6 +108,7 @@ class MyCustomFormState extends State<MyCustomForm> {
               Expanded(
                 child: Padding(padding: const EdgeInsets.only( top:10 ,right: 8, left: 8, bottom: 10),
                   child: TextFormField(
+                    controller: controllerChampPrenom,
                     keyboardType: TextInputType.name,
                     decoration: const InputDecoration(
                         border: OutlineInputBorder(),
@@ -107,6 +134,7 @@ class MyCustomFormState extends State<MyCustomForm> {
             Padding(padding: const EdgeInsets.only(right: 8, left: 8),
               child:
               TextFormField(
+                controller: controllerChampAdresse,
                 keyboardType: TextInputType.streetAddress,
                 decoration: const InputDecoration(
                     border: OutlineInputBorder(),
@@ -130,6 +158,7 @@ class MyCustomFormState extends State<MyCustomForm> {
               Padding(padding: const EdgeInsets.only(top:10, right: 8, left: 8, bottom: 10),
                 child:
                 TextFormField(
+                  controller: controllerChampCodePostal,
                   keyboardType: TextInputType.number,
                   decoration: const InputDecoration(
                       border: OutlineInputBorder(),
@@ -158,6 +187,7 @@ class MyCustomFormState extends State<MyCustomForm> {
                 Padding(padding: const EdgeInsets.only(top:10, right: 8, left: 8, bottom: 10),
                   child:
                   TextFormField(
+                    controller: controllerChampVille,
                     keyboardType: TextInputType.streetAddress,
                     decoration: const InputDecoration(
                         border: OutlineInputBorder(),
@@ -182,6 +212,7 @@ class MyCustomFormState extends State<MyCustomForm> {
             Padding(padding: const EdgeInsets.only( right: 8, left: 8),
               child:
               TextFormField(
+                controller: controllerChampNumero,
                 keyboardType: TextInputType.phone,
                 decoration: const InputDecoration(
                     border: OutlineInputBorder(),
@@ -200,6 +231,7 @@ class MyCustomFormState extends State<MyCustomForm> {
             Padding(padding: const EdgeInsets.only(top:10, right: 8, left: 8),
               child:
               TextFormField(
+                controller: controllerChampEmail,
                 keyboardType: TextInputType.emailAddress,
                 decoration: const InputDecoration(
                     border: OutlineInputBorder(),
@@ -224,14 +256,38 @@ class MyCustomFormState extends State<MyCustomForm> {
 
 
             ElevatedButton(
-              onPressed: () {
+              onPressed: () async {
                 // Validate returns true if the form is valid, or false otherwise.
                 if (_formKey.currentState!.validate()) {
                   // If the form is valid, display a snackbar. In the real world,
                   // you'd often call a server or save the information in a database.
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Processing Data')),
+                    const SnackBar(content: Text('Traitement des données ...')),
                   );
+
+                  Client c = Client(
+                      nom: controllerChampNom.text,
+                      prenom: controllerChampPrenom.text,
+                      adresse: controllerChampAdresse.text,
+                      codePostal: controllerChampCodePostal.text,
+                      ville: controllerChampVille.text,
+                      numeroTelephone: controllerChampNumero.text,
+                      email: controllerChampEmail.text
+                  );
+
+                  await ClientDatabase.instance.create(c).then((value) => {
+                    // Le client a bien été enregistrer
+                    if (value) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('${controllerChampPrenom.text.toUpperCase()} à bien été ajouté')),
+                      )
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Oups ! Une erreur sait produite =(')),
+                      )
+                    }
+                  });
+
                 }
               },
               child: const Text('Enregistrer'),
@@ -241,8 +297,6 @@ class MyCustomFormState extends State<MyCustomForm> {
         ),
       ),
     );
-
-
 
   }
 }
