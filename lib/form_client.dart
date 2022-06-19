@@ -1,3 +1,4 @@
+import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 
 
@@ -57,6 +58,7 @@ class MyCustomFormState extends State<MyCustomForm> {
               Expanded(child:
               Padding(padding: const EdgeInsets.only( top:10, left: 8, bottom: 10),
                 child: TextFormField(
+                  keyboardType: TextInputType.name,
                   decoration: const InputDecoration(
                       border: OutlineInputBorder(),
                       labelText: 'Nom',
@@ -80,6 +82,7 @@ class MyCustomFormState extends State<MyCustomForm> {
               Expanded(
                 child: Padding(padding: const EdgeInsets.only( top:10 ,right: 8, left: 8, bottom: 10),
                   child: TextFormField(
+                    keyboardType: TextInputType.name,
                     decoration: const InputDecoration(
                         border: OutlineInputBorder(),
                         labelText: 'Prénom',
@@ -104,6 +107,7 @@ class MyCustomFormState extends State<MyCustomForm> {
             Padding(padding: const EdgeInsets.only(right: 8, left: 8),
               child:
               TextFormField(
+                keyboardType: TextInputType.streetAddress,
                 decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: 'Adresse',
@@ -126,6 +130,7 @@ class MyCustomFormState extends State<MyCustomForm> {
               Padding(padding: const EdgeInsets.only(top:10, right: 8, left: 8, bottom: 10),
                 child:
                 TextFormField(
+                  keyboardType: TextInputType.number,
                   decoration: const InputDecoration(
                       border: OutlineInputBorder(),
                       labelText: 'Code postal',
@@ -134,6 +139,9 @@ class MyCustomFormState extends State<MyCustomForm> {
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Entrer un code postal';
+                    }
+                    if (value.length != 5) {
+                      return 'Entrer un code postal valide';
                     }
                     return null;
                   },
@@ -150,6 +158,7 @@ class MyCustomFormState extends State<MyCustomForm> {
                 Padding(padding: const EdgeInsets.only(top:10, right: 8, left: 8, bottom: 10),
                   child:
                   TextFormField(
+                    keyboardType: TextInputType.streetAddress,
                     decoration: const InputDecoration(
                         border: OutlineInputBorder(),
                         labelText: 'Ville',
@@ -173,6 +182,7 @@ class MyCustomFormState extends State<MyCustomForm> {
             Padding(padding: const EdgeInsets.only( right: 8, left: 8),
               child:
               TextFormField(
+                keyboardType: TextInputType.phone,
                 decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: 'Numéro de téléphone',
@@ -190,14 +200,18 @@ class MyCustomFormState extends State<MyCustomForm> {
             Padding(padding: const EdgeInsets.only(top:10, right: 8, left: 8),
               child:
               TextFormField(
+                keyboardType: TextInputType.emailAddress,
                 decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: 'Email',
                     icon: Icon(Icons.email_outlined)),
                 // The validator receives the text that the user has entered.
                 validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Entrer un email';
+                  if (value == null || value.isEmpty ) {
+                    return 'Entrer une email';
+                  }
+                  if (!EmailValidator.validate(value)) {
+                    return 'Entrer une email valide';
                   }
                   return null;
                 },
