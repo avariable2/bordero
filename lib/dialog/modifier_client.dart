@@ -4,6 +4,91 @@ import 'package:flutter/material.dart';
 
 import '../model/client.dart';
 
+class FullScreenDialogModifierClient extends StatelessWidget {
+  final Client client;
+  const FullScreenDialogModifierClient({Key? key, required this.client,}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Modification client'),
+        actions: [
+          IconButton(
+            icon: const Icon(
+              Icons.delete_outline,
+            ),
+            onPressed: () {
+              _afficherAvertissementSuppression(context, client);
+            },
+          )
+        ],
+      ),
+      body: DialogModifierClient(client: client,),
+    );
+  }
+
+  void _afficherAvertissementSuppression(BuildContext context, Client client) {
+    var richText = RichText(
+      text: const TextSpan(
+          style: TextStyle(
+            fontSize: 22.0,
+          ),
+          children: <TextSpan> [
+            TextSpan(text: "Attention",
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.red
+                )
+            ),
+            TextSpan(text: " : êtes-vous sur de vouloir supprimer se client ?"),
+          ]
+      ),
+    );
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) =>
+          AlertDialog(
+            title: richText,
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, 'Cancel'),
+                child: const Text("Non"),
+              ),
+              TextButton(
+                onPressed: () {
+                  _deleteClientDansBDD(context);
+                },
+                child: const Text("Oui"),),
+            ],
+            elevation: 24.0,
+          ),
+    );
+  }
+
+  Future<void> _deleteClientDansBDD(BuildContext context) async {
+    await ClientDatabase.instance.delete(client.id!).then((value) => {
+      _afficherResultatSnackbarPuisRetourEnArriere(context, value),
+    });
+  }
+
+  void _afficherResultatSnackbarPuisRetourEnArriere(BuildContext context, int value) {
+    // Le client a bien été modifier
+    if (value > 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('${client.prenom.toUpperCase()} à bien été supprimer')),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Oups ! Une erreur sait produite =(')),
+      );
+    }
+    Navigator.pop(context, 'OK');
+  }
+
+}
+
 
 // Create a Form widget.
 class DialogModifierClient extends StatefulWidget {
@@ -76,7 +161,7 @@ class DialogModifierClientState extends State<DialogModifierClient> {
   }
 
   void afficherResultatSnackbar(int value) {
-    // Le client a bien été enregistrer
+    // Le client a bien été modifier
     if (value > 0) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('${_controllerChampPrenom.text.toUpperCase()} à bien été modifier')),
@@ -86,19 +171,6 @@ class DialogModifierClientState extends State<DialogModifierClient> {
         const SnackBar(content: Text('Oups ! Une erreur sait produite =(')),
       );
     }
-  }
-
-  /// Methode asynchrone pour verifier que l'utilisateur n'est pas déjà présent dans la base de donnée.
-  Future<void> checkIfUserIsAlreadySet() async {
-    await ClientDatabase.instance.readIfClientIsAlreadySet(_controllerChampNom.text, _controllerChampPrenom.text)
-        .then((value) => {
-      if (value) {
-        // Il y'a un doublon
-        afficherDialogConfirmationCreationDoublon()
-      } else {
-        updateClientDansBDD()
-      }
-    });
   }
 
   @override
@@ -344,10 +416,10 @@ class DialogModifierClientState extends State<DialogModifierClient> {
                     const SnackBar(content: Text('Traitement des données ...')),
                   );
 
-                  checkIfUserIsAlreadySet();
+                  updateClientDansBDD();
                 }
               },
-              child: const Text('Enregistrer'),
+              child: const Text('Sauvegarder'),
             ),
 
           ],

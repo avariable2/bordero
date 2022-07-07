@@ -20,16 +20,26 @@ class MonAccueil extends StatefulWidget {
   State<MonAccueil> createState() => _MonAccueilState();
 }
 
-class _MonAccueilState extends State<MonAccueil> {
+class _MonAccueilState extends State<MonAccueil> with WidgetsBindingObserver {
   late List<Client> listClients;
   bool isLoading = false;
 
   @override
   void initState() {
+    WidgetsBinding.instance.addObserver(this);
     super.initState();
 
     refreshClient();
   }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // Methode pour chaque retour a l'accueil de refresh
+    if (state == AppLifecycleState.resumed) {
+      refreshClient();
+    }
+  }
+
 
   Future refreshClient() async {
     setState(() => isLoading = true);
@@ -242,22 +252,6 @@ class FullScreenDialogAjouterClient extends StatelessWidget {
         title: const Text('Création client'),
       ),
       body: const DialogAjouterClient(),
-    );
-  }
-}
-
-
-class FullScreenDialogModifierClient extends StatelessWidget {
-  final Client client;
-  const FullScreenDialogModifierClient({Key? key, required this.client,}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Modification client'),
-      ),
-      body: DialogModifierClient(client: client,),
     );
   }
 }
