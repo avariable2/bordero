@@ -1,4 +1,5 @@
 import 'package:app_psy/db/app_psy_database.dart';
+import 'package:app_psy/dialog/ajouter_type_acte.dart';
 import 'package:app_psy/dialog/modifier_client.dart';
 import 'package:app_psy/model/type_acte.dart';
 import 'package:flutter/material.dart';
@@ -138,7 +139,7 @@ class _MonAccueilState extends State<MonAccueil> with WidgetsBindingObserver {
           ),
 
           if(listClients.isEmpty)
-            const Text("Aucun clients 🤔​", style: TextStyle(fontSize: 18,),)
+            const Text("🤔​ Aucun clients ", style: TextStyle(fontSize: 18,),)
           else
           SizedBox(
             height: 200,
@@ -204,6 +205,9 @@ class _MonAccueilState extends State<MonAccueil> with WidgetsBindingObserver {
           ),
 
 
+          if(listTypeActes.isEmpty)
+            const Text("🤔​ Aucune type de seance enregistré", style: TextStyle(fontSize: 18,),)
+          else
           SizedBox(
             height: 200,
             child: Card(
@@ -213,11 +217,23 @@ class _MonAccueilState extends State<MonAccueil> with WidgetsBindingObserver {
                 shrinkWrap: true,
                 addAutomaticKeepAlives: false,
                 children: [
-                  for (int count in List.generate(20, (index) => index + 1))
+                  for(TypeActe typeActe in listTypeActes)
                     ListTile(
-                      title: Text('Thomas Simon $count'),
-                      leading: const Icon(Icons.work_outline),
-                      onTap: () {},
+                      title: Text(typeActe.nom),
+                      leading: const Icon(Icons.account_circle_sharp),
+                      onTap: () {
+
+                        /*Navigator.push(
+                          context,
+                          MaterialPageRoute<void>(
+                            builder: (BuildContext context) => FullScreenDialogModifierClient(client: client,),
+                            fullscreenDialog: true,
+                          ),
+                        ).then((value) => refreshLists());
+
+                         */
+
+                      },
                     ),
                 ],
               ),
@@ -225,7 +241,15 @@ class _MonAccueilState extends State<MonAccueil> with WidgetsBindingObserver {
           ),
 
           ElevatedButton.icon(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute<void>(
+                  builder: (BuildContext context) => const FullScreenDialogAjouterTypeActe(),
+                  fullscreenDialog: true,
+                ),
+              ).then((value) => refreshLists());
+            },
             icon: const Icon(Icons.add),
             label: const Text("Ajouter"),
           ),
@@ -247,18 +271,4 @@ class _MonAccueilState extends State<MonAccueil> with WidgetsBindingObserver {
         ],
       );
     }
-}
-
-class FullScreenDialogAjouterClient extends StatelessWidget {
-  const FullScreenDialogAjouterClient({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Création client'),
-      ),
-      body: const DialogAjouterClient(),
-    );
-  }
 }

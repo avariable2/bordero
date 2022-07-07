@@ -4,6 +4,19 @@ import 'package:flutter/material.dart';
 
 import '../model/client.dart';
 
+class FullScreenDialogAjouterClient extends StatelessWidget {
+  const FullScreenDialogAjouterClient({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Création client'),
+      ),
+      body: const DialogAjouterClient(),
+    );
+  }
+}
 
 // Create a Form widget.
 class DialogAjouterClient extends StatefulWidget {
@@ -85,7 +98,7 @@ class DialogAjouterClientState extends State<DialogAjouterClient> {
   }
 
   /// Methode asynchrone pour verifier que l'utilisateur n'est pas déjà présent dans la base de donnée.
-  Future<void> checkIfUserIsAlreadySet() async {
+  Future<void> checkSiClientEstDejaSet() async {
     await AppPsyDatabase.instance.readIfClientIsAlreadySet(controllerChampNom.text, controllerChampPrenom.text)
         .then((value) => {
           if (value) {
@@ -328,7 +341,7 @@ class DialogAjouterClientState extends State<DialogAjouterClient> {
                     const SnackBar(content: Text('Traitement des données ...')),
                   );
 
-                  checkIfUserIsAlreadySet();
+                  checkSiClientEstDejaSet();
                 }
               },
               child: const Text('Enregistrer'),

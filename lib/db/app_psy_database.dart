@@ -4,7 +4,7 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart' as p;
 
 class AppPsyDatabase {
-  final int VERSION_DBB = 6;
+  final int VERSION_DBB = 9;
 
   static final AppPsyDatabase instance = AppPsyDatabase._init();
 
@@ -29,7 +29,7 @@ class AppPsyDatabase {
   Future _createDB(Database db, int version) async {
     const idType = 'INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL';
     const stringType = 'TEXT NOT NULL';
-    const intType = 'INTEGER';
+    const doubleType = 'REAL NOT NULL';
 
     await db.execute(''' 
     CREATE TABLE $tableClient(
@@ -48,7 +48,7 @@ class AppPsyDatabase {
     CREATE TABLE $tableTypeActe(
     ${TypeActeChamps.id} $idType,
     ${TypeActeChamps.nom} $stringType,
-    ${TypeActeChamps.prix} $intType
+    ${TypeActeChamps.prix} $doubleType
     )
     ''');
   }
