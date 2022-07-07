@@ -4,6 +4,8 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart' as p;
 
 class AppPsyDatabase {
+  final int VERSION_DBB = 6;
+
   static final AppPsyDatabase instance = AppPsyDatabase._init();
 
   static Database? _database;
@@ -13,7 +15,7 @@ class AppPsyDatabase {
   Future<Database> get database async {
     if (_database != null ) return _database!;
 
-    _database = await _initDB('client.db');
+    _database = await _initDB('app_psy.db');
     return _database!;
   }
 
@@ -21,7 +23,7 @@ class AppPsyDatabase {
     final dbPath = await getDatabasesPath();
     final path = p.join(dbPath, filePath);
 
-    return await openDatabase(path, version: 2, onCreate: _createDB);
+    return await openDatabase(path, version: VERSION_DBB, onCreate: _createDB);
   }
 
   Future _createDB(Database db, int version) async {
@@ -43,10 +45,11 @@ class AppPsyDatabase {
     ''');
 
     await db.execute('''
-    CREATE TABLE $tableTypeActe,
+    CREATE TABLE $tableTypeActe(
     ${TypeActeChamps.id} $idType,
     ${TypeActeChamps.nom} $stringType,
-    ${TypeActeChamps.id} $intType,
+    ${TypeActeChamps.prix} $intType
+    )
     ''');
   }
 

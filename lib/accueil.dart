@@ -1,5 +1,6 @@
 import 'package:app_psy/db/app_psy_database.dart';
 import 'package:app_psy/dialog/modifier_client.dart';
+import 'package:app_psy/model/type_acte.dart';
 import 'package:flutter/material.dart';
 
 import 'dialog/ajouter_client.dart';
@@ -22,6 +23,7 @@ class MonAccueil extends StatefulWidget {
 
 class _MonAccueilState extends State<MonAccueil> with WidgetsBindingObserver {
   late List<Client> listClients;
+  late List<TypeActe> listTypeActes;
   bool isLoading = false;
 
   @override
@@ -29,19 +31,19 @@ class _MonAccueilState extends State<MonAccueil> with WidgetsBindingObserver {
     WidgetsBinding.instance.addObserver(this);
     super.initState();
 
-    refreshClient();
+    refreshLists();
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     // Methode pour chaque retour a l'accueil de refresh
     if (state == AppLifecycleState.resumed) {
-      refreshClient();
+      refreshLists();
     }
   }
 
 
-  Future refreshClient() async {
+  Future refreshLists() async {
     setState(() => isLoading = true);
 
     await AppPsyDatabase.instance.readAllClient().then((value) => {
@@ -52,7 +54,13 @@ class _MonAccueilState extends State<MonAccueil> with WidgetsBindingObserver {
       }
     });
 
-
+    await AppPsyDatabase.instance.readAllTypeActe().then((value) => {
+      if (value.isNotEmpty) {
+        listTypeActes = value,
+      } else {
+        listTypeActes = [],
+      }
+    });
 
     setState(() => isLoading = false);
   }
@@ -152,7 +160,7 @@ class _MonAccueilState extends State<MonAccueil> with WidgetsBindingObserver {
                             builder: (BuildContext context) => FullScreenDialogModifierClient(client: client,),
                             fullscreenDialog: true,
                           ),
-                        ).then((value) => refreshClient());
+                        ).then((value) => refreshLists());
                       },
                     ),
                 ],
@@ -169,7 +177,7 @@ class _MonAccueilState extends State<MonAccueil> with WidgetsBindingObserver {
                   builder: (BuildContext context) => const FullScreenDialogAjouterClient(),
                   fullscreenDialog: true,
                 ),
-              ).then((value) => refreshClient());
+              ).then((value) => refreshLists());
             },
             icon: const Icon(Icons.add),
             label: const Text("Ajouter"),
