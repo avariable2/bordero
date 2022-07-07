@@ -84,6 +84,8 @@ class FullScreenDialogModifierClient extends StatelessWidget {
         const SnackBar(content: Text('Oups ! Une erreur sait produite =(')),
       );
     }
+    // 2 fois car on ferme le dialog et la fenetre avant
+    Navigator.pop(context, 'OK');
     Navigator.pop(context, 'OK');
   }
 

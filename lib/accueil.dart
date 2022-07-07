@@ -48,9 +48,6 @@ class _MonAccueilState extends State<MonAccueil> with WidgetsBindingObserver {
       if (value.isNotEmpty) {
         listClients = value,
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content:  Text('Aie ! Contacter le developpeur')),
-        ),
         listClients = [],
       }
     });
@@ -132,7 +129,9 @@ class _MonAccueilState extends State<MonAccueil> with WidgetsBindingObserver {
             height: 15,
           ),
 
-
+          if(listClients.isEmpty)
+            const Text("Aucun clients 🤔​", style: TextStyle(fontSize: 18,),)
+          else
           SizedBox(
             height: 200,
             child: Card(
@@ -153,7 +152,7 @@ class _MonAccueilState extends State<MonAccueil> with WidgetsBindingObserver {
                             builder: (BuildContext context) => FullScreenDialogModifierClient(client: client,),
                             fullscreenDialog: true,
                           ),
-                        );
+                        ).then((value) => refreshClient());
                       },
                     ),
                 ],
@@ -170,7 +169,7 @@ class _MonAccueilState extends State<MonAccueil> with WidgetsBindingObserver {
                   builder: (BuildContext context) => const FullScreenDialogAjouterClient(),
                   fullscreenDialog: true,
                 ),
-              );
+              ).then((value) => refreshClient());
             },
             icon: const Icon(Icons.add),
             label: const Text("Ajouter"),
