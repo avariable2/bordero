@@ -1,4 +1,4 @@
-import 'package:app_psy/db/client_database.dart';
+import 'package:app_psy/db/app_psy_database.dart';
 import 'package:app_psy/dialog/modifier_client.dart';
 import 'package:flutter/material.dart';
 
@@ -44,7 +44,7 @@ class _MonAccueilState extends State<MonAccueil> with WidgetsBindingObserver {
   Future refreshClient() async {
     setState(() => isLoading = true);
 
-    await ClientDatabase.instance.readAllClient().then((value) => {
+    await AppPsyDatabase.instance.readAllClient().then((value) => {
       if (value.isNotEmpty) {
         listClients = value,
       } else {

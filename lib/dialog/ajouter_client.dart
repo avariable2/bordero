@@ -1,4 +1,4 @@
-import 'package:app_psy/db/client_database.dart';
+import 'package:app_psy/db/app_psy_database.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 
@@ -70,7 +70,7 @@ class DialogAjouterClientState extends State<DialogAjouterClient> {
     );
 
 
-    await ClientDatabase.instance.create(c).then((value) => {
+    await AppPsyDatabase.instance.createClient(c).then((value) => {
       // Le client a bien été enregistrer
       if (value) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -86,7 +86,7 @@ class DialogAjouterClientState extends State<DialogAjouterClient> {
 
   /// Methode asynchrone pour verifier que l'utilisateur n'est pas déjà présent dans la base de donnée.
   Future<void> checkIfUserIsAlreadySet() async {
-    await ClientDatabase.instance.readIfClientIsAlreadySet(controllerChampNom.text, controllerChampPrenom.text)
+    await AppPsyDatabase.instance.readIfClientIsAlreadySet(controllerChampNom.text, controllerChampPrenom.text)
         .then((value) => {
           if (value) {
             // Il y'a un doublon

@@ -1,13 +1,14 @@
 import 'package:app_psy/model/client.dart';
+import 'package:app_psy/model/type_acte.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart' as p;
 
-class ClientDatabase {
-  static final ClientDatabase instance = ClientDatabase._init();
+class AppPsyDatabase {
+  static final AppPsyDatabase instance = AppPsyDatabase._init();
 
   static Database? _database;
 
-  ClientDatabase._init();
+  AppPsyDatabase._init();
 
   Future<Database> get database async {
     if (_database != null ) return _database!;
@@ -26,6 +27,7 @@ class ClientDatabase {
   Future _createDB(Database db, int version) async {
     const idType = 'INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL';
     const stringType = 'TEXT NOT NULL';
+    const intType = 'INTEGER';
 
     await db.execute(''' 
     CREATE TABLE $tableClient(
@@ -39,9 +41,18 @@ class ClientDatabase {
     ${ClientChamps.email} $stringType
     )
     ''');
+
+    await db.execute('''
+    CREATE TABLE $tableTypeActe,
+    ${TypeActeChamps.id} $idType,
+    ${TypeActeChamps.nom} $stringType,
+    ${TypeActeChamps.id} $intType,
+    ''');
   }
 
-  Future<bool> create(Client client) async {
+  /// CLIENTS ///
+
+  Future<bool> createClient(Client client) async {
     final db = await instance.database;
 
     // -- POSSIBLE de le faire a la main soit même --
@@ -100,7 +111,7 @@ class ClientDatabase {
     return result.map((json) => Client.fromJson(json)).toList();
   }
 
-  Future<int> update(Client client) async {
+  Future<int> updateClient(Client client) async {
     final db = await instance.database;
 
     return db.update(
@@ -111,13 +122,79 @@ class ClientDatabase {
     );
   }
 
-  Future<int> delete(int id) async {
+  Future<int> deleteClient(int id) async {
     final db = await instance.database;
 
     return await db.delete(
       tableClient,
       where: '${ClientChamps.id} = ?',
       whereArgs: [id],
+    );
+  }
+
+  /// TYPE D'ACTE ///
+
+  Future<bool> createTypeActe(TypeActe typeActe) async {
+    final db = await instance.database;
+    int result = 0;
+
+    try {
+      result = await db.insert(tableTypeActe, typeActe.toJson());
+    } catch(e) {
+      print("0 success for create TypeActe");
+    }
+
+    return result > 0 ? true : false;
+  }
+
+  Future<TypeActe?> readTypeActe(int id) async {
+    final db = await instance.database;
+
+    final maps = await db.query(
+      tableTypeActe,
+      columns: TypeActeChamps.values,
+      where: '${TypeActeChamps.id} = ?',
+      whereArgs: [id],
+    );
+
+    if (maps.isNotEmpty) {
+      return TypeActe.fromJson(maps.first);
+    } else {
+      return null;
+    }
+  }
+
+  Future<bool> readIfTypeActeIsAlreadySet(String nom) async {
+    final db = await instance.database;
+
+    final maps = await db.query(
+      tableTypeActe,
+      columns: TypeActeChamps.values,
+      where: '${TypeActeChamps.nom} = ?',
+      whereArgs: [nom],
+    );
+
+    return maps.isEmpty ? false : true; // Si c'est vide pas de user
+  }
+
+  Future<List<TypeActe>> readAllTypeActe() async {
+    final db = await instance.database;
+
+    //const orderBy = '${ClientChamps.nom} ASC';
+    //final result = await db.query(tableClient, orderBy: orderBy);
+    final result = await db.query(tableTypeActe);
+
+    return result.map((json) => TypeActe.fromJson(json)).toList();
+  }
+
+  Future<int> updateTypeActe(TypeActe typeActe) async {
+    final db = await instance.database;
+
+    return db.update(
+      tableTypeActe,
+      typeActe.toJson(),
+      where: '${TypeActeChamps.id} = ?',
+      whereArgs: [typeActe.id],
     );
   }
 

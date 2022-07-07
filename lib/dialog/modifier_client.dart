@@ -1,4 +1,4 @@
-import 'package:app_psy/db/client_database.dart';
+import 'package:app_psy/db/app_psy_database.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 
@@ -68,7 +68,7 @@ class FullScreenDialogModifierClient extends StatelessWidget {
   }
 
   Future<void> _deleteClientDansBDD(BuildContext context) async {
-    await ClientDatabase.instance.delete(client.id!).then((value) => {
+    await AppPsyDatabase.instance.deleteClient(client.id!).then((value) => {
       _afficherResultatSnackbarPuisRetourEnArriere(context, value),
     });
   }
@@ -158,7 +158,7 @@ class DialogModifierClientState extends State<DialogModifierClient> {
         email: _controllerChampEmail.text
     );
 
-    await ClientDatabase.instance.update(c).then((value) => {
+    await AppPsyDatabase.instance.updateClient(c).then((value) => {
       afficherResultatSnackbar(value)
     });
   }
