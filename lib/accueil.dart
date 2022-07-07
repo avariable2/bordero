@@ -1,7 +1,8 @@
 import 'package:app_psy/db/client_database.dart';
+import 'package:app_psy/dialog/modifier_client.dart';
 import 'package:flutter/material.dart';
 
-import 'form_client.dart';
+import 'dialog/ajouter_client.dart';
 import 'model/client.dart';
 
 class Accueil extends StatelessWidget {
@@ -132,11 +133,18 @@ class _MonAccueilState extends State<MonAccueil> {
                 addAutomaticKeepAlives: false,
                 children: [
                   for(Client client in listClients)
-                  //for (int count in listClients)
                     ListTile(
                       title: Text("${client.prenom} ${client.nom} / ${client.adresse}"),
                       leading: const Icon(Icons.account_circle_sharp),
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute<void>(
+                            builder: (BuildContext context) => FullScreenDialogModifierClient(client: client,),
+                            fullscreenDialog: true,
+                          ),
+                        );
+                      },
                     ),
                 ],
               ),
@@ -149,7 +157,7 @@ class _MonAccueilState extends State<MonAccueil> {
               Navigator.push(
                 context,
                 MaterialPageRoute<void>(
-                  builder: (BuildContext context) => const FullScreenDialog(),
+                  builder: (BuildContext context) => const FullScreenDialogAjouterClient(),
                   fullscreenDialog: true,
                 ),
               );
@@ -224,8 +232,8 @@ class _MonAccueilState extends State<MonAccueil> {
     }
 }
 
-class FullScreenDialog extends StatelessWidget {
-  const FullScreenDialog({Key? key}) : super(key: key);
+class FullScreenDialogAjouterClient extends StatelessWidget {
+  const FullScreenDialogAjouterClient({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -233,7 +241,23 @@ class FullScreenDialog extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Création client'),
       ),
-      body: const MyCustomForm(),
+      body: const DialogAjouterClient(),
+    );
+  }
+}
+
+
+class FullScreenDialogModifierClient extends StatelessWidget {
+  final Client client;
+  const FullScreenDialogModifierClient({Key? key, required this.client,}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Modification client'),
+      ),
+      body: DialogModifierClient(client: client,),
     );
   }
 }

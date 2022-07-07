@@ -2,22 +2,22 @@ import 'package:app_psy/db/client_database.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 
-import 'model/client.dart';
+import '../model/client.dart';
 
 
 // Create a Form widget.
-class MyCustomForm extends StatefulWidget {
-  const MyCustomForm({super.key});
+class DialogAjouterClient extends StatefulWidget {
+  const DialogAjouterClient({super.key});
 
   @override
-  MyCustomFormState createState() {
-    return MyCustomFormState();
+  DialogAjouterClientState createState() {
+    return DialogAjouterClientState();
   }
 }
 
 // Create a corresponding State class.
 // This class holds data related to the form.
-class MyCustomFormState extends State<MyCustomForm> {
+class DialogAjouterClientState extends State<DialogAjouterClient> {
   // Create a global key that uniquely identifies the Form widget
   // and allows validation of the form.
   //
