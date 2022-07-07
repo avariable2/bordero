@@ -20,11 +20,11 @@ class ClientDatabase {
     final dbPath = await getDatabasesPath();
     final path = p.join(dbPath, filePath);
 
-    return await openDatabase(path, version: 1, onCreate: _createDB);
+    return await openDatabase(path, version: 2, onCreate: _createDB);
   }
 
   Future _createDB(Database db, int version) async {
-    const idType = 'INTEGER PRIMARY KEY AUTOINCREMENT';
+    const idType = 'INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL';
     const stringType = 'TEXT NOT NULL';
 
     await db.execute(''' 

@@ -146,6 +146,7 @@ class DialogModifierClientState extends State<DialogModifierClient> {
 
   Future<void> updateClientDansBDD() async {
     Client c = Client(
+        id: widget.client.id,
         nom: _controllerChampNom.text,
         prenom: _controllerChampPrenom.text,
         adresse: _controllerChampAdresse.text,
