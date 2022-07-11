@@ -85,6 +85,23 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
       onStepTapped: (int index) {
         setState(() => _index = index);
       },
+      controlsBuilder: (BuildContext context, ControlsDetails details) {
+        return Row(
+          children: <Widget>[
+            ElevatedButton(
+              onPressed: details.onStepContinue,
+              child: const Text('CONTINUER'),
+            ),
+            const SizedBox(
+              width: 10,
+            ),
+            TextButton(
+              onPressed: details.onStepCancel,
+              child: const Text('RETOUR', style: TextStyle(color: Colors.white70),),
+            ),
+          ],
+        );
+      },
       steps: [
         Step(title: const Text("Client(s)"), isActive: _index >= 0, content: buildClient()),
         Step(title: const Text("Séance(s)"), isActive: _index >= 1, content: buildSeance()),
@@ -162,25 +179,6 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
         Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-
-            const SizedBox(
-              height: 15,
-            ),
-
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: const [
-                Expanded(flex: 1, child: Icon(Icons.info_outline)),
-                Expanded(flex: 4, child: Text('''Toutes les informations sont nécessaire pour la création d'un client.'''), ),
-              ],
-            ),
-
-            const SizedBox(
-              height: 15,
-            ),
-
-            const Divider(),
-
             /* PARTIE NOM ET PRENOM */
 
             Row(children: [
@@ -353,23 +351,6 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
 
             const SizedBox(
               height: 20,
-            ),
-
-
-            ElevatedButton(
-              onPressed: () async {
-                // Validate returns true if the form is valid, or false otherwise.
-                if (_formKey.currentState!.validate()) {
-                  // If the form is valid, display a snackbar. In the real world,
-                  // you'd often call a server or save the information in a database.
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Traitement des données ...')),
-                  );
-
-                  //checkSiClientEstDejaSet();
-                }
-              },
-              child: const Text('Ajouter'),
             ),
 
           ],
