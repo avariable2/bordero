@@ -344,7 +344,7 @@ class DialogAjouterClientState extends State<DialogAjouterClient> {
                   checkSiClientEstDejaSet();
                 }
               },
-              child: const Text('Enregistrer'),
+              child: const Text('Ajouter'),
             ),
 
           ],

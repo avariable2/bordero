@@ -1,6 +1,7 @@
 import 'package:app_psy/db/app_psy_database.dart';
 import 'package:app_psy/dialog/ajouter_type_acte.dart';
 import 'package:app_psy/dialog/modifier_client.dart';
+import 'package:app_psy/dialog/modifier_type_acte.dart';
 import 'package:app_psy/model/type_acte.dart';
 import 'package:flutter/material.dart';
 
@@ -223,15 +224,13 @@ class _MonAccueilState extends State<MonAccueil> with WidgetsBindingObserver {
                       leading: const Icon(Icons.account_circle_sharp),
                       onTap: () {
 
-                        /*Navigator.push(
+                        Navigator.push(
                           context,
                           MaterialPageRoute<void>(
-                            builder: (BuildContext context) => FullScreenDialogModifierClient(client: client,),
+                            builder: (BuildContext context) => FullScreenDialogModifierTypeActe(typeActe: typeActe,),
                             fullscreenDialog: true,
                           ),
                         ).then((value) => refreshLists());
-
-                         */
 
                       },
                     ),

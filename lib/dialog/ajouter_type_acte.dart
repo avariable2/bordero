@@ -189,7 +189,7 @@ class DialogAjouterTypeActeState extends State<DialogAjouterTypeActe> {
                     checkSiTypeActeExiste();
                   }
                 },
-                child: const Text('Enregistrer'),
+                child: const Text('Ajouter'),
               ),
             ]
         ),
