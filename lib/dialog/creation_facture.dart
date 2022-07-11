@@ -27,6 +27,8 @@ class FormulaireCreationFacture extends StatefulWidget {
 class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> with WidgetsBindingObserver {
   final _formKey = GlobalKey<FormState>();
   late List<Client> listClients;
+  List<Client> clientSelectionner = [];
+  late List<bool> _selected;
   bool isLoading = false;
 
   final controllerChampNom = TextEditingController();
@@ -43,8 +45,10 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
     await AppPsyDatabase.instance.readAllClient().then((value) => {
       if (value.isNotEmpty) {
         listClients = value,
+        _selected = List.generate(listClients.length, (index) => false),
       } else {
         listClients = [],
+        _selected = [],
       }
     });
 
@@ -65,34 +69,74 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
   }
 
   Widget buildClient() {
-    var c;
-    if(listClients.isEmpty) {
-      c = const Text("🤔​ Aucun clients ", style: TextStyle(fontSize: 18,),);
-
-    } else {
-      c = SizedBox(
-        height: 200,
-        child: Card(
-          borderOnForeground: true,
-          child: ListView(
-            scrollDirection: Axis.vertical,
-            shrinkWrap: true,
-            addAutomaticKeepAlives: false,
-            children: [
-              for(Client client in listClients)
-                ListTile(
-                  title: Text("${client.prenom} ${client.nom} / ${client.adresse}"),
-                  leading: const Icon(Icons.account_circle_sharp),
-                  onTap: () {
-
-                  },
-                ),
-            ],
-          ),
+    return ListView(
+          physics: const BouncingScrollPhysics(),
+          padding: const EdgeInsets.only(
+          left: 20,
+          top: 20,
+          right: 20,
         ),
-      );
-    }
-    return c;
+        children: [
+          const Text("Sélectionner client(s)",
+            style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                inherit: true,
+                letterSpacing: 0.4,
+              ),
+          ),
+
+
+          const SizedBox(
+            height: 15,
+          ),
+
+        if(listClients.isEmpty)
+          const Text("🤔​ Aucun clients ", style: TextStyle(fontSize: 18,),)
+        else
+          SizedBox(
+              height: 200,
+              child: Card(
+                  borderOnForeground: true,
+                  child: ListView(
+                      scrollDirection: Axis.vertical,
+                      shrinkWrap: true,
+                      addAutomaticKeepAlives: false,
+                      children: [
+                        for(var i = 0; i < listClients.length; i++)
+                          ListTile(
+                            title: Text("${listClients[i].prenom} ${listClients[i].nom} / ${listClients[i].adresse}"),
+                            leading: const Icon(Icons.account_circle_sharp),
+                            selected: _selected[i],
+                            onTap: () {
+                              if (!clientSelectionner.contains(listClients[i])) {
+                                clientSelectionner.add(listClients[i]);
+                                _selected[i] = true;
+                              } else {
+                                clientSelectionner.remove(listClients[i]);
+                                _selected[i] = false;
+                              }
+                            },
+                          ),
+                      ],
+                  ),
+              ),
+          ),
+
+          const SizedBox(
+            height: 15,
+          ),
+
+
+          ElevatedButton(
+            onPressed: () {
+
+            },
+            child: const Text('Continuer'),
+          ),
+
+        ],
+    );
   }
 
   Widget buildSeance() {
