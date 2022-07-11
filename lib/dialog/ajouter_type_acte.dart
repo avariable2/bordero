@@ -1,4 +1,4 @@
-import 'package:app_psy/app_psy_utils.dart';
+import 'package:app_psy/utils/app_psy_utils.dart';
 import 'package:app_psy/db/app_psy_database.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';

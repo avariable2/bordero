@@ -5,8 +5,8 @@ import 'package:app_psy/dialog/modifier_type_acte.dart';
 import 'package:app_psy/model/type_acte.dart';
 import 'package:flutter/material.dart';
 
-import 'dialog/ajouter_client.dart';
-import 'model/client.dart';
+import '../dialog/ajouter_client.dart';
+import '../model/client.dart';
 
 class Accueil extends StatelessWidget {
   const Accueil({Key? key}) : super(key: key);
@@ -38,7 +38,7 @@ class _MonAccueilState extends State<MonAccueil> with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    // Methode pour chaque retour a l'accueil de refresh
+    // Methode pour chaque retour a l'page de refresh
     if (state == AppLifecycleState.resumed) {
       refreshLists();
     }
@@ -263,7 +263,7 @@ class _MonAccueilState extends State<MonAccueil> with WidgetsBindingObserver {
               height: 200,
               child: Card(
                 borderOnForeground: true,
-                child: Text("Actuellement la premiere version du chemin nous attends."),
+                child: Text("Actuellement la premiere version ! Du chemin nous attends."),
               )
           )
 

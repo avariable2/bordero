@@ -1,5 +1,6 @@
-import 'package:app_psy/accueil.dart';
+import 'package:app_psy/page/accueil.dart';
 import 'package:app_psy/color_schemes.g.dart';
+import 'package:app_psy/page/factures.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -67,11 +68,7 @@ class _NavigationExampleState extends State<NavigationExample> {
       ),
       body: <Widget>[
         const Accueil(),
-        Container(
-          color: Colors.green,
-          alignment: Alignment.center,
-          child: const Text('Page 2'),
-        ),
+        const Factures(),
         Container(
           color: Colors.blue,
           alignment: Alignment.center,
