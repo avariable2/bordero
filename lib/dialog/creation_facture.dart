@@ -1,3 +1,4 @@
+import 'package:app_psy/model/type_acte.dart';
 import 'package:flutter/material.dart';
 
 import '../db/app_psy_database.dart';
@@ -25,12 +26,15 @@ class FormulaireCreationFacture extends StatefulWidget {
 }
 
 class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> with WidgetsBindingObserver {
+  DateTime _date = DateTime(2020, 11, 17);
   final _formKey = GlobalKey<FormState>();
   late List<Client> listClients;
+  late List<TypeActe> listTypeActes;
   List<Client> clientSelectionner = [];
   late List<bool> _selected;
   int _index = 0;
   bool isLoading = false;
+  String _dropdownSelectionner = "";
 
   final controllerChampNom = TextEditingController();
   final controllerChampPrenom = TextEditingController();
@@ -43,6 +47,22 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
   /// POUR CREER LE PDF
   /// https://www.google.com/search?q=create+facture+flutter&rlz=1C1CHZN_frFR980FR980&oq=create+facture+flutter&aqs=chrome..69i57j0i22i30.8424j0j7&sourceid=chrome&ie=UTF-8#kpvalbx=_ITnMYuiTI4f_lwSe-o-YAw18
 
+  void _selectDate() async {
+    final DateTime? newDate = await showDatePicker(
+      cancelText: "ANNULER",
+      context: context,
+      initialDate: _date,
+      firstDate: DateTime(2015),
+      lastDate: DateTime(2100),
+      helpText: 'Selectionner une date',
+    );
+    if (newDate != null) {
+      setState(() {
+        _date = newDate;
+      });
+    }
+  }
+
   Future _getListClients() async {
     setState(() => isLoading = true);
 
@@ -53,6 +73,14 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
       } else {
         listClients = [],
         _selected = [],
+      }
+    });
+
+    await AppPsyDatabase.instance.readAllTypeActe().then((value) => {
+      if (value.isNotEmpty) {
+        listTypeActes = value,
+      } else {
+        listTypeActes = [],
       }
     });
 
@@ -74,12 +102,12 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
       currentStep: _index,
       onStepCancel: () {
         if (_index > 0) {
-          setState(() => _index -= 1);
+          setState(() => _index--);
         }
       },
       onStepContinue: () {
-        if (_index <= 0) {
-          setState(() => _index += 1);
+        if (_index < 4 && _index >= 0) {
+          setState(() => _index++);
         }
       },
       onStepTapped: (int index) {
@@ -134,7 +162,7 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
           const Text("🤔​ Aucun clients ", style: TextStyle(fontSize: 18,),)
         else
           SizedBox(
-              height: 200,
+              height: 150,
               child: Card(
                   borderOnForeground: true,
                   child: ListView(
@@ -162,8 +190,13 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
               ),
           ),
 
+          const Divider(height: 30,),
+
+          for(Client client in clientSelectionner)
+            Text(" - ${client.nom} ${client.prenom} / ${client.adresse}"),
+
           const SizedBox(
-            height: 15,
+            height: 20,
           ),
 
         ],
@@ -179,7 +212,36 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
         Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            /* PARTIE NOM ET PRENOM */
+
+            Row(children: [
+              Expanded(child:
+                Padding(padding: const EdgeInsets.only( top:10, left: 8, bottom: 10),
+                  child:
+                    DropdownButton(
+                        icon: const Icon(Icons.arrow_downward),
+                        items: listTypeActes.map((typeActe) => DropdownMenuItem<String>(value: _dropdownSelectionner, child: Text(typeActe.nom.toString()))).toList(),
+                        onChanged: (String? _value) {
+                          setState(() => _dropdownSelectionner = _value!);
+                        },
+                    ),
+                )
+              ),
+
+              const SizedBox(
+                width: 20,
+              ),
+
+              Expanded(child:
+                  Padding(padding: const EdgeInsets.only( top:10, left: 8, bottom: 10),
+                      child:
+                          OutlinedButton(
+                              onPressed: _selectDate,
+                              child: Text("${_date.day}/${_date.month}/${_date.year}"),
+                          ),
+                  )
+              ),
+            ]),
+
 
             Row(children: [
               Expanded(child:
@@ -306,47 +368,6 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
                 ),
               ),
             ],
-            ),
-
-            /* PARTIE Numero de téléphone et EMAIl */
-
-
-            Padding(padding: const EdgeInsets.only( right: 8, left: 8),
-              child:
-              TextFormField(
-                controller: controllerChampNumero,
-                keyboardType: TextInputType.phone,
-                decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'Numéro de téléphone',
-                    icon: Icon(Icons.phone_outlined)),
-                // The validator receives the text that the user has entered.
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Entrer un numéro de téléphone';
-                  }
-                  return null;
-                },
-              ),
-            ),
-
-            Padding(padding: const EdgeInsets.only(top:10, right: 8, left: 8),
-              child:
-              TextFormField(
-                controller: controllerChampEmail,
-                keyboardType: TextInputType.emailAddress,
-                decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'Email',
-                    icon: Icon(Icons.email_outlined)),
-                // The validator receives the text that the user has entered.
-                validator: (value) {
-                  if (value == null || value.isEmpty ) {
-                    return 'Entrer une email';
-                  }
-                  return null;
-                },
-              ),
             ),
 
             const SizedBox(
