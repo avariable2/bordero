@@ -29,7 +29,7 @@ class FormulaireCreationFacture extends StatefulWidget {
 }
 
 class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> with WidgetsBindingObserver {
-  DateTime _date = DateTime(2020, 11, 17);
+  DateTime _dateEmission = DateTime(2020, 11, 17);
   DateTime _dateLimitePayement = DateTime(2020, 11, 17);
 
   final _formKey = GlobalKey<FormState>();
@@ -48,6 +48,7 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
 
   int _indexStepper = 0;
   bool _isLoading = false;
+  bool _aUneDateLimite = false;
   late String _dropdownSelectionnerTypeActe;
   String _dropdownSelectionnerUnite = "Heure";
 
@@ -105,7 +106,7 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
   void _ajouterSeance() {
       Seance s = Seance(
           nom: _dropdownSelectionnerTypeActe,
-          date: _date,
+          date: _dateEmission,
           prix: AppPsyUtils.tryParseDouble(_controllerChampPrix.text),
           uniteTemps: _dropdownSelectionnerUnite.toString(),
           nombreUniteTemps: int.parse(_controllerChampNombreUH.text)
@@ -133,15 +134,15 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
     final DateTime? newDate = await showDatePicker(
       cancelText: "ANNULER",
       context: context,
-      initialDate: _date,
+      initialDate: _dateEmission,
       firstDate: DateTime(2015),
       lastDate: DateTime(2100),
       helpText: 'Selectionner une date',
     );
     if (newDate != null) {
       setState(() {
-        _date = newDate;
-        _controllerChampDate.text = "${_date.day}/${_date.month}/${_date.year}";
+        _dateEmission = newDate;
+        _controllerChampDate.text = "${_dateEmission.day}/${_dateEmission.month}/${_dateEmission.year}";
       });
     }
   }
@@ -150,7 +151,7 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
     final DateTime? newDate = await showDatePicker(
       cancelText: "ANNULER",
       context: context,
-      initialDate: _date,
+      initialDate: _dateLimitePayement,
       firstDate: DateTime(2015),
       lastDate: DateTime(2100),
       helpText: 'Selectionner une date limite de payement',
@@ -158,7 +159,7 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
     if (newDate != null) {
       setState(() {
         _dateLimitePayement = newDate;
-        _controllerChampDateLimitePayement.text = "${_date.day}/${_date.month}/${_date.year}";
+        _controllerChampDateLimitePayement.text = "${_dateLimitePayement.day}/${_dateLimitePayement.month}/${_dateLimitePayement.year}";
       });
     }
   }
@@ -536,27 +537,41 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
                     ),
 
                     const Divider(),
-                    
-                    Padding(padding: const EdgeInsets.only( bottom: 10),
-                        child:
-                        Expanded(
-                          child:
-                            TextFormField(
-                              controller: _controllerChampDateLimitePayement,
-                              keyboardType: TextInputType.datetime,
-                              onTap: () {
-                                FocusScope.of(context).requestFocus(FocusNode());
 
-                                _selectDateLimitePayement();
-                              },
-                              decoration: const InputDecoration(
-                                  border: OutlineInputBorder(),
-                                  labelText: "Date limite de payement",
-                                  icon: Icon(Icons.date_range_outlined)
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Padding(padding: const EdgeInsets.only(top: 10, bottom: 10),
+                            child:
+                              TextFormField(
+                                enabled: _aUneDateLimite,
+                                controller: _controllerChampDateLimitePayement,
+                                keyboardType: TextInputType.datetime,
+                                onTap: () {
+                                  FocusScope.of(context).requestFocus(FocusNode());
+
+                                  _selectDateLimitePayement();
+                                },
+                                decoration: const InputDecoration(
+                                    border: OutlineInputBorder(),
+                                    labelText: "Date limite de payement",
+                                    icon: Icon(Icons.date_range_outlined)
+                                ),
                               ),
-                            ),
+                          ),
                         ),
+
+                        Switch(
+                            value: _aUneDateLimite,
+                            onChanged: (bool value) {
+                              setState(() => _aUneDateLimite = !_aUneDateLimite);
+                            }),
+                      ],
                     ),
+
+                    const Divider(),
+
+                    
                   ]),
         ),
       );
