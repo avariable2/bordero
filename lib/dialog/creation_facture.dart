@@ -34,7 +34,7 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
   late List<bool> _selected;
   int _index = 0;
   bool isLoading = false;
-  String _dropdownSelectionner = "";
+  late String _dropdownSelectionner;
 
   final controllerChampNom = TextEditingController();
   final controllerChampPrenom = TextEditingController();
@@ -43,6 +43,8 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
   final controllerChampVille = TextEditingController();
   final controllerChampNumero = TextEditingController();
   final controllerChampEmail = TextEditingController();
+
+  final _controllerChampDate = TextEditingController();
 
   /// POUR CREER LE PDF
   /// https://www.google.com/search?q=create+facture+flutter&rlz=1C1CHZN_frFR980FR980&oq=create+facture+flutter&aqs=chrome..69i57j0i22i30.8424j0j7&sourceid=chrome&ie=UTF-8#kpvalbx=_ITnMYuiTI4f_lwSe-o-YAw18
@@ -59,6 +61,7 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
     if (newDate != null) {
       setState(() {
         _date = newDate;
+        _controllerChampDate.text = "${_date.day}/${_date.month}/${_date.year}";
       });
     }
   }
@@ -79,8 +82,10 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
     await AppPsyDatabase.instance.readAllTypeActe().then((value) => {
       if (value.isNotEmpty) {
         listTypeActes = value,
+        _dropdownSelectionner = listTypeActes[0].nom,
       } else {
         listTypeActes = [],
+        _dropdownSelectionner = "",
       }
     });
 
@@ -213,34 +218,60 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
 
-            Row(children: [
-              Expanded(child:
-                Padding(padding: const EdgeInsets.only( top:10, left: 8, bottom: 10),
+            Row(
+                children: [
+
+                Expanded(
                   child:
-                    DropdownButton(
-                        icon: const Icon(Icons.arrow_downward),
-                        items: listTypeActes.map((typeActe) => DropdownMenuItem<String>(value: _dropdownSelectionner, child: Text(typeActe.nom.toString()))).toList(),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 10, top: 10),
+                      child:
+                      DropdownButtonFormField(
+                        isExpanded: true,
+                        decoration: const InputDecoration(
+                            border: OutlineInputBorder(),
+                            labelText: 'Type de séance',
+                            icon: Icon(Icons.assignment_outlined)
+                        ),
+                        value: _dropdownSelectionner,
+                        items: listTypeActes.map((typeActe) =>
+                            DropdownMenuItem(
+                              value: typeActe.nom,
+                              child:  Text(
+                                //overflow: TextOverflow.,
+                                  typeActe.nom.toString()
+                              ),
+                            )
+                        ).toList(),
                         onChanged: (String? _value) {
                           setState(() => _dropdownSelectionner = _value!);
                         },
+                      ),
                     ),
-                )
-              ),
+                ),
 
-              const SizedBox(
-                width: 20,
-              ),
 
               Expanded(child:
-                  Padding(padding: const EdgeInsets.only( top:10, left: 8, bottom: 10),
-                      child:
-                          OutlinedButton(
-                              onPressed: _selectDate,
-                              child: Text("${_date.day}/${_date.month}/${_date.year}"),
-                          ),
-                  )
-              ),
-            ]),
+                Padding(padding: const EdgeInsets.only( top:10, left: 8, bottom: 10),
+                  child:
+                  TextFormField(
+                    controller: _controllerChampDate,
+                    keyboardType: TextInputType.datetime,
+                    onTap: () {
+                      FocusScope.of(context).requestFocus(FocusNode());
+
+                      _selectDate();
+                    },
+                    decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: "Date d'emission",
+                        icon: Icon(Icons.date_range)
+                    ),
+                  ),
+                ),
+    ),
+              ],
+            ),
 
 
             Row(children: [
@@ -251,7 +282,7 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
                   keyboardType: TextInputType.name,
                   decoration: const InputDecoration(
                       border: OutlineInputBorder(),
-                      labelText: 'Nom',
+                      labelText: 'Prix',
                       icon: Icon(Icons.account_box_outlined)
                   ),
                   // The validator receives the text that the user has entered.
