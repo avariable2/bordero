@@ -1,6 +1,7 @@
 
 class AppPsyUtils {
 
+  static String CACHE_SAUVEGARDER_NUMERO_FACTURE = "cache_sauvegarder_numero_facture";
 
   static bool isNumeric(String s) {
     if (s == null || s.isEmpty) {

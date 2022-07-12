@@ -2,6 +2,7 @@ import 'package:app_psy/model/seance.dart';
 import 'package:app_psy/model/type_acte.dart';
 import 'package:app_psy/utils/app_psy_utils.dart';
 import 'package:flutter/material.dart';
+import 'package:sp_util/sp_util.dart';
 
 import '../db/app_psy_database.dart';
 import '../model/client.dart';
@@ -31,9 +32,11 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
   DateTime _date = DateTime(2020, 11, 17);
 
   final _formKey = GlobalKey<FormState>();
+  final _formKeyFacture = GlobalKey<FormState>();
   final _controllerChampDate = TextEditingController();
   final _controllerChampPrix = TextEditingController();
   final _controllerChampNombreUH = TextEditingController();
+  final _controllerNumeroFacture = TextEditingController();
 
   late List<Client> _listClients;
   late List<TypeActe> _listTypeActes;
@@ -187,12 +190,9 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
         }
       },
       onStepContinue: () {
-        if (_indexStepper < 4 && _indexStepper >= 0) {
+        if (_indexStepper <= 3 && _indexStepper >= 0) {
           setState(() => _indexStepper++);
         }
-      },
-      onStepTapped: (int index) {
-        setState(() => _indexStepper = index);
       },
       controlsBuilder: (BuildContext context, ControlsDetails details) {
         return Row(
@@ -470,6 +470,58 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
   }
 
   Widget buildFacture() {
-    return Container();
+    return
+      ListView(
+        shrinkWrap: true,
+        physics: const BouncingScrollPhysics(),
+        padding: const EdgeInsets.only(left: 0, top: 0, right: 0,),
+        children: [
+          Form(
+            key: _formKeyFacture,
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child:
+                          Padding(padding: const EdgeInsets.only( bottom: 10),
+                            child: TextFormField(
+                              controller: _controllerNumeroFacture,
+                              keyboardType: TextInputType.number,
+                              decoration: const InputDecoration(
+                                  border: OutlineInputBorder(),
+                                  labelText: 'Numero de facture',
+                                  icon: Icon(Icons.numbers_outlined)
+                              ),
+                              // The validator receives the text that the user has entered.
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Entrer un numéro de facture';
+                                }
+                                return null;
+                              },
+                            ),
+                          ),
+                      ),
+
+                      Expanded(
+                          child:
+                            CheckboxListTile(
+                              title: const Text("Sauvegarder"),
+                              value: SpUtil.getBool(AppPsyUtils.CACHE_SAUVEGARDER_NUMERO_FACTURE) ?? false,
+                              onChanged: (bool? value) {
+                                setState(() => SpUtil.putBool(AppPsyUtils.CACHE_SAUVEGARDER_NUMERO_FACTURE, value!));
+                              },
+                              controlAffinity: ListTileControlAffinity.leading,
+                            ),
+                      )
+                    ],
+                  )
+                ],
+              )
+          ),
+
+        ],
+      );
   }
 }

@@ -41,6 +41,7 @@ dependencies:
   path: ^1.8.0
   email_validator: ^2.0.0
   pdf: ^3.8.0
+  sp_util: ^2.0.3
 
 dev_dependencies:
   flutter_test:
