@@ -30,6 +30,7 @@ class FormulaireCreationFacture extends StatefulWidget {
 
 class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> with WidgetsBindingObserver {
   DateTime _date = DateTime(2020, 11, 17);
+  DateTime _dateLimitePayement = DateTime(2020, 11, 17);
 
   final _formKey = GlobalKey<FormState>();
   final _formKeyFacture = GlobalKey<FormState>();
@@ -37,6 +38,7 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
   final _controllerChampPrix = TextEditingController();
   final _controllerChampNombreUH = TextEditingController();
   final _controllerNumeroFacture = TextEditingController();
+  final _controllerChampDateLimitePayement = TextEditingController();
 
   late List<Client> _listClients;
   late List<TypeActe> _listTypeActes;
@@ -140,6 +142,23 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
       setState(() {
         _date = newDate;
         _controllerChampDate.text = "${_date.day}/${_date.month}/${_date.year}";
+      });
+    }
+  }
+
+  void _selectDateLimitePayement() async {
+    final DateTime? newDate = await showDatePicker(
+      cancelText: "ANNULER",
+      context: context,
+      initialDate: _date,
+      firstDate: DateTime(2015),
+      lastDate: DateTime(2100),
+      helpText: 'Selectionner une date limite de payement',
+    );
+    if (newDate != null) {
+      setState(() {
+        _dateLimitePayement = newDate;
+        _controllerChampDateLimitePayement.text = "${_date.day}/${_date.month}/${_date.year}";
       });
     }
   }
@@ -471,57 +490,75 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
 
   Widget buildFacture() {
     return
-      ListView(
-        shrinkWrap: true,
-        physics: const BouncingScrollPhysics(),
-        padding: const EdgeInsets.only(left: 0, top: 0, right: 0,),
-        children: [
-          Form(
-            key: _formKeyFacture,
-              child: Column(
-                children: [
-                  Row(
-                    children: [
-                      Expanded(
+      SingleChildScrollView(
+        child:
+            Form(
+              key: _formKeyFacture,
+                child: Column(
+                  children: [
+
+                    Row(
+                      children: [
+                        Expanded(
+                          child:
+                            Padding(padding: const EdgeInsets.only( bottom: 10),
+                              child: TextFormField(
+                                controller: _controllerNumeroFacture,
+                                keyboardType: TextInputType.number,
+                                decoration: const InputDecoration(
+                                    border: OutlineInputBorder(),
+                                    labelText: 'Numero de facture',
+                                    icon: Icon(Icons.numbers_outlined)
+                                ),
+                                // The validator receives the text that the user has entered.
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Entrer un numéro de facture';
+                                  }
+                                  return null;
+                                },
+                              ),
+                            ),
+                        ),
+
+                        Expanded(
+                            child:
+                              CheckboxListTile(
+                                title: const Text("Sauvegarder"),
+                                value: SpUtil.getBool(AppPsyUtils.CACHE_SAUVEGARDER_NUMERO_FACTURE) ?? false,
+                                onChanged: (bool? value) {
+                                  setState(() => SpUtil.putBool(AppPsyUtils.CACHE_SAUVEGARDER_NUMERO_FACTURE, value!));
+                                },
+                                controlAffinity: ListTileControlAffinity.leading,
+                              ),
+                        ),
+                      ],
+                    ),
+
+                    const Divider(),
+                    
+                    Padding(padding: const EdgeInsets.only( bottom: 10),
                         child:
-                          Padding(padding: const EdgeInsets.only( bottom: 10),
-                            child: TextFormField(
-                              controller: _controllerNumeroFacture,
-                              keyboardType: TextInputType.number,
+                        Expanded(
+                          child:
+                            TextFormField(
+                              controller: _controllerChampDateLimitePayement,
+                              keyboardType: TextInputType.datetime,
+                              onTap: () {
+                                FocusScope.of(context).requestFocus(FocusNode());
+
+                                _selectDateLimitePayement();
+                              },
                               decoration: const InputDecoration(
                                   border: OutlineInputBorder(),
-                                  labelText: 'Numero de facture',
-                                  icon: Icon(Icons.numbers_outlined)
+                                  labelText: "Date limite de payement",
+                                  icon: Icon(Icons.date_range_outlined)
                               ),
-                              // The validator receives the text that the user has entered.
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Entrer un numéro de facture';
-                                }
-                                return null;
-                              },
                             ),
-                          ),
-                      ),
-
-                      Expanded(
-                          child:
-                            CheckboxListTile(
-                              title: const Text("Sauvegarder"),
-                              value: SpUtil.getBool(AppPsyUtils.CACHE_SAUVEGARDER_NUMERO_FACTURE) ?? false,
-                              onChanged: (bool? value) {
-                                setState(() => SpUtil.putBool(AppPsyUtils.CACHE_SAUVEGARDER_NUMERO_FACTURE, value!));
-                              },
-                              controlAffinity: ListTileControlAffinity.leading,
-                            ),
-                      )
-                    ],
-                  )
-                ],
-              )
-          ),
-
-        ],
+                        ),
+                    ),
+                  ]),
+        ),
       );
   }
 }
