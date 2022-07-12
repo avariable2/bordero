@@ -429,9 +429,13 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
               ),
             ],),
 
-            ElevatedButton(onPressed: () {
-              setState(() => _ajouterSeance());
-            }, child: const Text("AJOUTER")),
+            ElevatedButton.icon(
+                onPressed: () {
+                  setState(() => _ajouterSeance());
+                },
+                label: const Text("AJOUTER"),
+                icon: const Icon(Icons.add),
+            ),
 
             const Divider(),
 
