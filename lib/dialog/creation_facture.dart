@@ -28,13 +28,16 @@ class FormulaireCreationFacture extends StatefulWidget {
 class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> with WidgetsBindingObserver {
   DateTime _date = DateTime(2020, 11, 17);
   final _formKey = GlobalKey<FormState>();
-  late List<Client> listClients;
-  late List<TypeActe> listTypeActes;
-  List<Client> clientSelectionner = [];
+  late List<Client> _listClients;
+  late List<TypeActe> _listTypeActes;
+  List<Client> _clientSelectionner = [];
   late List<bool> _selected;
-  int _index = 0;
-  bool isLoading = false;
-  late String _dropdownSelectionner;
+  int _indexStepper = 0;
+  bool _isLoading = false;
+  late String _dropdownSelectionnerTypeActe;
+  String _dropdownSelectionnerUnite = "Heure";
+  bool _veuxChangerPrix = false;
+
 
   final controllerChampNom = TextEditingController();
   final controllerChampPrenom = TextEditingController();
@@ -45,9 +48,26 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
   final controllerChampEmail = TextEditingController();
 
   final _controllerChampDate = TextEditingController();
+  final _controllerChampPrix = TextEditingController();
 
   /// POUR CREER LE PDF
   /// https://www.google.com/search?q=create+facture+flutter&rlz=1C1CHZN_frFR980FR980&oq=create+facture+flutter&aqs=chrome..69i57j0i22i30.8424j0j7&sourceid=chrome&ie=UTF-8#kpvalbx=_ITnMYuiTI4f_lwSe-o-YAw18
+
+  void _afficherPrixDansController() {
+    var res =  _getTypeActeDepuisNomTypeActe();
+    if ( res != null) {
+      _controllerChampPrix.text = res.prix.toString();
+    }
+  }
+
+  TypeActe? _getTypeActeDepuisNomTypeActe() {
+    for(TypeActe ta in _listTypeActes) {
+      if (ta.nom == _dropdownSelectionnerTypeActe)  {
+        return ta;
+      }
+    }
+    return null;
+  }
 
   void _selectDate() async {
     final DateTime? newDate = await showDatePicker(
@@ -67,29 +87,30 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
   }
 
   Future _getListClients() async {
-    setState(() => isLoading = true);
+    setState(() => _isLoading = true);
 
     await AppPsyDatabase.instance.readAllClient().then((value) => {
       if (value.isNotEmpty) {
-        listClients = value,
-        _selected = List.generate(listClients.length, (index) => false),
+        _listClients = value,
+        _selected = List.generate(_listClients.length, (index) => false),
       } else {
-        listClients = [],
+        _listClients = [],
         _selected = [],
       }
     });
 
     await AppPsyDatabase.instance.readAllTypeActe().then((value) => {
       if (value.isNotEmpty) {
-        listTypeActes = value,
-        _dropdownSelectionner = listTypeActes[0].nom,
+        _listTypeActes = value,
+        _dropdownSelectionnerTypeActe = _listTypeActes[0].nom,
+        _afficherPrixDansController(),
       } else {
-        listTypeActes = [],
-        _dropdownSelectionner = "",
+        _listTypeActes = [],
+        _dropdownSelectionnerTypeActe = "",
       }
     });
 
-    setState(() => isLoading = false);
+    setState(() => _isLoading = false);
   }
 
   @override
@@ -102,21 +123,21 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
 
   @override
   Widget build(BuildContext context) {
-    return isLoading ? const Center(child: CircularProgressIndicator()) : Stepper(
+    return _isLoading ? const Center(child: CircularProgressIndicator()) : Stepper(
       type: StepperType.horizontal,
-      currentStep: _index,
+      currentStep: _indexStepper,
       onStepCancel: () {
-        if (_index > 0) {
-          setState(() => _index--);
+        if (_indexStepper > 0) {
+          setState(() => _indexStepper--);
         }
       },
       onStepContinue: () {
-        if (_index < 4 && _index >= 0) {
-          setState(() => _index++);
+        if (_indexStepper < 4 && _indexStepper >= 0) {
+          setState(() => _indexStepper++);
         }
       },
       onStepTapped: (int index) {
-        setState(() => _index = index);
+        setState(() => _indexStepper = index);
       },
       controlsBuilder: (BuildContext context, ControlsDetails details) {
         return Row(
@@ -136,9 +157,9 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
         );
       },
       steps: [
-        Step(title: const Text("Client(s)"), isActive: _index >= 0, content: buildClient()),
-        Step(title: const Text("Séance(s)"), isActive: _index >= 1, content: buildSeance()),
-        Step(title: const Text("Facture"), isActive: _index >= 2, content: buildFacture())
+        Step(title: const Text("Client(s)"), isActive: _indexStepper >= 0, content: buildClient()),
+        Step(title: const Text("Séance(s)"), isActive: _indexStepper >= 1, content: buildSeance()),
+        Step(title: const Text("Facture"), isActive: _indexStepper >= 2, content: buildFacture())
       ],
     );
   }
@@ -163,7 +184,7 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
             height: 15,
           ),
 
-        if(listClients.isEmpty)
+        if(_listClients.isEmpty)
           const Text("🤔​ Aucun clients ", style: TextStyle(fontSize: 18,),)
         else
           SizedBox(
@@ -175,17 +196,17 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
                       shrinkWrap: true,
                       addAutomaticKeepAlives: false,
                       children: [
-                        for(var i = 0; i < listClients.length; i++)
+                        for(var i = 0; i < _listClients.length; i++)
                           ListTile(
-                            title: Text("${listClients[i].prenom} ${listClients[i].nom} / ${listClients[i].adresse}"),
+                            title: Text("${_listClients[i].prenom} ${_listClients[i].nom} / ${_listClients[i].adresse}"),
                             leading: const Icon(Icons.account_circle_sharp),
                             selected: _selected[i],
                             onTap: () => setState(() => {
-                              if (!clientSelectionner.contains(listClients[i])) {
-                              clientSelectionner.add(listClients[i]),
+                              if (!_clientSelectionner.contains(_listClients[i])) {
+                              _clientSelectionner.add(_listClients[i]),
                               _selected[i] = true,
                               } else {
-                              clientSelectionner.remove(listClients[i]),
+                              _clientSelectionner.remove(_listClients[i]),
                               _selected[i] = false,
                               }
                             })
@@ -197,7 +218,7 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
 
           const Divider(height: 30,),
 
-          for(Client client in clientSelectionner)
+          for(Client client in _clientSelectionner)
             Text(" - ${client.nom} ${client.prenom} / ${client.adresse}"),
 
           const SizedBox(
@@ -222,6 +243,7 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
                 children: [
 
                 Expanded(
+                  flex: 3,
                   child:
                     Padding(
                       padding: const EdgeInsets.only(bottom: 10, top: 10),
@@ -233,8 +255,8 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
                             labelText: 'Type de séance',
                             icon: Icon(Icons.assignment_outlined)
                         ),
-                        value: _dropdownSelectionner,
-                        items: listTypeActes.map((typeActe) =>
+                        value: _dropdownSelectionnerTypeActe,
+                        items: _listTypeActes.map((typeActe) =>
                             DropdownMenuItem(
                               value: typeActe.nom,
                               child:  Text(
@@ -244,14 +266,19 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
                             )
                         ).toList(),
                         onChanged: (String? _value) {
-                          setState(() => _dropdownSelectionner = _value!);
+                          setState(() {
+                            _dropdownSelectionnerTypeActe = _value!;
+                            _afficherPrixDansController();
+                          });
                         },
                       ),
                     ),
                 ),
 
 
-              Expanded(child:
+              Expanded(
+                flex: 2,
+                child:
                 Padding(padding: const EdgeInsets.only( top:10, left: 8, bottom: 10),
                   child:
                   TextFormField(
@@ -269,142 +296,68 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
                     ),
                   ),
                 ),
-    ),
+              ),
               ],
             ),
 
 
             Row(children: [
               Expanded(child:
-              Padding(padding: const EdgeInsets.only( top:10, left: 8, bottom: 10),
-                child: TextFormField(
-                  controller: controllerChampNom,
-                  keyboardType: TextInputType.name,
-                  decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'Prix',
-                      icon: Icon(Icons.account_box_outlined)
-                  ),
-                  // The validator receives the text that the user has entered.
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Entrer un nom';
-                    }
-                    return null;
-                  },
-                ),
-              ),
-              ),
-
-              const SizedBox(
-                width: 20,
-              ),
-
-              Expanded(
-                child: Padding(padding: const EdgeInsets.only( top:10 ,right: 8, left: 8, bottom: 10),
+                Padding(padding: const EdgeInsets.only( top:10, bottom: 10),
                   child: TextFormField(
-                    controller: controllerChampPrenom,
-                    keyboardType: TextInputType.name,
+                    enabled: _veuxChangerPrix,
+                    controller: _controllerChampPrix,
+                    keyboardType: TextInputType.number,
                     decoration: const InputDecoration(
                         border: OutlineInputBorder(),
-                        labelText: 'Prénom',
-                        icon: Icon(Icons.account_box_outlined)),
+                        labelText: 'Prix',
+                        icon: Icon(Icons.euro_outlined)
+                    ),
                     // The validator receives the text that the user has entered.
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Entrer un prénom';
+                        return 'Entrer un nom';
                       }
                       return null;
                     },
                   ),
                 ),
               ),
-            ],
-            ),
-
-
-            /* PARTIE Adresse, code postal et ville */
-
-
-            Padding(padding: const EdgeInsets.only(right: 8, left: 8),
-              child:
-              TextFormField(
-                controller: controllerChampAdresse,
-                keyboardType: TextInputType.streetAddress,
-                decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'Adresse',
-                    icon: Icon(Icons.person_pin_circle_outlined)),
-                // The validator receives the text that the user has entered.
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Entrer une adresse';
-                  }
-                  return null;
-                },
-              ),
-            ),
-
-
-
-
-            Row(children: [
-              Expanded(child:
-              Padding(padding: const EdgeInsets.only(top:10, right: 8, left: 8, bottom: 10),
-                child:
-                TextFormField(
-                  controller: controllerChampCodePostal,
-                  keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'Code postal',
-                      icon: Icon(Icons.domain_outlined)),
-                  // The validator receives the text that the user has entered.
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Entrer un code postal';
-                    }
-                    if (value.length != 5) {
-                      return 'Entrer un code postal valide';
-                    }
-                    return null;
-                  },
-                ),
-              ),
-              ),
-
-              const SizedBox(
-                width: 20,
-              ),
+              
+              Switch(
+                  value: !_veuxChangerPrix,
+                  onChanged: (bool b) {
+                    setState(() => _veuxChangerPrix = !_veuxChangerPrix);
+                  }),
 
               Expanded(
-                child:
-                Padding(padding: const EdgeInsets.only(top:10, right: 8, left: 8, bottom: 10),
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 10, top: 10),
                   child:
-                  TextFormField(
-                    controller: controllerChampVille,
-                    keyboardType: TextInputType.streetAddress,
+                  DropdownButtonFormField(
+                    isExpanded: true,
                     decoration: const InputDecoration(
                         border: OutlineInputBorder(),
-                        labelText: 'Ville',
-                        icon: Icon(Icons.location_city_outlined)),
-                    // The validator receives the text that the user has entered.
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Entrer une ville';
-                      }
-                      return null;
+                        labelText: 'Type de séance',
+                        icon: Icon(Icons.timelapse_outlined)
+                    ),
+                    value: _dropdownSelectionnerUnite,
+                    items: ["Heure", "Minute"].map((value) =>
+                        DropdownMenuItem(
+                          value: value,
+                          child:  Text(value),
+                        )
+                    ).toList(),
+                    onChanged: (String? _value) {
+                      setState(() {
+                        _dropdownSelectionnerUnite = _value!;
+                      });
                     },
                   ),
                 ),
               ),
             ],
             ),
-
-            const SizedBox(
-              height: 20,
-            ),
-
           ],
         ),
       ),
