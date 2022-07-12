@@ -1,4 +1,6 @@
+import 'package:app_psy/model/seance.dart';
 import 'package:app_psy/model/type_acte.dart';
+import 'package:app_psy/utils/app_psy_utils.dart';
 import 'package:flutter/material.dart';
 
 import '../db/app_psy_database.dart';
@@ -27,31 +29,84 @@ class FormulaireCreationFacture extends StatefulWidget {
 
 class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> with WidgetsBindingObserver {
   DateTime _date = DateTime(2020, 11, 17);
+
   final _formKey = GlobalKey<FormState>();
+  final _controllerChampDate = TextEditingController();
+  final _controllerChampPrix = TextEditingController();
+  final _controllerChampNombreUH = TextEditingController();
+
   late List<Client> _listClients;
   late List<TypeActe> _listTypeActes;
-  List<Client> _clientSelectionner = [];
+  final List<Client> _clientSelectionner = [];
   late List<bool> _selected;
+  final List<Seance> _listSeances = [];
+
   int _indexStepper = 0;
   bool _isLoading = false;
   late String _dropdownSelectionnerTypeActe;
   String _dropdownSelectionnerUnite = "Heure";
-  bool _veuxChangerPrix = false;
 
 
-  final controllerChampNom = TextEditingController();
-  final controllerChampPrenom = TextEditingController();
-  final controllerChampAdresse = TextEditingController();
-  final controllerChampCodePostal = TextEditingController();
-  final controllerChampVille = TextEditingController();
-  final controllerChampNumero = TextEditingController();
-  final controllerChampEmail = TextEditingController();
-
-  final _controllerChampDate = TextEditingController();
-  final _controllerChampPrix = TextEditingController();
 
   /// POUR CREER LE PDF
   /// https://www.google.com/search?q=create+facture+flutter&rlz=1C1CHZN_frFR980FR980&oq=create+facture+flutter&aqs=chrome..69i57j0i22i30.8424j0j7&sourceid=chrome&ie=UTF-8#kpvalbx=_ITnMYuiTI4f_lwSe-o-YAw18
+
+
+  void _afficherAvertissementAvantSuppression(Seance seance) {
+    var richText = RichText(
+      text: const TextSpan(
+          style: TextStyle(
+            fontSize: 22.0,
+          ),
+          children: <TextSpan> [
+            TextSpan(text: "Attention",
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                )
+            ),
+          ]
+      ),
+    );
+
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) =>
+          AlertDialog(
+            title: richText,
+            content: const Text("Etes-vous sur de vouloir supprimer cette séance ?"),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, 'RETOUR'),
+                child: const Text("RETOUR"),
+              ),
+              TextButton(
+                onPressed: () {
+                  _supprimerSeances(seance);
+                },
+                child: const Text("OUI", style: TextStyle(color: Colors.white,),),
+              ),
+            ],
+            elevation: 24.0,
+          ),
+    );
+  }
+
+  void _supprimerSeances(Seance seance) {
+    _listSeances.remove(seance);
+    Navigator.pop(context, 'SUPPRIMER');
+  }
+
+  void _ajouterSeance() {
+      Seance s = Seance(
+          nom: _dropdownSelectionnerTypeActe,
+          date: _date,
+          prix: AppPsyUtils.tryParseDouble(_controllerChampPrix.text),
+          uniteTemps: _dropdownSelectionnerUnite.toString(),
+          nombreUniteTemps: int.parse(_controllerChampNombreUH.text)
+      );
+      _listSeances.add(s);
+  }
 
   void _afficherPrixDansController() {
     var res =  _getTypeActeDepuisNomTypeActe();
@@ -240,13 +295,12 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
           children: [
 
             Row(
-                children: [
-
+              children: [
                 Expanded(
                   flex: 3,
                   child:
                     Padding(
-                      padding: const EdgeInsets.only(bottom: 10, top: 10),
+                      padding: const EdgeInsets.only(bottom: 10,),
                       child:
                       DropdownButtonFormField(
                         isExpanded: true,
@@ -276,36 +330,36 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
                 ),
 
 
-              Expanded(
-                flex: 2,
-                child:
-                Padding(padding: const EdgeInsets.only( top:10, left: 8, bottom: 10),
+                Expanded(
+                  flex: 2,
                   child:
-                  TextFormField(
-                    controller: _controllerChampDate,
-                    keyboardType: TextInputType.datetime,
-                    onTap: () {
-                      FocusScope.of(context).requestFocus(FocusNode());
+                  Padding(padding: const EdgeInsets.only( left: 8, bottom: 10),
+                    child:
+                    TextFormField(
+                      controller: _controllerChampDate,
+                      keyboardType: TextInputType.datetime,
+                      onTap: () {
+                        FocusScope.of(context).requestFocus(FocusNode());
 
-                      _selectDate();
-                    },
-                    decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: "Date d'emission",
-                        icon: Icon(Icons.date_range)
+                        _selectDate();
+                      },
+                      decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          labelText: "Date d'emission",
+                          icon: Icon(Icons.date_range_outlined)
+                      ),
                     ),
                   ),
                 ),
+                ],
               ),
-              ],
-            ),
 
 
             Row(children: [
-              Expanded(child:
-                Padding(padding: const EdgeInsets.only( top:10, bottom: 10),
+              Expanded(
+                child:
+                Padding(padding: const EdgeInsets.only( bottom: 10),
                   child: TextFormField(
-                    enabled: _veuxChangerPrix,
                     controller: _controllerChampPrix,
                     keyboardType: TextInputType.number,
                     decoration: const InputDecoration(
@@ -316,30 +370,47 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
                     // The validator receives the text that the user has entered.
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Entrer un nom';
+                        return 'Entrer un prix';
                       }
                       return null;
                     },
                   ),
                 ),
               ),
-              
-              Switch(
-                  value: !_veuxChangerPrix,
-                  onChanged: (bool b) {
-                    setState(() => _veuxChangerPrix = !_veuxChangerPrix);
-                  }),
 
-              Expanded(
+              SizedBox(
+                  width: 100,
+                  child: Padding(padding: const EdgeInsets.only( left: 10, bottom: 10),
+                    child: TextFormField(
+                      controller: _controllerChampNombreUH,
+                      keyboardType: TextInputType.number,
+                      decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          labelText: 'Nombre',
+                          icon: Icon(Icons.timelapse_outlined)
+                      ),
+                      // The validator receives the text that the user has entered.
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Entrer un nombre valide';
+                        }
+                        return null;
+                      },
+                    ),
+                  ),
+              ),
+
+
+              SizedBox(
+                width: 100,
                 child: Padding(
-                  padding: const EdgeInsets.only(bottom: 10, top: 10),
+                  padding: const EdgeInsets.only(bottom: 10,),
                   child:
                   DropdownButtonFormField(
                     isExpanded: true,
                     decoration: const InputDecoration(
                         border: OutlineInputBorder(),
-                        labelText: 'Type de séance',
-                        icon: Icon(Icons.timelapse_outlined)
+                        labelText: 'Unité de temps',
                     ),
                     value: _dropdownSelectionnerUnite,
                     items: ["Heure", "Minute"].map((value) =>
@@ -356,8 +427,38 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
                   ),
                 ),
               ),
-            ],
+            ],),
+
+            ElevatedButton(onPressed: () {
+              setState(() => _ajouterSeance());
+            }, child: const Text("AJOUTER")),
+
+            const Divider(),
+
+            SizedBox(
+              height: 200,
+              child: ListView(
+                  scrollDirection: Axis.vertical,
+                  shrinkWrap: true,
+                  addAutomaticKeepAlives: false,
+                  children: [
+                    for (Seance seance in _listSeances)
+                      Card(
+                        child:
+                          ListTile(
+                            title: Text("${seance.nom} (${seance.date.day}/${seance.date.month}/${seance.date.year}) - ${seance.nombreUniteTemps} ${seance.uniteTemps}"),
+                            leading: const Icon(Icons.work_history_outlined),
+                            onTap: () {
+                              _afficherAvertissementAvantSuppression(seance);
+                            },
+                          ),
+                      ),
+                  ]),
             ),
+
+            const SizedBox(
+              height: 20,
+            )
           ],
         ),
       ),
