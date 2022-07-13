@@ -30,8 +30,8 @@ class FormulaireCreationFacture extends StatefulWidget {
 }
 
 class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> with WidgetsBindingObserver {
-  DateTime _dateEmission = DateTime(2022, 01, 17);
-  DateTime _dateLimitePayement = DateTime(2022, 03, 15);
+  DateTime _dateEmission = DateTime.now();
+  DateTime _dateLimitePayement = DateTime.now();
 
   final _formKeySeance = GlobalKey<FormState>();
   final _formKeyFacture = GlobalKey<FormState>();
