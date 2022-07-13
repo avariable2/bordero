@@ -2,6 +2,7 @@ import 'package:app_psy/model/seance.dart';
 import 'package:app_psy/model/type_acte.dart';
 import 'package:app_psy/utils/app_psy_utils.dart';
 import 'package:flutter/material.dart';
+import 'package:signature/signature.dart';
 import 'package:sp_util/sp_util.dart';
 
 import '../db/app_psy_database.dart';
@@ -39,6 +40,11 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
   final _controllerChampNombreUH = TextEditingController();
   final _controllerNumeroFacture = TextEditingController();
   final _controllerChampDateLimitePayement = TextEditingController();
+  final _controllerSignature = SignatureController(
+    penStrokeWidth: 5,
+    penColor: Colors.black,
+    exportBackgroundColor: Colors.white70
+  );
 
   late List<Client> _listClients;
   late List<TypeActe> _listTypeActes;
@@ -49,6 +55,7 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
   int _indexStepper = 0;
   bool _isLoading = false;
   bool _aUneDateLimite = false;
+  bool _sauvegarderIdFacture = SpUtil.getBool(AppPsyUtils.CACHE_SAUVEGARDER_NUMERO_FACTURE) ?? false;
   late String _dropdownSelectionnerTypeActe;
   String _dropdownSelectionnerUnite = "Heure";
 
@@ -191,12 +198,17 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
     setState(() => _isLoading = false);
   }
 
+  Future<void> _getSpUtilsInitialisation() async {
+    await SpUtil.getInstance();
+  }
+
   @override
   void initState() {
     WidgetsBinding.instance.addObserver(this);
     super.initState();
 
     _getListClients();
+    _getSpUtilsInitialisation();
   }
 
   @override
@@ -210,8 +222,10 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
         }
       },
       onStepContinue: () {
-        if (_indexStepper <= 3 && _indexStepper >= 0) {
+        if (_indexStepper < 2 && _indexStepper >= 0) {
           setState(() => _indexStepper++);
+        } else if (_indexStepper == 2) {
+
         }
       },
       controlsBuilder: (BuildContext context, ControlsDetails details) {
@@ -526,9 +540,9 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
                             child:
                               CheckboxListTile(
                                 title: const Text("Sauvegarder"),
-                                value: SpUtil.getBool(AppPsyUtils.CACHE_SAUVEGARDER_NUMERO_FACTURE) ?? false,
+                                value: _sauvegarderIdFacture,
                                 onChanged: (bool? value) {
-                                  setState(() => SpUtil.putBool(AppPsyUtils.CACHE_SAUVEGARDER_NUMERO_FACTURE, value!));
+                                  setState(() => _sauvegarderIdFacture = !_sauvegarderIdFacture);
                                 },
                                 controlAffinity: ListTileControlAffinity.leading,
                               ),
@@ -571,7 +585,34 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
 
                     const Divider(),
 
-                    
+                    const Padding(
+                        padding: EdgeInsets.only(top: 10, bottom: 10),
+                        child: Text("Signature", style: TextStyle(fontSize: 18),),
+                    ),
+
+
+
+                    Row(
+                      children: [
+                        Signature(
+                          controller: _controllerSignature,
+                          width: 200,
+                          height: 100,
+                        ),
+
+                        IconButton(
+                            onPressed: () {
+                              setState(() => _controllerSignature.clear());
+                            },
+                            icon: const Icon(Icons.refresh_outlined)
+                        )
+                      ],
+                    ),
+
+                    const SizedBox(
+                      height: 20,
+                    )
+
                   ]),
         ),
       );
