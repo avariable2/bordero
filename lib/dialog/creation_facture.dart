@@ -211,6 +211,9 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
     } else if (_listSeances.isEmpty) {
       title = "Remplissez tous les champs et cliqué sur ajouter";
       body = "Assurez-vous d'enregistrer au moins un séance pour votre client. Ils vous suffit de remplir tous les champs.";
+    } else if (_indexStepper == 2) {
+      title = "Remplissez tous les champs";
+      body = "Assurez-vous de remplir bien le bon numero de facture et une signature.";
     }
 
     var richText = RichText(
@@ -271,7 +274,6 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
     _getSpUtilsInitialisation();
 
     _controllerChampDate.text = "${_dateEmission.day}/${_dateEmission.month}/${_dateEmission.year}";
-    //_controllerChampDateLimitePayement.text = "${_dateLimitePayement.day}/${_dateLimitePayement.month}/${_dateLimitePayement.year}";
   }
 
   @override
@@ -291,6 +293,12 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
           } else {
             _afficherAvertissementEtConditionPourPoursuivre();
           }
+        } else if (_indexStepper == 2) {
+            if(_formKeyFacture.currentState!.validate() && _controllerSignature.isEmpty) {
+              _afficherAvertissementEtConditionPourPoursuivre();
+            } else {
+              _controllerSignature.toPngBytes();
+            }
         }
       },
       controlsBuilder: (BuildContext context, ControlsDetails details) {
@@ -464,13 +472,13 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
                     keyboardType: TextInputType.number,
                     decoration: const InputDecoration(
                         border: OutlineInputBorder(),
-                        labelText: 'Prix',
+                        labelText: 'Prix HT',
                         icon: Icon(Icons.euro_outlined)
                     ),
                     // The validator receives the text that the user has entered.
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Entrer un prix';
+                        return 'Entrer un prix HT';
                       }
                       return null;
                     },
@@ -685,5 +693,9 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
                   ]),
         ),
       );
+  }
+
+  Widget buildCreationFacture() {
+    return Container();
   }
 }

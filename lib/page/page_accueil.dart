@@ -8,8 +8,8 @@ import 'package:flutter/material.dart';
 import '../dialog/ajouter_client.dart';
 import '../model/client.dart';
 
-class Accueil extends StatelessWidget {
-  const Accueil({Key? key}) : super(key: key);
+class PageAccueil extends StatelessWidget {
+  const PageAccueil({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

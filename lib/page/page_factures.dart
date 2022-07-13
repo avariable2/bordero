@@ -1,8 +1,8 @@
 import 'package:app_psy/dialog/creation_facture.dart';
 import 'package:flutter/material.dart';
 
-class Factures extends StatelessWidget {
-  const Factures({Key? key}) : super(key: key);
+class PageFactures extends StatelessWidget {
+  const PageFactures({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
