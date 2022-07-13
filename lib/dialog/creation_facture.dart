@@ -30,10 +30,10 @@ class FormulaireCreationFacture extends StatefulWidget {
 }
 
 class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> with WidgetsBindingObserver {
-  DateTime _dateEmission = DateTime(2020, 11, 17);
-  DateTime _dateLimitePayement = DateTime(2020, 11, 17);
+  DateTime _dateEmission = DateTime(2022, 01, 17);
+  DateTime _dateLimitePayement = DateTime(2022, 03, 15);
 
-  final _formKey = GlobalKey<FormState>();
+  final _formKeySeance = GlobalKey<FormState>();
   final _formKeyFacture = GlobalKey<FormState>();
   final _controllerChampDate = TextEditingController();
   final _controllerChampPrix = TextEditingController();
@@ -91,13 +91,13 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context, 'RETOUR'),
-                child: const Text("RETOUR"),
+                child: const Text("ANNULER"),
               ),
               TextButton(
                 onPressed: () {
                   _supprimerSeances(seance);
                 },
-                child: const Text("OUI", style: TextStyle(color: Colors.white,),),
+                child: const Text("SUPPRIMER", style: TextStyle(color: Colors.white,),),
               ),
             ],
             elevation: 24.0,
@@ -137,7 +137,7 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
     return null;
   }
 
-  void _selectDate() async {
+  void _selectDateSeance() async {
     final DateTime? newDate = await showDatePicker(
       cancelText: "ANNULER",
       context: context,
@@ -202,6 +202,66 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
     await SpUtil.getInstance();
   }
 
+  void _afficherAvertissementEtConditionPourPoursuivre() {
+    var title = "✋ Vous allez trop vite";
+    var body = "Verifiez les informations saisies.";
+    if(_clientSelectionner.isEmpty) {
+      title = "✋ Il faut d'abord séléctionner un client";
+      body = "Assurez-vous de selectionner au moins un client.";
+    } else if (_listSeances.isEmpty) {
+      title = "Remplissez tous les champs et cliqué sur ajouter";
+      body = "Assurez-vous d'enregistrer au moins un séance pour votre client. Ils vous suffit de remplir tous les champs.";
+    }
+
+    var richText = RichText(
+      text: TextSpan(
+          style: const TextStyle(
+            fontSize: 20.0,
+          ),
+          children: <TextSpan> [
+            TextSpan(text: title,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                )
+            ),
+          ]
+      ),
+    );
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) =>
+          AlertDialog(
+            title: richText,
+            content: Text(body),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, 'RETOUR'),
+                child: const Text("OK"),
+              ),
+            ],
+            elevation: 24.0,
+          ),
+    );
+  }
+
+  bool _checkConditionsPourContinuer() {
+    switch (_indexStepper) {
+      case 0:
+        if(_clientSelectionner.isEmpty) {
+          return false;
+        }
+        return true;
+      case 1:
+        if(_listSeances.isEmpty) {
+          return false;
+        }
+        return true;
+      default:
+        return false;
+    }
+  }
+
   @override
   void initState() {
     WidgetsBinding.instance.addObserver(this);
@@ -209,6 +269,9 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
 
     _getListClients();
     _getSpUtilsInitialisation();
+
+    _controllerChampDate.text = "${_dateEmission.day}/${_dateEmission.month}/${_dateEmission.year}";
+    //_controllerChampDateLimitePayement.text = "${_dateLimitePayement.day}/${_dateLimitePayement.month}/${_dateLimitePayement.year}";
   }
 
   @override
@@ -223,9 +286,11 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
       },
       onStepContinue: () {
         if (_indexStepper < 2 && _indexStepper >= 0) {
-          setState(() => _indexStepper++);
-        } else if (_indexStepper == 2) {
-
+          if (_checkConditionsPourContinuer()) {
+            setState(() => _indexStepper++);
+          } else {
+            _afficherAvertissementEtConditionPourPoursuivre();
+          }
         }
       },
       controlsBuilder: (BuildContext context, ControlsDetails details) {
@@ -321,7 +386,7 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
   Widget buildSeance() {
     return SingleChildScrollView(
       child: Form(
-        key: _formKey,
+        key: _formKeySeance,
         child:
 
         Column(
@@ -375,7 +440,7 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
                       onTap: () {
                         FocusScope.of(context).requestFocus(FocusNode());
 
-                        _selectDate();
+                        _selectDateSeance();
                       },
                       decoration: const InputDecoration(
                           border: OutlineInputBorder(),
@@ -390,7 +455,8 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
 
 
             Row(children: [
-              Expanded(
+              SizedBox(
+                width: 120,
                 child:
                 Padding(padding: const EdgeInsets.only( bottom: 10),
                   child: TextFormField(
@@ -413,7 +479,7 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
               ),
 
               SizedBox(
-                  width: 100,
+                  width: 120,
                   child: Padding(padding: const EdgeInsets.only( left: 10, bottom: 10),
                     child: TextFormField(
                       controller: _controllerChampNombreUH,
@@ -435,10 +501,9 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
               ),
 
 
-              SizedBox(
-                width: 100,
+              Expanded(
                 child: Padding(
-                  padding: const EdgeInsets.only(bottom: 10,),
+                  padding: const EdgeInsets.only(bottom: 10, left: 6),
                   child:
                   DropdownButtonFormField(
                     isExpanded: true,
@@ -465,7 +530,9 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
 
             ElevatedButton.icon(
                 onPressed: () {
-                  setState(() => _ajouterSeance());
+                  if (_formKeySeance.currentState!.validate()) {
+                    setState(() => _ajouterSeance());
+                  }
                 },
                 label: const Text("AJOUTER"),
                 icon: const Icon(Icons.add),
@@ -554,6 +621,14 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
 
                     Row(
                       children: [
+
+                        Switch(
+                            value: _aUneDateLimite,
+                            onChanged: (bool value) {
+                              setState(() => _aUneDateLimite = !_aUneDateLimite);
+                            }),
+
+
                         Expanded(
                           child: Padding(padding: const EdgeInsets.only(top: 10, bottom: 10),
                             child:
@@ -574,12 +649,6 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
                               ),
                           ),
                         ),
-
-                        Switch(
-                            value: _aUneDateLimite,
-                            onChanged: (bool value) {
-                              setState(() => _aUneDateLimite = !_aUneDateLimite);
-                            }),
                       ],
                     ),
 
