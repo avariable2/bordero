@@ -11,7 +11,7 @@ class Facture {
   final List<Client> listClients;
   final List<Seance> listSeances;
   final DateTime? dateLimitePayement;
-  final Future<Uint8List?> signaturePNG;
+  final Uint8List? signaturePNG;
 
   const Facture({
     required this.id,

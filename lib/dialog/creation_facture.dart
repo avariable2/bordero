@@ -268,14 +268,14 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
     }
   }
 
-  void _creationPdfEtOuverture() {
+  Future<void> _creationPdfEtOuverture() async {
     Facture facture = Facture(
         id: _controllerNumeroFacture.text,
         dateCreationFacture: DateTime.now(),
         listClients: _listClients,
         listSeances: _listSeances,
         dateLimitePayement: _dateLimitePayement,
-        signaturePNG: _controllerSignature.toPngBytes()
+        signaturePNG: await _controllerSignature.toPngBytes()
     );
 
     PdfFactureApi.generate(facture).then((value) => PdfApi.openFile(value));
@@ -311,9 +311,8 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
             _afficherAvertissementEtConditionPourPoursuivre();
           }
         } else if (_indexStepper == 2) {
-            if(_formKeyFacture.currentState!.validate() && _controllerSignature.isEmpty) {
-              _afficherAvertissementEtConditionPourPoursuivre();
-            } else {
+            if( _formKeyFacture.currentState!.validate()) {
+              //_afficherAvertissementEtConditionPourPoursuivre();
               _creationPdfEtOuverture();
             }
         }
@@ -443,9 +442,9 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
                               ),
                             )
                         ).toList(),
-                        onChanged: (String? _value) {
+                        onChanged: (String? value) {
                           setState(() {
-                            _dropdownSelectionnerTypeActe = _value!;
+                            _dropdownSelectionnerTypeActe = value!;
                             _afficherPrixDansController();
                           });
                         },
@@ -543,9 +542,9 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
                           child:  Text(value),
                         )
                     ).toList(),
-                    onChanged: (String? _value) {
+                    onChanged: (String? value) {
                       setState(() {
-                        _dropdownSelectionnerUnite = _value!;
+                        _dropdownSelectionnerUnite = value!;
                       });
                     },
                   ),
@@ -688,10 +687,14 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
 
                     Row(
                       children: [
-                        Signature(
-                          controller: _controllerSignature,
-                          width: 200,
-                          height: 100,
+                        Flexible(
+                          flex: 1,
+                          child:
+                            Signature(
+                              controller: _controllerSignature,
+                              width: 200,
+                              height: 100,
+                            ),
                         ),
 
                         IconButton(

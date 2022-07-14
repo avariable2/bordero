@@ -17,9 +17,11 @@ class PdfFactureApi {
         build: (context) => [
           buildTitre(facture),
           buildInformationsClients(facture),
-          buildInformations(facture),
+          buildInformationsSeances(facture),
           Divider(),
           buildTotal(facture),
+          buildPayement(facture),
+          buildSignature(facture),
         ]
     ));
 
@@ -53,7 +55,7 @@ class PdfFactureApi {
         children: [
           Text("NOTE D'HONORAIRE", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
           SizedBox(height: 0.6 * PdfPageFormat.cm),
-          Text(AppPsyUtils.toDateString(facture.dateCreationFacture) , style: const TextStyle(fontSize: 18)),
+          Text(AppPsyUtils.toDateString(facture.dateCreationFacture) , style: const TextStyle(fontSize: 16)),
           Text("N°${facture.id}", style: const TextStyle(fontSize: 18)),
           SizedBox(height: 100),
         ],
@@ -80,7 +82,7 @@ class PdfFactureApi {
 
   }
 
-  static Widget buildInformations(Facture facture) {
+  static Widget buildInformationsSeances(Facture facture) {
     final enTete = ["Prestations".toUpperCase(), "Quantité".toUpperCase(), "Prix unitaire HT".toUpperCase(), "Montant HT".toUpperCase()];
     final donnees = facture.listSeances.map((item) {
       final total = item.prix * item.quantite;
@@ -88,8 +90,8 @@ class PdfFactureApi {
       return [
         description,
         item.quantite,
-        item.prix,
-        total,
+        item.prix.toStringAsFixed(2),
+        total.toStringAsFixed(2),
       ];
     }).toList();
 
@@ -108,8 +110,8 @@ class PdfFactureApi {
 
   static Widget buildTotal(Facture facture) {
     final netTotal = facture.listSeances.map((item) => item.prix * item.quantite).reduce((item1, item2) => item1 + item2);
-    final vat = netTotal * 0.20;
-    final total = netTotal + vat;
+    final tva = netTotal * 0.20;
+    final total = netTotal + tva;
 
     return Container(
       alignment: Alignment.centerRight,
@@ -124,12 +126,12 @@ class PdfFactureApi {
                     children: [
                       buildText(
                         title: 'TOTAL HT',
-                        value: netTotal.toString(),
+                        value: netTotal.toStringAsFixed(2),
                         unite: true,
                       ),
                       buildText(
                         title: 'TVA 20%',
-                        value: vat.toString(),
+                        value: tva.toStringAsFixed(2),
                         unite: true,
                       ),
                       Divider(),
@@ -139,7 +141,7 @@ class PdfFactureApi {
                           fontSize: 14,
                           fontWeight: FontWeight.bold,
                         ),
-                        value: total.toString(),
+                        value: total.toStringAsFixed(2),
                         unite: true,
                       ),
                     ],
@@ -162,5 +164,39 @@ class PdfFactureApi {
         ]
       )
     );
+  }
+
+
+  static Widget buildPayement(Facture facture) {
+    var dateLimite = "";
+    if (facture.dateLimitePayement != null) {
+      dateLimite = AppPsyUtils.toDateString(facture.dateLimitePayement!);
+    }
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(height: 50),
+        Text('Echéance : $dateLimite'),
+        Text('Règlement : '),
+      ]
+    );
+  }
+
+  static Widget buildSignature(Facture facture) {
+    final data = facture.signaturePNG;
+    if (data != null) {
+      var image = MemoryImage(data);
+
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children : [
+          SizedBox(height: 20),
+          Image(image),
+        ]
+      );
+    } else {
+
+      return Container();
+    }
   }
 }

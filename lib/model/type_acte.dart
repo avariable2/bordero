@@ -1,4 +1,3 @@
-import 'package:app_psy/utils/app_psy_utils.dart';
 
 const String tableTypeActe = 'type_acte';
 
