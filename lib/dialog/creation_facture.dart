@@ -119,7 +119,7 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
           date: _dateEmission,
           prix: AppPsyUtils.tryParseDouble(_controllerChampPrix.text),
           uniteTemps: _dropdownSelectionnerUnite.toString(),
-          nombreUniteTemps: int.parse(_controllerChampNombreUH.text)
+          quantite: int.parse(_controllerChampNombreUH.text)
       );
       _listSeances.add(s);
   }
@@ -576,7 +576,7 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
                       Card(
                         child:
                           ListTile(
-                            title: Text("${seance.nom} (${seance.date.day}/${seance.date.month}/${seance.date.year}) - ${seance.nombreUniteTemps} ${seance.uniteTemps}"),
+                            title: Text("${seance.nom} (${seance.date.day}/${seance.date.month}/${seance.date.year}) - ${seance.quantite} ${seance.uniteTemps}"),
                             leading: const Icon(Icons.work_history_outlined),
                             onTap: () {
                               _afficherAvertissementAvantSuppression(seance);
