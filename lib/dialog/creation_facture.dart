@@ -1,6 +1,9 @@
+import 'package:app_psy/model/facture.dart';
 import 'package:app_psy/model/seance.dart';
 import 'package:app_psy/model/type_acte.dart';
 import 'package:app_psy/utils/app_psy_utils.dart';
+import 'package:app_psy/utils/pdf_api.dart';
+import 'package:app_psy/utils/pdf_facture_api.dart';
 import 'package:flutter/material.dart';
 import 'package:signature/signature.dart';
 import 'package:sp_util/sp_util.dart';
@@ -265,6 +268,20 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
     }
   }
 
+  void _creationPdfEtOuverture() {
+    Facture facture = Facture(
+        id: _controllerNumeroFacture.text,
+        dateCreationFacture: DateTime.now(),
+        listClients: _listClients,
+        listSeances: _listSeances,
+        dateLimitePayement: _dateLimitePayement,
+        signaturePNG: _controllerSignature.toPngBytes()
+    );
+
+    PdfFactureApi.generate(facture).then((value) => PdfApi.openFile(value));
+
+  }
+
   @override
   void initState() {
     WidgetsBinding.instance.addObserver(this);
@@ -273,7 +290,7 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
     _getListClients();
     _getSpUtilsInitialisation();
 
-    _controllerChampDate.text = "${_dateEmission.day}/${_dateEmission.month}/${_dateEmission.year}";
+    _controllerChampDate.text = AppPsyUtils.toDateString(_dateEmission);
   }
 
   @override
@@ -297,7 +314,7 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
             if(_formKeyFacture.currentState!.validate() && _controllerSignature.isEmpty) {
               _afficherAvertissementEtConditionPourPoursuivre();
             } else {
-              _controllerSignature.toPngBytes();
+              _creationPdfEtOuverture();
             }
         }
       },
@@ -494,7 +511,7 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
                       keyboardType: TextInputType.number,
                       decoration: const InputDecoration(
                           border: OutlineInputBorder(),
-                          labelText: 'Nombre',
+                          labelText: 'Durée',
                           icon: Icon(Icons.timelapse_outlined)
                       ),
                       // The validator receives the text that the user has entered.

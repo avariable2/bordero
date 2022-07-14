@@ -13,4 +13,8 @@ class AppPsyUtils {
   static double tryParseDouble(String s) {
     return double.tryParse(s) ?? 00.toDouble();
   }
+
+  static String toDateString(DateTime date) {
+    return "${date.day}/${date.month}/${date.year}";
+  }
 }
