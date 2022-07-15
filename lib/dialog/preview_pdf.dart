@@ -31,12 +31,13 @@ class _AffichageInfoPdfState extends State<AffichageInfoPdf> {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-
+      child: Center(
         child: SizedBox(
-          width: 250,
+          width: 270,
           height: 400,
           child: PdfView(path: widget.fichier.path),
         ),
+      ),
     );
   }
 }

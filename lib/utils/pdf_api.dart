@@ -30,4 +30,8 @@ class PdfApi {
 
     await OpenFile.open(url);
   }
+
+  static Future deleteFile(File file) async {
+    await file.delete();
+  }
 }
