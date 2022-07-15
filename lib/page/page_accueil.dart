@@ -46,6 +46,7 @@ class _MonAccueilState extends State<MonAccueil> with WidgetsBindingObserver {
 
 
   Future refreshLists() async {
+    if (!mounted) return;
     setState(() => isLoading = true);
 
     await AppPsyDatabase.instance.readAllClient().then((value) => {

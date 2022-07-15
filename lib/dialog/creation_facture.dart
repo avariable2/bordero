@@ -150,7 +150,7 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
       helpText: 'Selectionner une date',
     );
     if (newDate != null) {
-      setState(() {
+      setStateIfMounted(() {
         _dateEmission = newDate;
         _controllerChampDate.text = "${_dateEmission.day}/${_dateEmission.month}/${_dateEmission.year}";
       });
@@ -167,7 +167,7 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
       helpText: 'Selectionner une date limite de payement',
     );
     if (newDate != null) {
-      setState(() {
+      setStateIfMounted(() {
         _dateLimitePayement = newDate;
         _controllerChampDateLimitePayement.text = "${_dateLimitePayement.day}/${_dateLimitePayement.month}/${_dateLimitePayement.year}";
       });
@@ -294,19 +294,37 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
   }
 
   @override
+  void dispose() {
+    super.dispose();
+
+    _controllerChampDate.dispose();
+    _controllerChampPrix.dispose();
+    _controllerChampNombreUH .dispose();
+    _controllerNumeroFacture .dispose();
+    _controllerChampDateLimitePayement.dispose();
+    _controllerSignature.dispose();
+  }
+
+  /// Pour empecher les fuites memoires et les potenciel bugs.
+  /// Uniquement pour les setState dans une fonction await
+  void setStateIfMounted(f) {
+    if (mounted) setState(f);
+  }
+
+  @override
   Widget build(BuildContext context) {
     return _isLoading ? const Center(child: CircularProgressIndicator()) : Stepper(
       type: StepperType.horizontal,
       currentStep: _indexStepper,
       onStepCancel: () {
         if (_indexStepper > 0) {
-          setState(() => _indexStepper--);
+          setStateIfMounted(() => _indexStepper--);
         }
       },
       onStepContinue: () {
         if (_indexStepper < 2 && _indexStepper >= 0) {
           if (_checkConditionsPourContinuer()) {
-            setState(() => _indexStepper++);
+            setStateIfMounted(() => _indexStepper++);
           } else {
             _afficherAvertissementEtConditionPourPoursuivre();
           }
@@ -379,7 +397,7 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
                             title: Text("${_listClients[i].prenom} ${_listClients[i].nom} / ${_listClients[i].adresse}"),
                             leading: const Icon(Icons.account_circle_sharp),
                             selected: _selected[i],
-                            onTap: () => setState(() => {
+                            onTap: () => setStateIfMounted(() => {
                               if (!_clientSelectionner.contains(_listClients[i])) {
                               _clientSelectionner.add(_listClients[i]),
                               _selected[i] = true,
@@ -683,28 +701,7 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
                         child: Text("Signature", style: TextStyle(fontSize: 18),),
                     ),
 
-
-
-                    Row(
-                      children: [
-                        Flexible(
-                          flex: 1,
-                          child:
-                            Signature(
-                              controller: _controllerSignature,
-                              width: 200,
-                              height: 100,
-                            ),
-                        ),
-
-                        IconButton(
-                            onPressed: () {
-                              setState(() => _controllerSignature.clear());
-                            },
-                            icon: const Icon(Icons.refresh_outlined)
-                        )
-                      ],
-                    ),
+                    buildSignature(),
 
                     const SizedBox(
                       height: 20,
@@ -713,6 +710,31 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
                   ]),
         ),
       );
+  }
+
+  Widget buildSignature() {
+    return Row(
+      children: [
+        ClipRect(
+          child:
+              SizedBox(
+                height: 100,
+                child: Signature(
+                  width: 200,
+                  height: 100,
+                  controller: _controllerSignature,
+              ),
+          ),
+        ),
+
+        IconButton(
+            onPressed: () {
+              setState(() => _controllerSignature.clear());
+            },
+            icon: const Icon(Icons.refresh_outlined)
+        )
+      ],
+    );
   }
 
   Widget buildCreationFacture() {

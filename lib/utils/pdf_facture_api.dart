@@ -190,8 +190,8 @@ class PdfFactureApi {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children : [
-          SizedBox(height: 20),
-          Image(image),
+          SizedBox(height: 30),
+          Image(image, width: 100),
         ]
       );
     } else {
