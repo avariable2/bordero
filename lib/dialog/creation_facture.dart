@@ -75,7 +75,7 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
             fontSize: 22.0,
           ),
           children: <TextSpan> [
-            TextSpan(text: "Attention",
+            TextSpan(text: "Supprimer cette séance ?",
                 style: TextStyle(
                     fontWeight: FontWeight.bold,
                 )
@@ -90,7 +90,7 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
       builder: (BuildContext context) =>
           AlertDialog(
             title: richText,
-            content: const Text("Etes-vous sur de vouloir supprimer cette séance ?"),
+            content: const Text("Vous pourrez la recréer par la suite."),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context, 'RETOUR'),
@@ -212,8 +212,8 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
       title = "✋ Il faut d'abord séléctionner un client";
       body = "Assurez-vous de selectionner au moins un client.";
     } else if (_listSeances.isEmpty) {
-      title = "Remplissez tous les champs et cliqué sur ajouter";
-      body = "Assurez-vous d'enregistrer au moins un séance pour votre client. Ils vous suffit de remplir tous les champs.";
+      title = "⛔ Il faut au moins ajouter une séance";
+      body = "Assurez-vous d'enregistrer au moins une séance pour votre/vos client(s) et cliqué sur ajouter. Ils vous suffit de remplir tous les champs.";
     } else if (_indexStepper == 2) {
       title = "Remplissez tous les champs";
       body = "Assurez-vous de remplir bien le bon numero de facture et une signature.";

@@ -144,6 +144,8 @@ class PdfFactureApi {
                         value: total.toStringAsFixed(2),
                         unite: true,
                       ),
+                      SizedBox(height: 15),
+                      Text("Exonéré de TVA au titre de l'article 261-4-1° du Code Général des Impôts", style: const TextStyle(fontSize: 10)),
                     ],
                 )
           ),
@@ -175,7 +177,7 @@ class PdfFactureApi {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(height: 50),
+        SizedBox(height: 30),
         Text('Echéance : $dateLimite'),
         Text('Règlement : '),
       ]
@@ -190,7 +192,7 @@ class PdfFactureApi {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children : [
-          SizedBox(height: 30),
+          SizedBox(height: 20),
           Image(image, width: 100),
         ]
       );
