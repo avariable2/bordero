@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:app_psy/dialog/preview_pdf.dart';
 import 'package:app_psy/model/facture.dart';
 import 'package:app_psy/model/seance.dart';
 import 'package:app_psy/model/type_acte.dart';
@@ -5,6 +8,7 @@ import 'package:app_psy/utils/app_psy_utils.dart';
 import 'package:app_psy/utils/pdf_api.dart';
 import 'package:app_psy/utils/pdf_facture_api.dart';
 import 'package:flutter/material.dart';
+import 'package:pdf_viewer_plugin/pdf_viewer_plugin.dart';
 import 'package:signature/signature.dart';
 import 'package:sp_util/sp_util.dart';
 
@@ -61,12 +65,6 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
   bool _sauvegarderIdFacture = SpUtil.getBool(AppPsyUtils.CACHE_SAUVEGARDER_NUMERO_FACTURE) ?? false;
   late String _dropdownSelectionnerTypeActe;
   String _dropdownSelectionnerUnite = "Heure";
-
-
-
-  /// POUR CREER LE PDF
-  /// https://www.google.com/search?q=create+facture+flutter&rlz=1C1CHZN_frFR980FR980&oq=create+facture+flutter&aqs=chrome..69i57j0i22i30.8424j0j7&sourceid=chrome&ie=UTF-8#kpvalbx=_ITnMYuiTI4f_lwSe-o-YAw18
-
 
   void _afficherAvertissementAvantSuppression(Seance seance) {
     var richText = RichText(
@@ -278,7 +276,9 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
         signaturePNG: await _controllerSignature.toPngBytes()
     );
 
-    PdfFactureApi.generate(facture).then((value) => PdfApi.openFile(value));
+    PdfFactureApi.generate(facture).then((value) {
+      Navigator.of(context).push(MaterialPageRoute(builder: (context) => PreviewPdf(fichier: value,)));
+    });
 
   }
 
@@ -735,9 +735,5 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
         )
       ],
     );
-  }
-
-  Widget buildCreationFacture() {
-    return Container();
   }
 }
