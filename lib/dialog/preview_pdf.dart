@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:app_psy/utils/pdf_api.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
@@ -30,7 +31,29 @@ class AffichageInfoPdf extends StatefulWidget {
   State<AffichageInfoPdf> createState() => _AffichageInfoPdfState();
 }
 
-class _AffichageInfoPdfState extends State<AffichageInfoPdf> {
+class _AffichageInfoPdfState extends State<AffichageInfoPdf> with WidgetsBindingObserver {
+
+  @override
+  void initState() {
+    WidgetsBinding.instance.addObserver(this);
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    PdfApi.deleteFile(widget.fichier);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // Methode pour chaque retour a l'page de refresh
+    if (state == AppLifecycleState.resumed) {
+      if (!widget.fichier.existsSync()) {
+        Navigator.pop(this.context, 'SUPPRIMER');
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
