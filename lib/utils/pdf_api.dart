@@ -34,4 +34,16 @@ class PdfApi {
   static Future deleteFile(File file) async {
     await file.delete();
   }
+
+  static Future deleteAllFilesInCache() async {
+    String dirPath = "";
+    if(Platform.isAndroid) {
+      dirPath = (await getExternalStorageDirectory())!.path;
+    } else if(Platform.isIOS) {
+      dirPath = (await getApplicationDocumentsDirectory()).path;
+    }
+
+    final dir = Directory(dirPath);
+    dir.delete(recursive: true);
+  }
 }

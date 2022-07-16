@@ -48,10 +48,8 @@ class _AffichageInfoPdfState extends State<AffichageInfoPdf> with WidgetsBinding
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     // Methode pour chaque retour a l'page de refresh
-    if (state == AppLifecycleState.resumed) {
-      if (!widget.fichier.existsSync()) {
-        Navigator.pop(this.context, 'SUPPRIMER');
-      }
+    if (state == AppLifecycleState.detached) {
+      PdfApi.deleteAllFilesInCache();
     }
   }
 
@@ -145,7 +143,7 @@ class _AffichageInfoPdfState extends State<AffichageInfoPdf> with WidgetsBinding
           AlertDialog(
             title: richText,
             content: const Text("Cette application ne possède pas de serveur pour sauvegarder vos factures tout en protegeant celle-ci."
-                " N'hesitez pas à contribuer pour que nous puissions vous apporter toujours plus d'outils pour votre entreprise."),
+                "\nN'hesitez pas à contribuer pour que nous puissions vous apporter toujours plus d'outils pour votre entreprise."),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context, 'RETOUR'),
