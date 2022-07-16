@@ -1,10 +1,12 @@
 import 'package:app_psy/page/page_accueil.dart';
 import 'package:app_psy/color_schemes.g.dart';
 import 'package:app_psy/page/page_factures.dart';
+import 'package:app_psy/utils/pdf_api.dart';
 import 'package:flutter/material.dart';
 
 void main() {
   runApp(const MyApp());
+  PdfApi.deleteAllFilesInCache();
 }
 
 class MyApp extends StatelessWidget {
