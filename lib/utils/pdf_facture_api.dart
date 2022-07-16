@@ -64,20 +64,25 @@ class PdfFactureApi {
   }
 
   static Widget buildInformationsClients(Facture facture) {
-    return Row(children: [
-      Spacer(flex: 6),
+    return Column(children: [
       for (Client client in facture.listClients)
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            Text("${client.nom} ${client.prenom}", style: TextStyle(fontWeight: FontWeight.bold)),
-            Text(client.adresse),
-            Text("${client.codePostal} ${client.ville}"),
-            Text(client.numeroTelephone),
-            Text(client.email),
-            SizedBox(height: 20)
-          ],
-        ),
+      Row(
+        children: [
+          Spacer(flex: 6),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text("${client.nom} ${client.prenom}", style: TextStyle(fontWeight: FontWeight.bold)),
+              Text(client.adresse),
+              Text("${client.codePostal} ${client.ville}"),
+              Text(client.numeroTelephone),
+              Text(client.email),
+              SizedBox(height: 20)
+            ],
+          ),
+        ]
+      )
+
     ]);
 
   }
