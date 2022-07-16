@@ -1,7 +1,10 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:path/path.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:pdf_viewer_plugin/pdf_viewer_plugin.dart';
+import 'package:share_plus/share_plus.dart';
 
 class PreviewPdf extends StatelessWidget {
   final File fichier;
@@ -28,16 +31,106 @@ class AffichageInfoPdf extends StatefulWidget {
 }
 
 class _AffichageInfoPdfState extends State<AffichageInfoPdf> {
+
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      child: Center(
-        child: SizedBox(
-          width: 270,
-          height: 400,
-          child: PdfView(path: widget.fichier.path),
+      child: Column(children: [
+
+        Padding(
+            padding: const EdgeInsets.only(top: 15),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: const [
+                Expanded(flex: 1, child: CircleAvatar(child: Icon(Icons.info_outline))),
+                Expanded(flex: 4,
+                  child:
+                  Text('''Cette facture sera supprimer une fois cette activité fermer. Penser à la sauvegarder (Drive, vous l'envoyez par mail, ...) !'''), ),
+              ],
+            ),
         ),
+
+        Padding(
+          padding: const EdgeInsets.only(right: 15),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              TextButton(onPressed: () => _afficherInformationPourSauvegarde(), child: const Text("POURQUOI ?"))
+            ],
+          ),
+        ),
+
+
+        const Divider(),
+
+        const SizedBox(
+          height: 10,
+        ),
+
+        Center(
+          child: SizedBox(
+            width: 270,
+            height: 380,
+            child: PdfView(path: widget.fichier.path),
+          ),
+        ),
+
+        Padding(
+          padding: const EdgeInsets.only(top: 5),
+          child: ElevatedButton.icon(
+              onPressed: () => _onShare(context),
+              icon: const Icon(Icons.share_outlined),
+              label: const Text("PARTAGER")
+          ),
+        ),
+
+      ]),
+    );
+  }
+
+  void _onShare(BuildContext context) async {
+    final box = context.findRenderObject() as RenderBox;
+
+    // Il est necessaire de passer par un path different de l'original pour eviter les fuites
+    final temp = await getTemporaryDirectory();
+    final path = "${temp.path}/${basename(widget.fichier.path)}";
+
+    File(path).writeAsBytesSync(widget.fichier.readAsBytesSync());
+    await Share.shareFiles([path], subject: basename(widget.fichier.path), sharePositionOrigin: box.localToGlobal(Offset.zero) & box.size);
+  }
+
+  void _afficherInformationPourSauvegarde() {
+    var richText = RichText(
+      text: const TextSpan(
+          style: TextStyle(
+            fontSize: 22.0,
+          ),
+          children: <TextSpan> [
+            TextSpan(text: "Les données personnels de vos clients sont une priorité",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                )
+            ),
+          ]
       ),
+    );
+
+
+    showDialog(
+      context: this.context,
+      builder: (BuildContext context) =>
+          AlertDialog(
+            title: richText,
+            content: const Text("Et cette application ne possède pas de serveur pour sauvegarder vos factures tout en protegeant celle-ci."
+                " N'hesitez pas à contribuer pour que nous puissions vous apporter toujours plus d'outils pour votre entreprise."),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, 'RETOUR'),
+                child: const Text("COMPRIS"),
+              ),
+            ],
+            elevation: 24.0,
+          ),
     );
   }
 }
