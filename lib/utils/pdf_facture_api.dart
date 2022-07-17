@@ -27,7 +27,7 @@ class PdfFactureApi {
 
     var prenoms = "";
     for(Client c in facture.listClients) {
-      prenoms += "-${c.prenom}";
+      prenoms += "-${c.prenom}-${c.nom}";
     }
     final titre = 'Facture#${facture.id}$prenoms(${facture.dateCreationFacture.month}-${facture.dateCreationFacture.year}).pdf';
     return PdfApi.saveDocument(name: titre, pdf: pdf);

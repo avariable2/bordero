@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:app_psy/utils/pdf_api.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
@@ -41,7 +40,7 @@ class _AffichageInfoPdfState extends State<AffichageInfoPdf> with WidgetsBinding
 
   @override
   void dispose() {
-    PdfApi.deleteFile(widget.fichier);
+    //PdfApi.deleteFile(widget.fichier);
     super.dispose();
   }
 
@@ -49,7 +48,7 @@ class _AffichageInfoPdfState extends State<AffichageInfoPdf> with WidgetsBinding
   void didChangeAppLifecycleState(AppLifecycleState state) {
     // Methode pour chaque retour a l'page de refresh
     if (state == AppLifecycleState.detached) {
-      PdfApi.deleteAllFilesInCache();
+      //PdfApi.deleteAllFilesInCache();
     }
   }
 
@@ -66,7 +65,7 @@ class _AffichageInfoPdfState extends State<AffichageInfoPdf> with WidgetsBinding
                 Expanded(flex: 1, child: CircleAvatar(child: Icon(Icons.info_outline))),
                 Expanded(flex: 4,
                   child:
-                  Text('''Cette facture sera supprimer une fois cette activité fermer. Penser à la sauvegarder (Drive, vous l'envoyez par mail, ...) !'''), ),
+                  Text('''Cette facture n'est pas enregistrer sur une base de donnée. Penser à la sauvegarder (Drive, vous l'envoyez par mail, ...) !'''), ),
               ],
             ),
         ),

@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 
 void main() {
   runApp(const MyApp());
-  PdfApi.deleteAllFilesInCache();
+  //TODO("Si il n'est pas possible de garder les factures dans le cache alors les supprimer") PdfApi.deleteAllFilesInCache();
 }
 
 class MyApp extends StatelessWidget {

@@ -46,4 +46,15 @@ class PdfApi {
     final dir = Directory(dirPath);
     dir.delete(recursive: true);
   }
+
+  static getAllFilesInCache() async {
+    String dirPath = "";
+    if(Platform.isAndroid) {
+      dirPath = (await getExternalStorageDirectory())!.path;
+    } else if(Platform.isIOS) {
+      dirPath = (await getApplicationDocumentsDirectory()).path;
+    }
+
+    return Directory(dirPath).listSync(recursive: true);
+  }
 }
