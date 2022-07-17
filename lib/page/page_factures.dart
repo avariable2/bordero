@@ -64,7 +64,7 @@ class _ViewFacturesState extends State<ViewFactures> with WidgetsBindingObserver
               builder: (BuildContext context) => const FullScreenDialogCreationFacture(),
               fullscreenDialog: true,
             ),
-          );
+          ).then((value) => _getListFiles());
         },
       ),
       body: SafeArea(

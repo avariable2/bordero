@@ -17,16 +17,86 @@ class PreviewPdf extends StatelessWidget {
         appBar: AppBar(
           title: const Text("Gestion de votre facture"),
           actions: [
-            IconButton(onPressed: () => _supprimerFacture(context), icon: const Icon(Icons.delete_outline))
+            PopupMenuButton(
+              icon: const Icon(Icons.more_vert),
+              itemBuilder: (BuildContext context) => <PopupMenuEntry>[
+                PopupMenuItem(
+                    child: ListTile(
+                      leading: const Icon(Icons.delete),
+                      title: const Text('Supprimer'),
+                      onTap: () => _afficherAvertissementSuppression(context),
+                    ),
+                ),
+
+                PopupMenuItem(
+                  child: ListTile(
+                      leading: const Icon(Icons.share),
+                      title: const Text('Partager'),
+                      onTap: () => _onShare(context),
+                  ),
+                ),
+
+              ],),
+
           ],
         ),
-      body: AffichageInfoPdf(fichier: fichier,)
+        body: AffichageInfoPdf(fichier: fichier,));
+  }
+
+  void _afficherAvertissementSuppression(BuildContext context) {
+    var richText = RichText(
+      text: const TextSpan(
+          style: TextStyle(
+            fontSize: 22.0,
+          ),
+          children: <TextSpan> [
+            TextSpan(text: "Attention",
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.red
+                )
+            ),
+            TextSpan(text: " : êtes-vous sur de vouloir supprimer cette facture ?"),
+          ]
+      ),
+    );
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) =>
+          AlertDialog(
+            title: richText,
+            content: const Text("Vous avez une obligation légales de garder pendant 5 ans vos factures."),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, 'Cancel'),
+                child: const Text("ANNULER"),
+              ),
+              TextButton(
+                onPressed: () {
+                  _supprimerFacture(context);
+                },
+                child: const Text("SUPPRIMER", style: TextStyle(color: Colors.white70)),),
+            ],
+            elevation: 24.0,
+          ),
     );
   }
 
   void _supprimerFacture(BuildContext context) {
     PdfApi.deleteFile(fichier);
     Navigator.pop(context);
+  }
+
+  void _onShare(BuildContext context) async {
+    final box = context.findRenderObject() as RenderBox;
+
+    // Il est necessaire de passer par un path different de l'original pour eviter les fuites
+    final temp = await getTemporaryDirectory();
+    final path = "${temp.path}/${basename(fichier.path)}";
+
+    File(path).writeAsBytesSync(fichier.readAsBytesSync());
+    await Share.shareFiles([path], subject: basename(fichier.path), sharePositionOrigin: box.localToGlobal(Offset.zero) & box.size);
   }
 }
 
