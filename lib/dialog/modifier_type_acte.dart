@@ -16,7 +16,7 @@ class FullScreenDialogModifierTypeActe extends StatelessWidget {
         actions: [
           IconButton(
             icon: const Icon(
-              Icons.delete_outline,
+              Icons.delete,
             ),
             onPressed: () {
               _afficherAvertissementSuppression(context, typeActe);

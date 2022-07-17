@@ -27,8 +27,8 @@ class ViewFactures extends StatefulWidget {
 
 class _ViewFacturesState extends State<ViewFactures> with WidgetsBindingObserver {
   final _controllerChampRecherche = TextEditingController();
-  late List<FileSystemEntity> fichiers;
-  late List<FileSystemEntity> fichiersTrier = [];
+  late List<FileSystemEntity> listFichiers;
+  late List<FileSystemEntity> listFichiersTrier = [];
 
   bool isLoading = false;
   String _selectionnerChips = "";
@@ -102,7 +102,7 @@ class _ViewFacturesState extends State<ViewFactures> with WidgetsBindingObserver
                     helperText: 'Essayer le nom du client ou bien son prénom'
                 ),
                 onChanged: (String? entree) => setState(() {
-                  fichiersTrier = _sortParRecherche(entree) ?? [];
+                  listFichiersTrier = _sortParRecherche(entree) ?? [];
 
                 }),
               ),
@@ -122,7 +122,7 @@ class _ViewFacturesState extends State<ViewFactures> with WidgetsBindingObserver
                             _resetListFichierTrier();
                           } else {
                             _selectionnerChips = "Mois actuel";
-                            fichiersTrier = _sort(true, false);
+                            listFichiersTrier = _sort(true, false);
                           }
 
                         });
@@ -139,7 +139,7 @@ class _ViewFacturesState extends State<ViewFactures> with WidgetsBindingObserver
                           _resetListFichierTrier();
                         } else {
                           _selectionnerChips = "Année actuelle";
-                          fichiersTrier = _sort(false, true);
+                          listFichiersTrier = _sort(false, true);
                         }
                       });
                     },
@@ -157,21 +157,22 @@ class _ViewFacturesState extends State<ViewFactures> with WidgetsBindingObserver
               padding: const EdgeInsets.all(8),
               children: [
                 if (_checkSiUserTrie())
-                  for (FileSystemEntity f in fichiersTrier)
+                  for (FileSystemEntity fichier in listFichiersTrier)
                     Card(
                       child: ListTile(
                         leading: const Icon(Icons.picture_as_pdf_outlined),
-                        title: Text(basename(f.path)),
-                        onTap: () => Navigator.of(this.context).push(MaterialPageRoute(builder: (context) => PreviewPdf(fichier: File(f.path),))).then((value) => _getListFiles()),
+                        title: Text(basename(fichier.path)),
+                        onTap: () => Navigator.of(this.context).push(MaterialPageRoute(builder: (context) => PreviewPdf(fichier: File(fichier.path),))).then((value) => _getListFiles()),
                       ),
                     )
                 else
-                  for (FileSystemEntity f in fichiers)
+                  // On n'affiche que les 20 premiers sinon liste trop lourde
+                  for (int index = 0 ; index < listFichiers.length && index < 20; index++)
                     Card(
                       child: ListTile(
                         leading: const Icon(Icons.picture_as_pdf_outlined),
-                        title: Text(basename(f.path)),
-                        onTap: () => Navigator.of(this.context).push(MaterialPageRoute(builder: (context) => PreviewPdf(fichier: File(f.path),))).then((value) => _getListFiles()),
+                        title: Text(basename(listFichiers[index].path)),
+                        onTap: () => Navigator.of(this.context).push(MaterialPageRoute(builder: (context) => PreviewPdf(fichier: File(listFichiers[index].path),))).then((value) => _getListFiles()),
                       ),
                     ),
               ],
@@ -184,8 +185,7 @@ class _ViewFacturesState extends State<ViewFactures> with WidgetsBindingObserver
   Future<void> _getListFiles() async {
     setState(() => isLoading = true);
 
-
-    fichiers = await PdfApi.getAllFilesInCache();
+    listFichiers = await PdfApi.getAllFilesInCache();
 
     setState(() => isLoading = false);
   }
@@ -203,7 +203,7 @@ class _ViewFacturesState extends State<ViewFactures> with WidgetsBindingObserver
       RegExp regex = RegExp("([$month]-[$year])");
 
 
-      for (FileSystemEntity f in fichiers) {
+      for (FileSystemEntity f in listFichiers) {
         if (regex.firstMatch(basename(f.path)) != null) {
           listFinal.add(f);
         }
@@ -213,7 +213,7 @@ class _ViewFacturesState extends State<ViewFactures> with WidgetsBindingObserver
       RegExp regex = RegExp("([$year])");
 
 
-      for (FileSystemEntity f in fichiers) {
+      for (FileSystemEntity f in listFichiers) {
         if (regex.firstMatch(basename(f.path)) != null) {
           listFinal.add(f);
         }
@@ -231,7 +231,7 @@ class _ViewFacturesState extends State<ViewFactures> with WidgetsBindingObserver
     List<FileSystemEntity> listFinal = [];
     RegExp regex = RegExp(entree.toLowerCase());
 
-    for (FileSystemEntity f in fichiers) {
+    for (FileSystemEntity f in listFichiers) {
       if (regex.firstMatch(basename(f.path).toLowerCase()) != null) {
         listFinal.add(f);
       }
@@ -241,7 +241,7 @@ class _ViewFacturesState extends State<ViewFactures> with WidgetsBindingObserver
   }
 
   void _resetListFichierTrier() {
-    fichiersTrier = [];
+    listFichiersTrier.clear();
   }
 
   bool _checkSiUserTrie() {
