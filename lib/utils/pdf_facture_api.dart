@@ -73,9 +73,11 @@ class PdfFactureApi {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text("${client.nom} ${client.prenom}", style: TextStyle(fontWeight: FontWeight.bold)),
-              Text(client.adresse),
+              if (client.adresse != null && client.adresse!.isNotEmpty)
+                Text(client.adresse!),
               Text("${client.codePostal} ${client.ville}"),
-              Text(client.numeroTelephone),
+              if (client.numeroTelephone != null && client.numeroTelephone!.isNotEmpty)
+                Text(client.numeroTelephone!),
               Text(client.email),
               SizedBox(height: 20)
             ],

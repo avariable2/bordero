@@ -20,10 +20,10 @@ class Client {
   final int? id;
   final String nom;
   final String prenom;
-  final String adresse;
-  final String codePostal;
-  final String ville;
-  final String numeroTelephone;
+  final String? adresse;
+  final String? codePostal;
+  final String? ville;
+  final String? numeroTelephone;
   final String email;
 
   const Client({

@@ -102,25 +102,17 @@ class _MonAccueilState extends State<MonAccueil> with WidgetsBindingObserver {
           ],
         ),
 
-
-        const SizedBox(
-          height: 25,
-        ),
-
-
-        const Text(
-          "Clients",
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            inherit: true,
-            letterSpacing: 0.4,
+        const Padding(
+          padding: EdgeInsets.only(top: 25, bottom: 15),
+          child: Text(
+            "Clients",
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              inherit: true,
+              letterSpacing: 0.4,
+            ),
           ),
-        ),
-
-
-        const SizedBox(
-          height: 15,
         ),
 
         Row(
@@ -150,11 +142,7 @@ class _MonAccueilState extends State<MonAccueil> with WidgetsBindingObserver {
         if(listClients.isEmpty) ...[
             const Text("🤔​ Aucun clients ", style: TextStyle(fontSize: 18,),)
         ] else ...[
-          if(_checkSiUserTrie()) ...[
-            buildListClientTrier(),
-          ] else ...[
-            buildListClient(),
-          ]
+          buildListClient(_checkSiUserTrie()),
         ],
 
 
@@ -172,26 +160,18 @@ class _MonAccueilState extends State<MonAccueil> with WidgetsBindingObserver {
           label: const Text("Ajouter"),
         ),
 
-
-        const SizedBox(
-          height: 25,
-        ),
-
-
-        const Text(
-          "Type d'actes",
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            inherit: true,
-            letterSpacing: 0.4,
+        const Padding(
+          padding: EdgeInsets.only(top: 25, bottom: 15),
+          child: Text(
+            "Type d'actes",
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              inherit: true,
+              letterSpacing: 0.4,
+            ),
           ),
         ),
-
-        const SizedBox(
-          height: 15,
-        ),
-
 
         if(listTypeActes.isEmpty)
           const Text("🤔​ Aucune type de seance enregistré", style: TextStyle(fontSize: 18,),)
@@ -258,7 +238,8 @@ class _MonAccueilState extends State<MonAccueil> with WidgetsBindingObserver {
     );
   }
 
-  Widget buildListClient() {
+  Widget buildListClient(bool trier) {
+    List<Client> listUtiliser = trier ? listClientsTrier : listClients;
     return SizedBox(
       height: 150,
       child: Card(
@@ -268,36 +249,7 @@ class _MonAccueilState extends State<MonAccueil> with WidgetsBindingObserver {
           shrinkWrap: true,
           addAutomaticKeepAlives: false,
           children: [
-            for(Client client in listClients)
-              ListTile(
-                title: Text("${client.prenom} ${client.nom} / ${client.adresse}"),
-                leading: const Icon(Icons.account_circle_sharp),
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute<void>(
-                      builder: (BuildContext context) => FullScreenDialogModifierClient(client: client,),
-                      fullscreenDialog: true,
-                    ),
-                  ).then((value) => refreshLists());
-                },
-              ),
-          ],),
-      ),
-    );
-  }
-
-  Widget buildListClientTrier() {
-    return SizedBox(
-      height: 150,
-      child: Card(
-        borderOnForeground: true,
-        child: ListView(
-          scrollDirection: Axis.vertical,
-          shrinkWrap: true,
-          addAutomaticKeepAlives: false,
-          children: [
-            for(Client client in listClientsTrier)
+            for(Client client in listUtiliser)
               ListTile(
                 title: Text("${client.prenom} ${client.nom} / ${client.adresse}"),
                 leading: const Icon(Icons.account_circle_sharp),

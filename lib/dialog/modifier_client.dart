@@ -181,10 +181,10 @@ class DialogModifierClientState extends State<DialogModifierClient> {
     super.initState();
     _controllerChampNom.text = widget.client.nom;
     _controllerChampPrenom.text = widget.client.prenom;
-    _controllerChampAdresse.text = widget.client.adresse;
-    _controllerChampCodePostal.text = widget.client.codePostal;
-    _controllerChampVille.text = widget.client.ville;
-    _controllerChampNumero.text = widget.client.numeroTelephone;
+    _controllerChampAdresse.text = widget.client.adresse ?? '';
+    _controllerChampCodePostal.text = widget.client.codePostal ?? '';
+    _controllerChampVille.text = widget.client.ville ?? '';
+    _controllerChampNumero.text = widget.client.numeroTelephone ?? '';
     _controllerChampEmail.text = widget.client.email;
   }
 
