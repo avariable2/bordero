@@ -26,8 +26,10 @@ class ViewFactures extends StatefulWidget {
 }
 
 class _ViewFacturesState extends State<ViewFactures> with WidgetsBindingObserver {
+  final _controllerChampRecherche = TextEditingController();
   late List<FileSystemEntity> fichiers;
   late List<FileSystemEntity> fichiersTrier = [];
+
   bool isLoading = false;
   String _selectionnerChips = "";
 
@@ -89,15 +91,21 @@ class _ViewFacturesState extends State<ViewFactures> with WidgetsBindingObserver
           ),
 
 
-          Flex(direction: Axis.vertical, children: const [
-            TextField(
-              obscureText: true,
-              decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'Recherche facture',
-                  helperText: 'Essayer le nom du client ou bien sont prénom'
+          Flex(
+            direction: Axis.vertical,
+            children: [
+              TextField(
+                controller: _controllerChampRecherche,
+                decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: 'Recherche facture',
+                    helperText: 'Essayer le nom du client ou bien sont prénoam'
+                ),
+                onChanged: (String? entree) => setState(() {
+                  fichiersTrier = _sortParRecherche(entree) ?? [];
+
+                }),
               ),
-            ),
           ],),
 
 
@@ -111,7 +119,7 @@ class _ViewFacturesState extends State<ViewFactures> with WidgetsBindingObserver
                         setState(() {
                           if(_selectionnerChips == "Mois actuel") {
                             _selectionnerChips = "";
-                            fichiersTrier = [];
+                            _resetListFichierTrier();
                           } else {
                             _selectionnerChips = "Mois actuel";
                             fichiersTrier = _sort(true, false);
@@ -128,7 +136,7 @@ class _ViewFacturesState extends State<ViewFactures> with WidgetsBindingObserver
                       setState(() {
                         if(_selectionnerChips == "Année actuelle") {
                           _selectionnerChips = "";
-                          fichiersTrier = [];
+                          _resetListFichierTrier();
                         } else {
                           _selectionnerChips = "Année actuelle";
                           fichiersTrier = _sort(false, true);
@@ -141,7 +149,7 @@ class _ViewFacturesState extends State<ViewFactures> with WidgetsBindingObserver
 
           const Divider(),
 
-          if (fichiersTrier.isNotEmpty)
+          if (_checkSiUserTrie())
             for (FileSystemEntity f in fichiersTrier)
               Card(
                 child: ListTile(
@@ -172,6 +180,7 @@ class _ViewFacturesState extends State<ViewFactures> with WidgetsBindingObserver
   }
 
   List<FileSystemEntity> _sort(bool mois, bool annee) {
+    _resetListFichierTrier();
     List<FileSystemEntity> listFinal = [];
     var now = DateTime.now();
     var formatterMounth = DateFormat('MM');
@@ -184,7 +193,7 @@ class _ViewFacturesState extends State<ViewFactures> with WidgetsBindingObserver
 
 
       for (FileSystemEntity f in fichiers) {
-        if (regex.firstMatch(f.path) != null) {
+        if (regex.firstMatch(basename(f.path)) != null) {
           listFinal.add(f);
         }
       }
@@ -194,14 +203,38 @@ class _ViewFacturesState extends State<ViewFactures> with WidgetsBindingObserver
 
 
       for (FileSystemEntity f in fichiers) {
-        if (regex.firstMatch(f.path) != null) {
+        if (regex.firstMatch(basename(f.path)) != null) {
           listFinal.add(f);
         }
       }
     }
 
+    return listFinal;
+  }
+
+  List<FileSystemEntity>? _sortParRecherche(String? entree) {
+    if(entree == null) {
+      return null;
+    }
+    _resetListFichierTrier();
+    List<FileSystemEntity> listFinal = [];
+    RegExp regex = RegExp(entree.toLowerCase());
+
+    for (FileSystemEntity f in fichiers) {
+      if (regex.firstMatch(basename(f.path).toLowerCase()) != null) {
+        listFinal.add(f);
+      }
+    }
 
     return listFinal;
+  }
+
+  void _resetListFichierTrier() {
+    fichiersTrier = [];
+  }
+
+  bool _checkSiUserTrie() {
+    return _selectionnerChips.isNotEmpty || _controllerChampRecherche.text.isNotEmpty;
   }
 
 }
