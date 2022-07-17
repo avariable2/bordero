@@ -120,13 +120,16 @@ class _MonAccueilState extends State<MonAccueil> with WidgetsBindingObserver {
             Expanded(
               child: TextField(
                 controller: _controllerChampRecherche,
+                keyboardType: TextInputType.name,
                 decoration: const InputDecoration(
                   border: OutlineInputBorder(),
                   labelText: 'Recherche client',
                   helperText: 'Essayer le nom du client ou bien son prénom',
                 ),
                 onChanged: (String? entree) => setState(() {
-                  listClientsTrier = _sortParRecherche(entree) ?? [];
+                  if (entree != null && entree.length > 1) {
+                    listClientsTrier = _sortParRecherche(entree) ?? [];
+                  }
 
                 }),
               ),
@@ -251,7 +254,7 @@ class _MonAccueilState extends State<MonAccueil> with WidgetsBindingObserver {
           children: [
             for(Client client in listUtiliser)
               ListTile(
-                title: Text("${client.prenom} ${client.nom} / ${client.adresse}"),
+                title: Text("${client.prenom} ${client.nom} / ${client.email}"),
                 leading: const Icon(Icons.account_circle_sharp),
                 onTap: () {
                   Navigator.push(
@@ -269,15 +272,15 @@ class _MonAccueilState extends State<MonAccueil> with WidgetsBindingObserver {
   }
 
   List<Client>? _sortParRecherche(String? entree) {
-    if(entree == null) {
+    if (entree == null) {
       return null;
     }
     _resetListClient();
     List<Client> listFinal = [];
     RegExp regex = RegExp(entree.toLowerCase());
 
-    for (Client client in listClientsTrier) {
-      if (regex.firstMatch(client.nom.toLowerCase()) != null || regex.firstMatch(client.prenom.toLowerCase()) != null) {
+    for (Client client in listClients) {
+      if (regex.firstMatch(client.nom.toLowerCase()) != null || regex.firstMatch(client.prenom.toLowerCase()) != null || regex.firstMatch(client.email.toLowerCase()) != null) {
         listFinal.add(client);
       }
     }

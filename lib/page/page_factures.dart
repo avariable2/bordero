@@ -96,6 +96,7 @@ class _ViewFacturesState extends State<ViewFactures> with WidgetsBindingObserver
             children: [
               TextField(
                 controller: _controllerChampRecherche,
+                keyboardType: TextInputType.name,
                 decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: 'Recherche facture',

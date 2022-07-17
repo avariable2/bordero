@@ -143,7 +143,7 @@ class DialogAjouterClientState extends State<DialogAjouterClient> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: const [
                   Expanded(flex: 1, child: Icon(Icons.info_outline)),
-                  Expanded(flex: 4, child: Text('''Toutes les informations sont nécessaire pour la création d'un client.'''), ),
+                  Expanded(flex: 4, child: Text('''Les champs marqués avec (*) sont oblicatoire.'''), ),
                 ],
             ),
 
@@ -163,7 +163,7 @@ class DialogAjouterClientState extends State<DialogAjouterClient> {
                   keyboardType: TextInputType.name,
                   decoration: const InputDecoration(
                       border: OutlineInputBorder(),
-                      labelText: 'Nom',
+                      labelText: 'Nom *',
                       icon: Icon(Icons.account_box_outlined)
                   ),
                   // The validator receives the text that the user has entered.
@@ -188,9 +188,8 @@ class DialogAjouterClientState extends State<DialogAjouterClient> {
                     keyboardType: TextInputType.name,
                     decoration: const InputDecoration(
                         border: OutlineInputBorder(),
-                        labelText: 'Prénom',
+                        labelText: 'Prénom *',
                         icon: Icon(Icons.account_box_outlined)),
-                    // The validator receives the text that the user has entered.
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Entrer un prénom';
@@ -216,13 +215,12 @@ class DialogAjouterClientState extends State<DialogAjouterClient> {
                     border: OutlineInputBorder(),
                     labelText: 'Adresse',
                     icon: Icon(Icons.person_pin_circle_outlined)),
-                // The validator receives the text that the user has entered.
-                validator: (value) {
+                /*validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Entrer une adresse';
                   }
                   return null;
-                },
+                },*/
               ),
             ),
 
@@ -231,27 +229,26 @@ class DialogAjouterClientState extends State<DialogAjouterClient> {
 
             Row(children: [
               Expanded(child:
-              Padding(padding: const EdgeInsets.only(top:10, right: 8, left: 8, bottom: 10),
-                child:
-                TextFormField(
-                  controller: controllerChampCodePostal,
-                  keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'Code postal',
-                      icon: Icon(Icons.domain_outlined)),
-                  // The validator receives the text that the user has entered.
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Entrer un code postal';
-                    }
-                    if (value.length != 5) {
-                      return 'Entrer un code postal valide';
-                    }
-                    return null;
-                  },
+                Padding(padding: const EdgeInsets.only(top:10, right: 8, left: 8, bottom: 10),
+                  child:
+                  TextFormField(
+                    controller: controllerChampCodePostal,
+                    keyboardType: TextInputType.number,
+                    decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: 'Code postal',
+                        icon: Icon(Icons.domain_outlined)),
+                    /*validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Entrer un code postal';
+                      }
+                      if (value.length != 5) {
+                        return 'Entrer un code postal valide';
+                      }
+                      return null;
+                    },*/
+                  ),
                 ),
-              ),
               ),
 
               const SizedBox(
@@ -269,13 +266,12 @@ class DialogAjouterClientState extends State<DialogAjouterClient> {
                         border: OutlineInputBorder(),
                         labelText: 'Ville',
                         icon: Icon(Icons.location_city_outlined)),
-                    // The validator receives the text that the user has entered.
-                    validator: (value) {
+                    /*validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Entrer une ville';
                       }
                       return null;
-                    },
+                    },*/
                   ),
                 ),
               ),
@@ -294,13 +290,12 @@ class DialogAjouterClientState extends State<DialogAjouterClient> {
                     border: OutlineInputBorder(),
                     labelText: 'Numéro de téléphone',
                     icon: Icon(Icons.phone_outlined)),
-                // The validator receives the text that the user has entered.
-                validator: (value) {
+                /*validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Entrer un numéro de téléphone';
                   }
                   return null;
-                },
+                },*/
               ),
             ),
 
@@ -311,9 +306,8 @@ class DialogAjouterClientState extends State<DialogAjouterClient> {
                 keyboardType: TextInputType.emailAddress,
                 decoration: const InputDecoration(
                     border: OutlineInputBorder(),
-                    labelText: 'Email',
+                    labelText: 'Email *',
                     icon: Icon(Icons.email_outlined)),
-                // The validator receives the text that the user has entered.
                 validator: (value) {
                   if (value == null || value.isEmpty ) {
                     return 'Entrer une email';
@@ -333,10 +327,7 @@ class DialogAjouterClientState extends State<DialogAjouterClient> {
 
             ElevatedButton(
               onPressed: () async {
-                // Validate returns true if the form is valid, or false otherwise.
                 if (_formKey.currentState!.validate()) {
-                  // If the form is valid, display a snackbar. In the real world,
-                  // you'd often call a server or save the information in a database.
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Traitement des données ...')),
                   );
