@@ -120,7 +120,7 @@ class _ViewFacturesState extends State<ViewFactures> with WidgetsBindingObserver
               child: ListTile(
                 leading: const Icon(Icons.picture_as_pdf_outlined),
                 title: Text(basename(f.path)),
-                onTap: () => Navigator.of(this.context).push(MaterialPageRoute(builder: (context) => PreviewPdf(fichier: File(f.path),))),
+                onTap: () => Navigator.of(this.context).push(MaterialPageRoute(builder: (context) => PreviewPdf(fichier: File(f.path),))).then((value) => _getListFiles()),
               ),
             ),
         ]);

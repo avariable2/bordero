@@ -48,23 +48,23 @@ class _NavigationExampleState extends State<NavigationExample> {
         selectedIndex: currentPageIndex,
         destinations: const <Widget>[
           NavigationDestination(
-            selectedIcon: Icon(Icons.home),
-            icon: Icon(Icons.home_outlined),
+            selectedIcon: Icon(Icons.home_outlined),
+            icon: Icon(Icons.home),
             label: 'Accueil',
           ),
           NavigationDestination(
-            selectedIcon: Icon(Icons.description),
-            icon: Icon(Icons.description_outlined),
+            selectedIcon: Icon(Icons.description_outlined),
+            icon: Icon(Icons.description),
             label: 'Factures',
           ),
           NavigationDestination(
-            selectedIcon: Icon(Icons.receipt_long),
-            icon: Icon(Icons.receipt_long_outlined),
+            selectedIcon: Icon(Icons.receipt_long_outlined),
+            icon: Icon(Icons.receipt_long),
             label: 'Devis',
           ),
           NavigationDestination(
-            selectedIcon: Icon(Icons.settings_sharp),
-            icon: Icon(Icons.settings_outlined),
+            selectedIcon: Icon(Icons.settings_outlined),
+            icon: Icon(Icons.settings),
             label: 'Paramètres',
           )
         ],

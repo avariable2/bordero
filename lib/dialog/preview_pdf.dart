@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:app_psy/utils/pdf_api.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
@@ -16,11 +17,16 @@ class PreviewPdf extends StatelessWidget {
         appBar: AppBar(
           title: const Text("Gestion de votre facture"),
           actions: [
-            IconButton(onPressed: () => null, icon: const Icon(Icons.delete_outline))
+            IconButton(onPressed: () => _supprimerFacture(context), icon: const Icon(Icons.delete_outline))
           ],
         ),
       body: AffichageInfoPdf(fichier: fichier,)
     );
+  }
+
+  void _supprimerFacture(BuildContext context) {
+    PdfApi.deleteFile(fichier);
+    Navigator.pop(context);
   }
 }
 
