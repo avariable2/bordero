@@ -1,6 +1,7 @@
 import 'package:app_psy/dialog/creation_facture.dart';
 import 'package:app_psy/utils/pdf_api.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'dart:io';
 
 import 'package:path/path.dart';
@@ -26,7 +27,9 @@ class ViewFactures extends StatefulWidget {
 
 class _ViewFacturesState extends State<ViewFactures> with WidgetsBindingObserver {
   late List<FileSystemEntity> fichiers;
+  late List<FileSystemEntity> fichiersTrier = [];
   bool isLoading = false;
+  String _selectionnerChips = "";
 
   @override
   void initState() {
@@ -41,15 +44,6 @@ class _ViewFacturesState extends State<ViewFactures> with WidgetsBindingObserver
     if (state == AppLifecycleState.resumed) {
       _getListFiles();
     }
-  }
-
-  Future<void> _getListFiles() async {
-    setState(() => isLoading = true);
-
-
-    fichiers = await PdfApi.getAllFilesInCache();
-
-    setState(() => isLoading = false);
   }
 
   @override
@@ -94,35 +88,120 @@ class _ViewFacturesState extends State<ViewFactures> with WidgetsBindingObserver
               ),
           ),
 
-          Row(
-            children: const [
-              Expanded(
-                child: TextField(
-                  obscureText: true,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'Recherche facture',
-                    helperText: 'Essayer le nom du client ou bien sont prénom'
-                  ),
-                ),
-              ),
-            ],
-          ),
 
-          const SizedBox(
-            height: 10,
-          ),
+          Flex(direction: Axis.vertical, children: const [
+            TextField(
+              obscureText: true,
+              decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: 'Recherche facture',
+                  helperText: 'Essayer le nom du client ou bien sont prénom'
+              ),
+            ),
+          ],),
+
+
+
+           Row(
+              children: [
+                  FilterChip(
+                    label: const Text("Mois actuel"),
+                    selected: _selectionnerChips == "Mois actuel",
+                    onSelected: (bool value) {
+                        setState(() {
+                          if(_selectionnerChips == "Mois actuel") {
+                            _selectionnerChips = "";
+                            fichiersTrier = [];
+                          } else {
+                            _selectionnerChips = "Mois actuel";
+                            fichiersTrier = _sort(true, false);
+                          }
+
+                        });
+                     },
+                  ),
+
+                  FilterChip(
+                    label: const Text("Année actuelle"),
+                    selected: _selectionnerChips == "Année actuelle",
+                    onSelected: (bool value) {
+                      setState(() {
+                        if(_selectionnerChips == "Année actuelle") {
+                          _selectionnerChips = "";
+                          fichiersTrier = [];
+                        } else {
+                          _selectionnerChips = "Année actuelle";
+                          fichiersTrier = _sort(false, true);
+                        }
+                      });
+                    },
+                  ),
+              ],
+            ),
 
           const Divider(),
 
-          for (FileSystemEntity f in fichiers)
-            Card(
-              child: ListTile(
-                leading: const Icon(Icons.picture_as_pdf_outlined),
-                title: Text(basename(f.path)),
-                onTap: () => Navigator.of(this.context).push(MaterialPageRoute(builder: (context) => PreviewPdf(fichier: File(f.path),))).then((value) => _getListFiles()),
+          if (fichiersTrier.isNotEmpty)
+            for (FileSystemEntity f in fichiersTrier)
+              Card(
+                child: ListTile(
+                  leading: const Icon(Icons.picture_as_pdf_outlined),
+                  title: Text(basename(f.path)),
+                  onTap: () => Navigator.of(this.context).push(MaterialPageRoute(builder: (context) => PreviewPdf(fichier: File(f.path),))).then((value) => _getListFiles()),
+                ),
+              )
+          else
+            for (FileSystemEntity f in fichiers)
+              Card(
+                child: ListTile(
+                  leading: const Icon(Icons.picture_as_pdf_outlined),
+                  title: Text(basename(f.path)),
+                  onTap: () => Navigator.of(this.context).push(MaterialPageRoute(builder: (context) => PreviewPdf(fichier: File(f.path),))).then((value) => _getListFiles()),
+                ),
               ),
-            ),
         ]);
   }
+
+  Future<void> _getListFiles() async {
+    setState(() => isLoading = true);
+
+
+    fichiers = await PdfApi.getAllFilesInCache();
+
+    setState(() => isLoading = false);
+  }
+
+  List<FileSystemEntity> _sort(bool mois, bool annee) {
+    List<FileSystemEntity> listFinal = [];
+    var now = DateTime.now();
+    var formatterMounth = DateFormat('MM');
+    var formatterYear = DateFormat('yyyy');
+    if (mois) {
+      String month = formatterMounth.format(now);
+      String year = formatterYear.format(now);
+
+      RegExp regex = RegExp("([$month]-[$year])");
+
+
+      for (FileSystemEntity f in fichiers) {
+        if (regex.firstMatch(f.path) != null) {
+          listFinal.add(f);
+        }
+      }
+    } else if (annee) {
+      String year = formatterYear.format(now);
+      RegExp regex = RegExp("([$year])");
+
+
+      for (FileSystemEntity f in fichiers) {
+        if (regex.firstMatch(f.path) != null) {
+          listFinal.add(f);
+        }
+      }
+    }
+
+
+    return listFinal;
+  }
+
 }

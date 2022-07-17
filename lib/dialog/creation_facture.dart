@@ -290,6 +290,7 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
     _getSpUtilsInitialisation();
 
     _controllerChampDate.text = AppPsyUtils.toDateString(_dateEmission);
+    _controllerChampNombreUH.text = "1";
   }
 
   @override
@@ -527,7 +528,7 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
                       keyboardType: TextInputType.number,
                       decoration: const InputDecoration(
                           border: OutlineInputBorder(),
-                          labelText: 'Quantité de séance',
+                          labelText: 'Quantité',
                           icon: Icon(Icons.onetwothree_outlined)
                       ),
                       // The validator receives the text that the user has entered.
