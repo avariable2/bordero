@@ -15,6 +15,9 @@ class PreviewPdf extends StatelessWidget {
     return Scaffold(
         appBar: AppBar(
           title: const Text("Gestion de votre facture"),
+          actions: [
+            IconButton(onPressed: () => null, icon: const Icon(Icons.delete_outline))
+          ],
         ),
       body: AffichageInfoPdf(fichier: fichier,)
     );

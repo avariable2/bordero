@@ -24,7 +24,7 @@ class ViewFactures extends StatefulWidget {
   State<ViewFactures> createState() => _ViewFacturesState();
 }
 
-class _ViewFacturesState extends State<ViewFactures> {
+class _ViewFacturesState extends State<ViewFactures> with WidgetsBindingObserver {
   late List<FileSystemEntity> fichiers;
   bool isLoading = false;
 
@@ -33,6 +33,14 @@ class _ViewFacturesState extends State<ViewFactures> {
     super.initState();
 
     _getListFiles();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // Methode pour chaque retour a l'page de refresh
+    if (state == AppLifecycleState.resumed) {
+      _getListFiles();
+    }
   }
 
   Future<void> _getListFiles() async {
