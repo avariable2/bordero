@@ -149,24 +149,35 @@ class _ViewFacturesState extends State<ViewFactures> with WidgetsBindingObserver
 
           const Divider(),
 
-          if (_checkSiUserTrie())
-            for (FileSystemEntity f in fichiersTrier)
-              Card(
-                child: ListTile(
-                  leading: const Icon(Icons.picture_as_pdf_outlined),
-                  title: Text(basename(f.path)),
-                  onTap: () => Navigator.of(this.context).push(MaterialPageRoute(builder: (context) => PreviewPdf(fichier: File(f.path),))).then((value) => _getListFiles()),
-                ),
-              )
-          else
-            for (FileSystemEntity f in fichiers)
-              Card(
-                child: ListTile(
-                  leading: const Icon(Icons.picture_as_pdf_outlined),
-                  title: Text(basename(f.path)),
-                  onTap: () => Navigator.of(this.context).push(MaterialPageRoute(builder: (context) => PreviewPdf(fichier: File(f.path),))).then((value) => _getListFiles()),
-                ),
-              ),
+          SizedBox(
+            height: MediaQuery.of(this.context).size.height / 2.4,
+            child: ListView(
+              scrollDirection: Axis.vertical,
+              shrinkWrap: true,
+              padding: const EdgeInsets.all(8),
+              children: [
+                if (_checkSiUserTrie())
+                  for (FileSystemEntity f in fichiersTrier)
+                    Card(
+                      child: ListTile(
+                        leading: const Icon(Icons.picture_as_pdf_outlined),
+                        title: Text(basename(f.path)),
+                        onTap: () => Navigator.of(this.context).push(MaterialPageRoute(builder: (context) => PreviewPdf(fichier: File(f.path),))).then((value) => _getListFiles()),
+                      ),
+                    )
+                else
+                  for (FileSystemEntity f in fichiers)
+                    Card(
+                      child: ListTile(
+                        leading: const Icon(Icons.picture_as_pdf_outlined),
+                        title: Text(basename(f.path)),
+                        onTap: () => Navigator.of(this.context).push(MaterialPageRoute(builder: (context) => PreviewPdf(fichier: File(f.path),))).then((value) => _getListFiles()),
+                      ),
+                    ),
+              ],
+            ),
+          ),
+
         ]);
   }
 

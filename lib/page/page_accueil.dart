@@ -210,35 +210,35 @@ class _MonAccueilState extends State<MonAccueil> with WidgetsBindingObserver {
           if(listTypeActes.isEmpty)
             const Text("🤔​ Aucune type de seance enregistré", style: TextStyle(fontSize: 18,),)
           else
-          SizedBox(
-            height: 200,
-            child: Card(
-              borderOnForeground: true,
-              child: ListView(
-                scrollDirection: Axis.vertical,
-                shrinkWrap: true,
-                addAutomaticKeepAlives: false,
-                children: [
-                  for(TypeActe typeActe in listTypeActes)
-                    ListTile(
-                      title: Text(typeActe.nom),
-                      leading: const Icon(Icons.account_circle_sharp),
-                      onTap: () {
+            SizedBox(
+              height: 200,
+              child: Card(
+                borderOnForeground: true,
+                child: ListView(
+                  scrollDirection: Axis.vertical,
+                  shrinkWrap: true,
+                  addAutomaticKeepAlives: false,
+                  children: [
+                    for(TypeActe typeActe in listTypeActes)
+                      ListTile(
+                        title: Text(typeActe.nom),
+                        leading: const Icon(Icons.account_circle_sharp),
+                        onTap: () {
 
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute<void>(
-                            builder: (BuildContext context) => FullScreenDialogModifierTypeActe(typeActe: typeActe,),
-                            fullscreenDialog: true,
-                          ),
-                        ).then((value) => refreshLists());
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute<void>(
+                              builder: (BuildContext context) => FullScreenDialogModifierTypeActe(typeActe: typeActe,),
+                              fullscreenDialog: true,
+                            ),
+                          ).then((value) => refreshLists());
 
-                      },
-                    ),
-                ],
+                        },
+                      ),
+                  ],
+                ),
               ),
             ),
-          ),
 
           ElevatedButton.icon(
             onPressed: () {

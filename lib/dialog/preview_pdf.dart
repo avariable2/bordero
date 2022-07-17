@@ -85,6 +85,11 @@ class PreviewPdf extends StatelessWidget {
 
   void _supprimerFacture(BuildContext context) {
     PdfApi.deleteFile(fichier);
+    // Close dialog
+    Navigator.pop(context);
+    // Close menu view
+    Navigator.pop(context);
+    // Close actual view
     Navigator.pop(context);
   }
 
