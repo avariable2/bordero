@@ -99,7 +99,7 @@ class _ViewFacturesState extends State<ViewFactures> with WidgetsBindingObserver
                 decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: 'Recherche facture',
-                    helperText: 'Essayer le nom du client ou bien sont prénoam'
+                    helperText: 'Essayer le nom du client ou bien son prénom'
                 ),
                 onChanged: (String? entree) => setState(() {
                   fichiersTrier = _sortParRecherche(entree) ?? [];

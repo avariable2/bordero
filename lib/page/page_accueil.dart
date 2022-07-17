@@ -24,8 +24,10 @@ class MonAccueil extends StatefulWidget {
 }
 
 class _MonAccueilState extends State<MonAccueil> with WidgetsBindingObserver {
+  final _controllerChampRecherche = TextEditingController();
   late List<Client> listClients;
   late List<TypeActe> listTypeActes;
+  List<Client> listClientsTrier = [];
   bool isLoading = false;
 
   @override
@@ -77,74 +79,125 @@ class _MonAccueilState extends State<MonAccueil> with WidgetsBindingObserver {
     );
     }
 
-    Widget buildAccueil() {
-      return ListView(
-        physics: const BouncingScrollPhysics(),
-        padding: const EdgeInsets.only(
-          left: 20,
-          top: 70,
-          right: 20,
-        ),
-        children: [
-          Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: const [
-              Text(
-                "Mon espace de gestion",
-                style: TextStyle(
-                  fontSize: 35,
-                  fontWeight: FontWeight.bold,
-                ),
+  Widget buildAccueil() {
+    return ListView(
+      physics: const BouncingScrollPhysics(),
+      padding: const EdgeInsets.only(
+        left: 20,
+        top: 70,
+        right: 20,
+      ),
+      children: [
+        Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: const [
+            Text(
+              "Mon espace de gestion",
+              style: TextStyle(
+                fontSize: 35,
+                fontWeight: FontWeight.bold,
               ),
-            ],
-          ),
-
-
-          const SizedBox(
-            height: 25,
-          ),
-
-
-          const Text(
-            "Clients",
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              inherit: true,
-              letterSpacing: 0.4,
             ),
+          ],
+        ),
+
+
+        const SizedBox(
+          height: 25,
+        ),
+
+
+        const Text(
+          "Clients",
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            inherit: true,
+            letterSpacing: 0.4,
           ),
+        ),
 
 
-          const SizedBox(
-            height: 15,
-          ),
+        const SizedBox(
+          height: 15,
+        ),
 
-          Row(
-            children: const [
-              Expanded(
-                child: TextField(
-                  obscureText: true,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'Nom patient',
-                  ),
+        Row(
+          children: [
+            Expanded(
+              child: TextField(
+                controller: _controllerChampRecherche,
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: 'Recherche client',
+                  helperText: 'Essayer le nom du client ou bien son prénom',
                 ),
+                onChanged: (String? entree) => setState(() {
+                  listClientsTrier = _sortParRecherche(entree) ?? [];
+
+                }),
               ),
-            ],
-          ),
+            ),
+          ],
+        ),
 
 
-          const SizedBox(
-            height: 15,
-          ),
+        const SizedBox(
+          height: 15,
+        ),
 
-          if(listClients.isEmpty)
+        if(listClients.isEmpty) ...[
             const Text("🤔​ Aucun clients ", style: TextStyle(fontSize: 18,),)
-          else
+        ] else ...[
+          if(_checkSiUserTrie()) ...[
+            buildListClientTrier(),
+          ] else ...[
+            buildListClient(),
+          ]
+        ],
+
+
+        ElevatedButton.icon(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute<void>(
+                builder: (BuildContext context) => const FullScreenDialogAjouterClient(),
+                fullscreenDialog: true,
+              ),
+            ).then((value) => refreshLists());
+          },
+          icon: const Icon(Icons.add),
+          label: const Text("Ajouter"),
+        ),
+
+
+        const SizedBox(
+          height: 25,
+        ),
+
+
+        const Text(
+          "Type d'actes",
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            inherit: true,
+            letterSpacing: 0.4,
+          ),
+        ),
+
+        const SizedBox(
+          height: 15,
+        ),
+
+
+        if(listTypeActes.isEmpty)
+          const Text("🤔​ Aucune type de seance enregistré", style: TextStyle(fontSize: 18,),)
+        else
           SizedBox(
-            height: 200,
+            height: 150,
             child: Card(
               borderOnForeground: true,
               child: ListView(
@@ -152,18 +205,20 @@ class _MonAccueilState extends State<MonAccueil> with WidgetsBindingObserver {
                 shrinkWrap: true,
                 addAutomaticKeepAlives: false,
                 children: [
-                  for(Client client in listClients)
+                  for(TypeActe typeActe in listTypeActes)
                     ListTile(
-                      title: Text("${client.prenom} ${client.nom} / ${client.adresse}"),
+                      title: Text(typeActe.nom),
                       leading: const Icon(Icons.account_circle_sharp),
                       onTap: () {
+
                         Navigator.push(
                           context,
                           MaterialPageRoute<void>(
-                            builder: (BuildContext context) => FullScreenDialogModifierClient(client: client,),
+                            builder: (BuildContext context) => FullScreenDialogModifierTypeActe(typeActe: typeActe,),
                             fullscreenDialog: true,
                           ),
                         ).then((value) => refreshLists());
+
                       },
                     ),
                 ],
@@ -171,104 +226,118 @@ class _MonAccueilState extends State<MonAccueil> with WidgetsBindingObserver {
             ),
           ),
 
-
-          ElevatedButton.icon(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute<void>(
-                  builder: (BuildContext context) => const FullScreenDialogAjouterClient(),
-                  fullscreenDialog: true,
-                ),
-              ).then((value) => refreshLists());
-            },
-            icon: const Icon(Icons.add),
-            label: const Text("Ajouter"),
-          ),
-
-
-          const SizedBox(
-            height: 25,
-          ),
-
-
-          const Text(
-            "Type d'actes",
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              inherit: true,
-              letterSpacing: 0.4,
-            ),
-          ),
-
-          const SizedBox(
-            height: 15,
-          ),
-
-
-          if(listTypeActes.isEmpty)
-            const Text("🤔​ Aucune type de seance enregistré", style: TextStyle(fontSize: 18,),)
-          else
-            SizedBox(
-              height: 200,
-              child: Card(
-                borderOnForeground: true,
-                child: ListView(
-                  scrollDirection: Axis.vertical,
-                  shrinkWrap: true,
-                  addAutomaticKeepAlives: false,
-                  children: [
-                    for(TypeActe typeActe in listTypeActes)
-                      ListTile(
-                        title: Text(typeActe.nom),
-                        leading: const Icon(Icons.account_circle_sharp),
-                        onTap: () {
-
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute<void>(
-                              builder: (BuildContext context) => FullScreenDialogModifierTypeActe(typeActe: typeActe,),
-                              fullscreenDialog: true,
-                            ),
-                          ).then((value) => refreshLists());
-
-                        },
-                      ),
-                  ],
-                ),
+        ElevatedButton.icon(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute<void>(
+                builder: (BuildContext context) => const FullScreenDialogAjouterTypeActe(),
+                fullscreenDialog: true,
               ),
-            ),
-
-          ElevatedButton.icon(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute<void>(
-                  builder: (BuildContext context) => const FullScreenDialogAjouterTypeActe(),
-                  fullscreenDialog: true,
-                ),
-              ).then((value) => refreshLists());
-            },
-            icon: const Icon(Icons.add),
-            label: const Text("Ajouter"),
-          ),
+            ).then((value) => refreshLists());
+          },
+          icon: const Icon(Icons.add),
+          label: const Text("Ajouter"),
+        ),
 
 
-          const SizedBox(
-            height: 15,
-          ),
+        const SizedBox(
+          height: 15,
+        ),
 
 
-          const SizedBox(
-              height: 200,
-              child: Card(
-                borderOnForeground: true,
-                child: Text("Actuellement la premiere version ! Du chemin nous attends."),
-              )
-          )
+        const SizedBox(
+            height: 200,
+            child: Card(
+              borderOnForeground: true,
+              child: Text("Actuellement la premiere version ! Du chemin nous attends."),
+            )
+        )
 
-        ],
-      );
+      ],
+    );
+  }
+
+  Widget buildListClient() {
+    return SizedBox(
+      height: 150,
+      child: Card(
+        borderOnForeground: true,
+        child: ListView(
+          scrollDirection: Axis.vertical,
+          shrinkWrap: true,
+          addAutomaticKeepAlives: false,
+          children: [
+            for(Client client in listClients)
+              ListTile(
+                title: Text("${client.prenom} ${client.nom} / ${client.adresse}"),
+                leading: const Icon(Icons.account_circle_sharp),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute<void>(
+                      builder: (BuildContext context) => FullScreenDialogModifierClient(client: client,),
+                      fullscreenDialog: true,
+                    ),
+                  ).then((value) => refreshLists());
+                },
+              ),
+          ],),
+      ),
+    );
+  }
+
+  Widget buildListClientTrier() {
+    return SizedBox(
+      height: 150,
+      child: Card(
+        borderOnForeground: true,
+        child: ListView(
+          scrollDirection: Axis.vertical,
+          shrinkWrap: true,
+          addAutomaticKeepAlives: false,
+          children: [
+            for(Client client in listClientsTrier)
+              ListTile(
+                title: Text("${client.prenom} ${client.nom} / ${client.adresse}"),
+                leading: const Icon(Icons.account_circle_sharp),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute<void>(
+                      builder: (BuildContext context) => FullScreenDialogModifierClient(client: client,),
+                      fullscreenDialog: true,
+                    ),
+                  ).then((value) => refreshLists());
+                },
+              ),
+          ],),
+      ),
+    );
+  }
+
+  List<Client>? _sortParRecherche(String? entree) {
+    if(entree == null) {
+      return null;
     }
+    _resetListClient();
+    List<Client> listFinal = [];
+    RegExp regex = RegExp(entree.toLowerCase());
+
+    for (Client client in listClientsTrier) {
+      if (regex.firstMatch(client.nom.toLowerCase()) != null || regex.firstMatch(client.prenom.toLowerCase()) != null) {
+        listFinal.add(client);
+      }
+    }
+
+    return listFinal;
+  }
+
+  void _resetListClient() {
+    listClientsTrier.clear();
+  }
+
+  bool _checkSiUserTrie() {
+    return _controllerChampRecherche.text.isNotEmpty;
+  }
 }
