@@ -1,6 +1,7 @@
 import 'package:app_psy/page/page_accueil.dart';
 import 'package:app_psy/color_schemes.g.dart';
 import 'package:app_psy/page/page_factures.dart';
+import 'package:app_psy/page/page_parametres.dart';
 import 'package:app_psy/utils/pdf_api.dart';
 import 'package:flutter/material.dart';
 
@@ -76,11 +77,7 @@ class _NavigationExampleState extends State<NavigationExample> {
           alignment: Alignment.center,
           child: const Text('Page 3'),
         ),
-        Container(
-          color: Colors.yellow,
-          alignment: Alignment.center,
-          child: const Text('Page 4'),
-        ),
+        const PageParametres(),
       ][currentPageIndex],
     );
   }
