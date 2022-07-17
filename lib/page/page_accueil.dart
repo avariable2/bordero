@@ -191,7 +191,7 @@ class _MonAccueilState extends State<MonAccueil> with WidgetsBindingObserver {
                   for(TypeActe typeActe in listTypeActes)
                     ListTile(
                       title: Text(typeActe.nom),
-                      leading: const Icon(Icons.account_circle_sharp),
+                      leading: const Icon(Icons.work_outline),
                       onTap: () {
 
                         Navigator.push(
