@@ -221,7 +221,7 @@ class DialogModifierClientState extends State<DialogModifierClient> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: const [
                 Expanded(flex: 1, child: Icon(Icons.info_outline)),
-                Expanded(flex: 4, child: Text('''Toutes les informations doivent être remplies pour modifier un client.'''), ),
+                Expanded(flex: 4, child: Text('''Les champs marqués avec (*) sont oblicatoire.'''), ),
               ],
             ),
 
@@ -241,10 +241,9 @@ class DialogModifierClientState extends State<DialogModifierClient> {
                   keyboardType: TextInputType.name,
                   decoration: const InputDecoration(
                       border: OutlineInputBorder(),
-                      labelText: 'Nom',
+                      labelText: 'Nom *',
                       icon: Icon(Icons.account_box_outlined)
                   ),
-                  // The validator receives the text that the user has entered.
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Entrer un nom';
@@ -266,9 +265,8 @@ class DialogModifierClientState extends State<DialogModifierClient> {
                     keyboardType: TextInputType.name,
                     decoration: const InputDecoration(
                         border: OutlineInputBorder(),
-                        labelText: 'Prénom',
+                        labelText: 'Prénom *',
                         icon: Icon(Icons.account_box_outlined)),
-                    // The validator receives the text that the user has entered.
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Entrer un prénom';
@@ -294,13 +292,12 @@ class DialogModifierClientState extends State<DialogModifierClient> {
                     border: OutlineInputBorder(),
                     labelText: 'Adresse',
                     icon: Icon(Icons.person_pin_circle_outlined)),
-                // The validator receives the text that the user has entered.
-                validator: (value) {
+                /*validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Entrer une adresse';
                   }
                   return null;
-                },
+                },*/
               ),
             ),
 
@@ -318,8 +315,7 @@ class DialogModifierClientState extends State<DialogModifierClient> {
                       border: OutlineInputBorder(),
                       labelText: 'Code postal',
                       icon: Icon(Icons.domain_outlined)),
-                  // The validator receives the text that the user has entered.
-                  validator: (value) {
+                  /*validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Entrer un code postal';
                     }
@@ -327,7 +323,7 @@ class DialogModifierClientState extends State<DialogModifierClient> {
                       return 'Entrer un code postal valide';
                     }
                     return null;
-                  },
+                  },*/
                 ),
               ),
               ),
@@ -347,13 +343,12 @@ class DialogModifierClientState extends State<DialogModifierClient> {
                         border: OutlineInputBorder(),
                         labelText: 'Ville',
                         icon: Icon(Icons.location_city_outlined)),
-                    // The validator receives the text that the user has entered.
-                    validator: (value) {
+                    /*validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Entrer une ville';
                       }
                       return null;
-                    },
+                    },*/
                   ),
                 ),
               ),
@@ -372,13 +367,12 @@ class DialogModifierClientState extends State<DialogModifierClient> {
                     border: OutlineInputBorder(),
                     labelText: 'Numéro de téléphone',
                     icon: Icon(Icons.phone_outlined)),
-                // The validator receives the text that the user has entered.
-                validator: (value) {
+                /*validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Entrer un numéro de téléphone';
                   }
                   return null;
-                },
+                },*/
               ),
             ),
 
@@ -389,9 +383,8 @@ class DialogModifierClientState extends State<DialogModifierClient> {
                 keyboardType: TextInputType.emailAddress,
                 decoration: const InputDecoration(
                     border: OutlineInputBorder(),
-                    labelText: 'Email',
+                    labelText: 'Email *',
                     icon: Icon(Icons.email_outlined)),
-                // The validator receives the text that the user has entered.
                 validator: (value) {
                   if (value == null || value.isEmpty ) {
                     return 'Entrer une email';

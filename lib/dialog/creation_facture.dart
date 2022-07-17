@@ -269,7 +269,7 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
     Facture facture = Facture(
         id: _controllerNumeroFacture.text,
         dateCreationFacture: DateTime.now(),
-        listClients: _listClients,
+        listClients: _clientSelectionner,
         listSeances: _listSeances,
         dateLimitePayement: _dateLimitePayement,
         signaturePNG: await _controllerSignature.toPngBytes()
@@ -394,7 +394,7 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
                       children: [
                         for(var i = 0; i < _listClients.length; i++)
                           ListTile(
-                            title: Text("${_listClients[i].prenom} ${_listClients[i].nom} / ${_listClients[i].adresse}"),
+                            title: Text("${_listClients[i].prenom} ${_listClients[i].nom} / ${_listClients[i].email}"),
                             leading: const Icon(Icons.account_circle_sharp),
                             selected: _selected[i],
                             onTap: () => setStateIfMounted(() => {
@@ -415,7 +415,7 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
           const Divider(height: 30,),
 
           for(Client client in _clientSelectionner)
-            Text(" - ${client.nom} ${client.prenom} / ${client.adresse}"),
+            Text(" - ${client.nom} ${client.prenom} / ${client.email}"),
 
           const SizedBox(
             height: 20,
