@@ -3,7 +3,7 @@ class Seance {
   final String nom;
   final DateTime date;
   final double prix;
-  final String uniteTemps;
+  final String? uniteTemps;
   final int quantite;
 
   const Seance({

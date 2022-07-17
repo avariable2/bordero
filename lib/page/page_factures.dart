@@ -102,7 +102,7 @@ class _ViewFacturesState extends State<ViewFactures> with WidgetsBindingObserver
                   decoration: InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: 'Recherche facture',
-                    helperText: 'Essayer par le nom du client ou bien sont prénom'
+                    helperText: 'Essayer le nom du client ou bien sont prénom'
                   ),
                 ),
               ),

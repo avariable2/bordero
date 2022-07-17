@@ -64,7 +64,6 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
   bool _aUneDateLimite = false;
   bool _sauvegarderIdFacture = SpUtil.getBool(AppPsyUtils.CACHE_SAUVEGARDER_NUMERO_FACTURE) ?? false;
   late String _dropdownSelectionnerTypeActe;
-  String _dropdownSelectionnerUnite = "Heure";
 
   void _afficherAvertissementAvantSuppression(Seance seance) {
     var richText = RichText(
@@ -116,8 +115,8 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
           nom: _dropdownSelectionnerTypeActe,
           date: _dateEmission,
           prix: AppPsyUtils.tryParseDouble(_controllerChampPrix.text),
-          uniteTemps: _dropdownSelectionnerUnite.toString(),
-          quantite: int.parse(_controllerChampNombreUH.text)
+          quantite: int.parse(_controllerChampNombreUH.text),
+          uniteTemps: null,
       );
       _listSeances.add(s);
   }
@@ -447,7 +446,7 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
                         isExpanded: true,
                         decoration: const InputDecoration(
                             border: OutlineInputBorder(),
-                            labelText: 'Type de séance',
+                            labelText: 'Type de préstation',
                             icon: Icon(Icons.assignment_outlined)
                         ),
                         value: _dropdownSelectionnerTypeActe,
@@ -477,18 +476,20 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
                   Padding(padding: const EdgeInsets.only( left: 8, bottom: 10),
                     child:
                     TextFormField(
-                      controller: _controllerChampDate,
-                      keyboardType: TextInputType.datetime,
-                      onTap: () {
-                        FocusScope.of(context).requestFocus(FocusNode());
-
-                        _selectDateSeance();
-                      },
+                      controller: _controllerChampPrix,
+                      keyboardType: TextInputType.number,
                       decoration: const InputDecoration(
                           border: OutlineInputBorder(),
-                          labelText: "Date d'emission",
-                          icon: Icon(Icons.date_range_outlined)
+                          labelText: 'Prix HT',
+                          icon: Icon(Icons.euro_outlined)
                       ),
+                      // The validator receives the text that the user has entered.
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Entrer un prix HT';
+                        }
+                        return null;
+                      },
                     ),
                   ),
                 ),
@@ -497,39 +498,37 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
 
 
             Row(children: [
-              SizedBox(
-                width: 120,
+              Expanded(
+                flex: 3,
                 child:
                 Padding(padding: const EdgeInsets.only( bottom: 10),
                   child: TextFormField(
-                    controller: _controllerChampPrix,
-                    keyboardType: TextInputType.number,
+                    controller: _controllerChampDate,
+                    keyboardType: TextInputType.datetime,
+                    onTap: () {
+                      FocusScope.of(context).requestFocus(FocusNode());
+
+                      _selectDateSeance();
+                    },
                     decoration: const InputDecoration(
                         border: OutlineInputBorder(),
-                        labelText: 'Prix HT',
-                        icon: Icon(Icons.euro_outlined)
+                        labelText: "Date d'emission",
+                        icon: Icon(Icons.date_range_outlined)
                     ),
-                    // The validator receives the text that the user has entered.
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Entrer un prix HT';
-                      }
-                      return null;
-                    },
                   ),
                 ),
               ),
 
-              SizedBox(
-                  width: 120,
+              Expanded(
+                  flex: 3,
                   child: Padding(padding: const EdgeInsets.only( left: 10, bottom: 10),
                     child: TextFormField(
                       controller: _controllerChampNombreUH,
                       keyboardType: TextInputType.number,
                       decoration: const InputDecoration(
                           border: OutlineInputBorder(),
-                          labelText: 'Durée',
-                          icon: Icon(Icons.timelapse_outlined)
+                          labelText: 'Quantité de séance',
+                          icon: Icon(Icons.onetwothree_outlined)
                       ),
                       // The validator receives the text that the user has entered.
                       validator: (value) {
@@ -540,33 +539,6 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
                       },
                     ),
                   ),
-              ),
-
-
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.only(bottom: 10, left: 6),
-                  child:
-                  DropdownButtonFormField(
-                    isExpanded: true,
-                    decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: 'Unité de temps',
-                    ),
-                    value: _dropdownSelectionnerUnite,
-                    items: ["Heure", "Minute"].map((value) =>
-                        DropdownMenuItem(
-                          value: value,
-                          child:  Text(value),
-                        )
-                    ).toList(),
-                    onChanged: (String? value) {
-                      setState(() {
-                        _dropdownSelectionnerUnite = value!;
-                      });
-                    },
-                  ),
-                ),
               ),
             ],),
 
@@ -593,7 +565,7 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
                       Card(
                         child:
                           ListTile(
-                            title: Text("${seance.nom} (${seance.date.day}/${seance.date.month}/${seance.date.year}) - ${seance.quantite} ${seance.uniteTemps}"),
+                            title: Text("${seance.quantite} ${seance.nom} le (${seance.date.day}/${seance.date.month}/${seance.date.year})"),
                             leading: const Icon(Icons.work_history_outlined),
                             onTap: () {
                               _afficherAvertissementAvantSuppression(seance);
