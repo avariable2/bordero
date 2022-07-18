@@ -287,7 +287,7 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
     super.initState();
 
     _getListClients();
-    _getSpUtilsInitialisation();
+    //_getSpUtilsInitialisation();
 
     _controllerChampDate.text = AppPsyUtils.toDateString(_dateEmission);
     _controllerChampNombreUH.text = "1";
