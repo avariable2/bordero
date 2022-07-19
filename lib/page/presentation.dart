@@ -1,3 +1,4 @@
+import 'package:app_psy/page/connexion.dart';
 import 'package:flutter/material.dart';
 import 'package:onboarding/onboarding.dart';
 
@@ -11,16 +12,11 @@ class PresentationPage extends StatefulWidget {
 class _PresentationPageState extends State<PresentationPage> {
   late Material materialButton;
   late int index;
+
   final onboardingPagesList = [
     PageModel(
       widget: DecoratedBox(
-        decoration: BoxDecoration(
-          color: background,
-          border: Border.all(
-            width: 0.0,
-            color: background,
-          ),
-        ),
+        decoration: const BoxDecoration(),
         child: SingleChildScrollView(
           controller: ScrollController(),
           child: Column(
@@ -63,13 +59,7 @@ class _PresentationPageState extends State<PresentationPage> {
     ),
     PageModel(
       widget: DecoratedBox(
-        decoration: BoxDecoration(
-          color: background,
-          border: Border.all(
-            width: 0.0,
-            color: background,
-          ),
-        ),
+        decoration: const BoxDecoration(),
         child: SingleChildScrollView(
           controller: ScrollController(),
           child: Column(
@@ -112,13 +102,7 @@ class _PresentationPageState extends State<PresentationPage> {
     ),
     PageModel(
       widget: DecoratedBox(
-        decoration: BoxDecoration(
-          color: background,
-          border: Border.all(
-            width: 0.0,
-            color: background,
-          ),
-        ),
+        decoration: const BoxDecoration(),
         child: SingleChildScrollView(
           controller: ScrollController(),
           child: Column(
@@ -197,7 +181,15 @@ class _PresentationPageState extends State<PresentationPage> {
       color: Colors.green,
       child: InkWell(
         borderRadius: defaultProceedButtonBorderRadius,
-        onTap: () {},
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute<void>(
+              builder: (BuildContext context) => const PageConnexion(),
+              fullscreenDialog: true,
+            ),
+          );
+        },
         child: const Padding(
           padding: defaultProceedButtonPadding,
           child: Text(
