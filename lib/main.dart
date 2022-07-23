@@ -3,13 +3,18 @@ import 'package:app_psy/color_schemes.g.dart';
 import 'package:app_psy/page/page_factures.dart';
 import 'package:app_psy/page/page_parametres.dart';
 import 'package:app_psy/page/presentation.dart';
-import 'package:app_psy/utils/pdf_api.dart';
+import 'package:app_psy/utils/firebase_options.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:sp_util/sp_util.dart';
 
-//TODO("Si il n'est pas possible de garder les factures dans le cache alors les supprimer" = PdfApi.deleteAllFilesInCache());
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform
+  );
   await SpUtil.getInstance();
   runApp(const MyApp());
 
@@ -35,28 +40,25 @@ class AppPsy extends StatefulWidget {
 class _NavigationExampleState extends State<AppPsy> {
   int currentPageIndex = 0;
 
+
   @override
   Widget build(BuildContext context) {
-    Widget result;
-    if (SpUtil.haveKey(MyApp.keyUserEstCo) != null && SpUtil.getBool(MyApp.keyUserEstCo, defValue: false)!) {
-      result = buildApp();
-    } else {
-      result = buildOnBoadring();
-    }
-
-    //result = buildApp();
-
     return MaterialApp(
         title: "Bordero",
         theme: ThemeData(
           colorScheme: darkColorScheme,
         ),
-        home: result,
+        home: StreamBuilder<User?>(
+          stream: FirebaseAuth.instance.authStateChanges(),
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              return buildApp();
+            } else {
+              return const PresentationPage();
+            }
+          },
+        ),
     );
-  }
-
-  Widget buildOnBoadring() {
-    return const PresentationPage();
   }
 
   Widget buildApp() {

@@ -49,6 +49,13 @@ dependencies:
   share_plus: 4.0.10
   onboarding: ^3.1.0
   firebase_auth: ^3.4.2
+  firebase_core: ^1.20.0
+  #equatable: ^2.0.3
+  #flutter_bloc: ^8.0.1
+  #bloc: ^8.0.3
+  #get_it: ^7.2.0
+  # DIO
+  # secure_storage
 
 dev_dependencies:
   flutter_test:

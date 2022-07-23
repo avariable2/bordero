@@ -1,25 +1,18 @@
 import 'package:app_psy/utils/animation_delais.dart';
 import 'package:email_validator/email_validator.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-class PageConnexion extends StatelessWidget {
+import '../utils/fire_auth.dart';
+
+
+class PageConnexion extends StatefulWidget {
   const PageConnexion({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    return const FormConnexion();
-  }
+  State<PageConnexion> createState() => _PageConnexionState();
 }
 
-class FormConnexion extends StatefulWidget {
-  const FormConnexion({Key? key}) : super(key: key);
-
-  @override
-  State<FormConnexion> createState() => _FormConnexionState();
-}
-
-class _FormConnexionState extends State<FormConnexion> {
+class _PageConnexionState extends State<PageConnexion> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final GlobalKey<FormState> _formInscriptionKey = GlobalKey<FormState>();
   final TextEditingController _emailConnexionController =
@@ -38,9 +31,9 @@ class _FormConnexionState extends State<FormConnexion> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Bordero")),
-      body: veuxSeCo ? buildPageConnexion() : buildPageInscription(),
-    );
+        appBar: AppBar(title: const Text("Bordero")),
+        body: veuxSeCo ? buildPageConnexion() : buildPageInscription(),
+        );
   }
 
   Widget buildPageConnexion() {
@@ -102,7 +95,10 @@ class _FormConnexionState extends State<FormConnexion> {
                     child: const Text('Se connecter'),
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
-                        _connexion();
+                        FireAuth.connexionUtilisantEmailMotDePasse(
+                            email: _emailConnexionController.text.trim(),
+                            password: _motDePasseConnexionController.text.trim(),
+                            context: context);
                       }
                     },
                   )),
@@ -225,7 +221,14 @@ class _FormConnexionState extends State<FormConnexion> {
                       child: const Text("S'inscrire"),
                       onPressed: () => {
                         if (_formInscriptionKey.currentState!.validate())
-                          {setState(() => _inscription())}
+                          {
+                            setState(() =>
+                                FireAuth.inscriptionUtilisantEmailMotDePasse(
+                                    context: context,
+                                    email: _emailInscrireController.text.trim(),
+                                    password:
+                                        _motDePasseInscrireController.text.trim()))
+                          }
                       },
                     )),
               ),
@@ -247,30 +250,20 @@ class _FormConnexionState extends State<FormConnexion> {
               ),
             ],
           ),
-        ));
+        )
+    );
   }
 
-  void _inscription() async {
-    try {
-      final credential =
-          await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: _emailInscrireController.text,
-        password: _motDePasseInscrireController.text,
-      );
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'weak-password') {
-      } else if (e.code == 'email-already-in-use') {}
-    } catch (e) {}
+  @override
+  void dispose() {
+    _emailConnexionController.dispose();
+    _emailInscrireController.dispose();
+    _motDePasseConnexionController.dispose();
+    _motDePasseInscrireController.dispose();
+    _motDePasseVerifInscrireController.dispose();
+
+    super.dispose();
   }
 
-  Future<void> _connexion() async {
-    try {
-      final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
-          email: _emailConnexionController.text,
-          password: _motDePasseConnexionController.text);
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'user-not-found') {
-      } else if (e.code == 'wrong-password') {}
-    }
-  }
+
 }

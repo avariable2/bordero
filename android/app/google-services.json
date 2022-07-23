@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "910507710550",
+    "project_id": "bordero-2d01a",
+    "storage_bucket": "bordero-2d01a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:910507710550:android:eef79079e130f5f09d03f7",
+        "android_client_info": {
+          "package_name": "com.example.app_psy"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "910507710550-gtl5b2agfget9ajueju54uo8nn3f5o1c.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC8LchrwLUTbRq3nmmIS99pvJvR6N0WDQE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "910507710550-gtl5b2agfget9ajueju54uo8nn3f5o1c.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

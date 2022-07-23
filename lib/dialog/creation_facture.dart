@@ -65,6 +65,11 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
   bool _sauvegarderIdFacture = SpUtil.getBool(AppPsyUtils.CACHE_SAUVEGARDER_NUMERO_FACTURE) ?? false;
   late String _dropdownSelectionnerTypeActe;
 
+  /// Il affiche une boîte de dialogue avec un message d'avertissement et deux
+  /// boutons, un pour annuler l'action et un pour la confirmer
+  ///
+  /// Args:
+  ///   seance (Seance): l'objet qui sera supprimé
   void _afficherAvertissementAvantSuppression(Seance seance) {
     var richText = RichText(
       text: const TextSpan(
@@ -80,7 +85,6 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
           ]
       ),
     );
-
 
     showDialog(
       context: context,
