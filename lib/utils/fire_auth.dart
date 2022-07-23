@@ -2,7 +2,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class FireAuth {
-
   static Future<User?> inscriptionUtilisantEmailMotDePasse({
     required BuildContext context,
     required String email,
@@ -19,7 +18,9 @@ class FireAuth {
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Mots de passe trop faible ajouter des caractères.")),
+          const SnackBar(
+              content:
+                  Text("Mots de passe trop faible ajouter des caractères.")),
         );
       } else if (e.code == 'email-already-in-use') {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -63,4 +64,28 @@ class FireAuth {
     return user;
   }
 
+  static Future reinitialiserMotDePasse({
+    required BuildContext context,
+    required String email
+  }) async {
+
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const Center(
+              child: CircularProgressIndicator(),
+            ));
+    try {
+      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Un email de reinitialisation à été envoyer. Verifier vos spam.")),
+      );
+      Navigator.of(context).popUntil((route) => route.isFirst);
+    } on FirebaseAuthException catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Désolé, une erreur est survenu.")),
+      );
+    }
+  }
 }

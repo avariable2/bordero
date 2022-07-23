@@ -1,3 +1,4 @@
+import 'package:app_psy/utils/fire_auth.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 
@@ -31,14 +32,14 @@ class _MotDePasseOublierState extends State<MotDePasseOublier> {
           scrollDirection: Axis.vertical,
           shrinkWrap: true,
           children: <Widget>[
-            Center(child: Container(
-                alignment: Alignment.center,
-                padding: const EdgeInsets.all(10),
-                child: const Text(
-                  "Recevoir un email pour réinitialiser votre mot de passe.",
-                  style: TextStyle(fontWeight: FontWeight.w500, fontSize: 30),
-                )),),
-
+            Container(
+              alignment: Alignment.center,
+              padding: const EdgeInsets.all(10),
+              child: const Text(
+                "Recevoir un email pour réinitialiser votre mot de passe.",
+                style: TextStyle(fontWeight: FontWeight.w500, fontSize: 30),
+              ),
+            ),
             Container(
                 alignment: Alignment.center,
                 padding: const EdgeInsets.all(10),
@@ -74,7 +75,7 @@ class _MotDePasseOublierState extends State<MotDePasseOublier> {
                     child: const Text('Réinitialiser mot de passe'),
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
-                        
+                        FireAuth.reinitialiserMotDePasse(context: context, email: _emailController.text.trim());
                       }
                     })),
           ],
@@ -82,4 +83,6 @@ class _MotDePasseOublierState extends State<MotDePasseOublier> {
       )),
     );
   }
+
+
 }
