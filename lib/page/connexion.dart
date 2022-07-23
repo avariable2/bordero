@@ -1,9 +1,9 @@
 import 'package:app_psy/utils/animation_delais.dart';
 import 'package:email_validator/email_validator.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../utils/fire_auth.dart';
-
 
 class PageConnexion extends StatefulWidget {
   const PageConnexion({Key? key}) : super(key: key);
@@ -31,9 +31,9 @@ class _PageConnexionState extends State<PageConnexion> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: const Text("Bordero")),
-        body: veuxSeCo ? buildPageConnexion() : buildPageInscription(),
-        );
+      appBar: AppBar(title: const Text("Bordero")),
+      body: veuxSeCo ? buildPageConnexion() : buildPageInscription(),
+    );
   }
 
   Widget buildPageConnexion() {
@@ -66,7 +66,15 @@ class _PageConnexionState extends State<PageConnexion> {
                     labelText: 'Email',
                   ),
                   controller: _emailConnexionController,
-                  validator: (value) {},
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "Saisir un email";
+                    }
+                    if (!EmailValidator.validate(value)) {
+                      return "Saisir un email valide";
+                    }
+                    return null;
+                  },
                 ),
               ),
               Container(
@@ -78,6 +86,12 @@ class _PageConnexionState extends State<PageConnexion> {
                     border: OutlineInputBorder(),
                     labelText: 'Mot de passe',
                   ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "Saisir un mot de passe";
+                    }
+                    return null;
+                  },
                 ),
               ),
               TextButton(
@@ -96,9 +110,15 @@ class _PageConnexionState extends State<PageConnexion> {
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
                         FireAuth.connexionUtilisantEmailMotDePasse(
-                            email: _emailConnexionController.text.trim(),
-                            password: _motDePasseConnexionController.text.trim(),
-                            context: context);
+                                email: _emailConnexionController.text.trim(),
+                                password:
+                                    _motDePasseConnexionController.text.trim(),
+                                context: context)
+                            .then((User? user) {
+                          if (user != null) {
+                            Navigator.of(context).pop();
+                          }
+                        });
                       }
                     },
                   )),
@@ -222,12 +242,16 @@ class _PageConnexionState extends State<PageConnexion> {
                       onPressed: () => {
                         if (_formInscriptionKey.currentState!.validate())
                           {
-                            setState(() =>
-                                FireAuth.inscriptionUtilisantEmailMotDePasse(
+                            FireAuth.inscriptionUtilisantEmailMotDePasse(
                                     context: context,
                                     email: _emailInscrireController.text.trim(),
-                                    password:
-                                        _motDePasseInscrireController.text.trim()))
+                                    password: _motDePasseInscrireController.text
+                                        .trim())
+                                .then((User? user) {
+                              if (user != null) {
+                                Navigator.of(context).pop();
+                              }
+                            })
                           }
                       },
                     )),
@@ -250,8 +274,7 @@ class _PageConnexionState extends State<PageConnexion> {
               ),
             ],
           ),
-        )
-    );
+        ));
   }
 
   @override
@@ -264,6 +287,4 @@ class _PageConnexionState extends State<PageConnexion> {
 
     super.dispose();
   }
-
-
 }
