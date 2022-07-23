@@ -4,7 +4,7 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart' as p;
 
 class AppPsyDatabase {
-  final int VERSION_DBB = 9;
+  final int VERSION_DBB = 10;
 
   static final AppPsyDatabase instance = AppPsyDatabase._init();
 
@@ -54,6 +54,17 @@ class AppPsyDatabase {
   }
 
   /// CLIENTS ///
+  
+  Future<int> nbClients() async{
+    final db = await instance.database;
+    int result = 0;
+    try {
+      result = db.rawQuery('SELECT COUNT(*) FROM $tableClient') as int;
+    } catch(e) {
+      print("ERROR requete : $e");
+    }
+    return result;
+  }
 
   Future<bool> createClient(Client client) async {
     final db = await instance.database;
@@ -136,6 +147,17 @@ class AppPsyDatabase {
   }
 
   /// TYPE D'ACTE ///
+
+  Future<int> nbTypeActe() async{
+    final db = await instance.database;
+    int result = 0;
+    try {
+      result = db.rawQuery('SELECT COUNT(*) FROM $tableTypeActe') as int;
+    } catch(e) {
+      print("ERROR requete : $e");
+    }
+    return result;
+  }
 
   Future<bool> createTypeActe(TypeActe typeActe) async {
     final db = await instance.database;

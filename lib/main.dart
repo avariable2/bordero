@@ -51,9 +51,7 @@ class _NavigationExampleState extends State<AppPsy> {
         home: StreamBuilder<User?>(
           stream: FirebaseAuth.instance.authStateChanges(),
           builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
-            } else if (snapshot.hasError) {
+            if (snapshot.hasError) {
               return const Center(child: Text("Connexion impossible à nos services ! Nous en sommes désolé."),);
             } else if (snapshot.hasData) {
               return buildApp();
