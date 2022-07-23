@@ -1,3 +1,4 @@
+import 'package:app_psy/page/page_mot_de_passe_oublier.dart';
 import 'package:app_psy/utils/animation_delais.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -66,6 +67,7 @@ class _PageConnexionState extends State<PageConnexion> {
                     labelText: 'Email',
                   ),
                   controller: _emailConnexionController,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return "Saisir un email";
@@ -86,18 +88,17 @@ class _PageConnexionState extends State<PageConnexion> {
                     border: OutlineInputBorder(),
                     labelText: 'Mot de passe',
                   ),
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
                   validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return "Saisir un mot de passe";
+                    if (value == null || value.isEmpty && value.length < 6) {
+                      return "Saisir un mot de passe de minimum 6 lettres";
                     }
                     return null;
                   },
                 ),
               ),
               TextButton(
-                onPressed: () {
-                  //forgot password screen
-                },
+                onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (context) => const MotDePasseOublier() )),
                 child: const Text(
                   'Mot de passe oublié',
                 ),
