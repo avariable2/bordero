@@ -1,6 +1,7 @@
 import 'package:app_psy/page/page_accueil.dart';
 import 'package:app_psy/color_schemes.g.dart';
 import 'package:app_psy/page/page_factures.dart';
+import 'package:app_psy/page/page_information_praticien.dart';
 import 'package:app_psy/page/page_parametres.dart';
 import 'package:app_psy/page/presentation.dart';
 import 'package:app_psy/utils/firebase_options.dart';
@@ -54,7 +55,11 @@ class _NavigationExampleState extends State<AppPsy> {
             if (snapshot.hasError) {
               return const Center(child: Text("Connexion impossible à nos services ! Nous en sommes désolé."),);
             } else if (snapshot.hasData) {
-              return buildApp();
+              if (SpUtil.haveKey(InfosPraticien.keyObjInfosPraticien) ?? false) {
+                return buildApp();
+              } else {
+                return const FullScreenDialogInformationPraticien();
+              }
             } else {
               return const PresentationPage();
             }

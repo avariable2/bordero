@@ -202,10 +202,6 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
     setState(() => _isLoading = false);
   }
 
-  Future<void> _getSpUtilsInitialisation() async {
-    await SpUtil.getInstance();
-  }
-
   void _afficherAvertissementEtConditionPourPoursuivre() {
     var title = "✋ Vous allez trop vite";
     var body = "Verifiez les informations saisies.";
