@@ -16,7 +16,9 @@ import '../db/app_psy_database.dart';
 import '../model/client.dart';
 
 class FullScreenDialogCreationFacture extends StatelessWidget {
-  const FullScreenDialogCreationFacture({Key? key,}) : super(key: key);
+  const FullScreenDialogCreationFacture({
+    Key? key,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -33,10 +35,12 @@ class FormulaireCreationFacture extends StatefulWidget {
   const FormulaireCreationFacture({Key? key}) : super(key: key);
 
   @override
-  State<FormulaireCreationFacture> createState() => _FormulaireCreationFactureState();
+  State<FormulaireCreationFacture> createState() =>
+      _FormulaireCreationFactureState();
 }
 
-class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> with WidgetsBindingObserver {
+class _FormulaireCreationFactureState extends State<FormulaireCreationFacture>
+    with WidgetsBindingObserver {
   DateTime _dateEmission = DateTime.now();
   DateTime _dateLimitePayement = DateTime.now();
 
@@ -48,10 +52,9 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
   final _controllerNumeroFacture = TextEditingController();
   final _controllerChampDateLimitePayement = TextEditingController();
   final _controllerSignature = SignatureController(
-    penStrokeWidth: 5,
-    penColor: Colors.black,
-    exportBackgroundColor: Colors.white70
-  );
+      penStrokeWidth: 5,
+      penColor: Colors.black,
+      exportBackgroundColor: Colors.white70);
 
   late List<Client> _listClients;
   late List<TypeActe> _listTypeActes;
@@ -62,7 +65,8 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
   int _indexStepper = 0;
   bool _isLoading = false;
   bool _aUneDateLimite = false;
-  bool _sauvegarderIdFacture = SpUtil.getBool(AppPsyUtils.CACHE_SAUVEGARDER_NUMERO_FACTURE) ?? false;
+  bool _sauvegarderIdFacture =
+      SpUtil.getBool(AppPsyUtils.CACHE_SAUVEGARDER_NUMERO_FACTURE) ?? false;
   late String _dropdownSelectionnerTypeActe;
 
   /// Il affiche une boîte de dialogue avec un message d'avertissement et deux
@@ -76,36 +80,39 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
           style: TextStyle(
             fontSize: 22.0,
           ),
-          children: <TextSpan> [
-            TextSpan(text: "Supprimer cette séance ?",
+          children: <TextSpan>[
+            TextSpan(
+                text: "Supprimer cette séance ?",
                 style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                )
-            ),
-          ]
-      ),
+                  fontWeight: FontWeight.bold,
+                )),
+          ]),
     );
 
     showDialog(
       context: context,
-      builder: (BuildContext context) =>
-          AlertDialog(
-            title: richText,
-            content: const Text("Vous pourrez la recréer par la suite."),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context, 'RETOUR'),
-                child: const Text("ANNULER"),
-              ),
-              TextButton(
-                onPressed: () {
-                  _supprimerSeances(seance);
-                },
-                child: const Text("SUPPRIMER", style: TextStyle(color: Colors.white,),),
-              ),
-            ],
-            elevation: 24.0,
+      builder: (BuildContext context) => AlertDialog(
+        title: richText,
+        content: const Text("Vous pourrez la recréer par la suite."),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, 'RETOUR'),
+            child: const Text("ANNULER"),
           ),
+          TextButton(
+            onPressed: () {
+              _supprimerSeances(seance);
+            },
+            child: const Text(
+              "SUPPRIMER",
+              style: TextStyle(
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ],
+        elevation: 24.0,
+      ),
     );
   }
 
@@ -115,26 +122,26 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
   }
 
   void _ajouterSeance() {
-      Seance s = Seance(
-          nom: _dropdownSelectionnerTypeActe,
-          date: _dateEmission,
-          prix: AppPsyUtils.tryParseDouble(_controllerChampPrix.text),
-          quantite: int.parse(_controllerChampNombreUH.text),
-          uniteTemps: null,
-      );
-      _listSeances.add(s);
+    Seance s = Seance(
+      nom: _dropdownSelectionnerTypeActe,
+      date: _dateEmission,
+      prix: AppPsyUtils.tryParseDouble(_controllerChampPrix.text),
+      quantite: int.parse(_controllerChampNombreUH.text),
+      uniteTemps: null,
+    );
+    _listSeances.add(s);
   }
 
   void _afficherPrixDansController() {
-    var res =  _getTypeActeDepuisNomTypeActe();
-    if ( res != null) {
+    var res = _getTypeActeDepuisNomTypeActe();
+    if (res != null) {
       _controllerChampPrix.text = res.prix.toString();
     }
   }
 
   TypeActe? _getTypeActeDepuisNomTypeActe() {
-    for(TypeActe ta in _listTypeActes) {
-      if (ta.nom == _dropdownSelectionnerTypeActe)  {
+    for (TypeActe ta in _listTypeActes) {
+      if (ta.nom == _dropdownSelectionnerTypeActe) {
         return ta;
       }
     }
@@ -153,7 +160,8 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
     if (newDate != null) {
       setStateIfMounted(() {
         _dateEmission = newDate;
-        _controllerChampDate.text = "${_dateEmission.day}/${_dateEmission.month}/${_dateEmission.year}";
+        _controllerChampDate.text =
+            "${_dateEmission.day}/${_dateEmission.month}/${_dateEmission.year}";
       });
     }
   }
@@ -170,7 +178,8 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
     if (newDate != null) {
       setStateIfMounted(() {
         _dateLimitePayement = newDate;
-        _controllerChampDateLimitePayement.text = "${_dateLimitePayement.day}/${_dateLimitePayement.month}/${_dateLimitePayement.year}";
+        _controllerChampDateLimitePayement.text =
+            "${_dateLimitePayement.day}/${_dateLimitePayement.month}/${_dateLimitePayement.year}";
       });
     }
   }
@@ -179,25 +188,31 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
     setState(() => _isLoading = true);
 
     await AppPsyDatabase.instance.readAllClient().then((value) => {
-      if (value.isNotEmpty) {
-        _listClients = value,
-        _selected = List.generate(_listClients.length, (index) => false),
-      } else {
-        _listClients = [],
-        _selected = [],
-      }
-    });
+          if (value.isNotEmpty)
+            {
+              _listClients = value,
+              _selected = List.generate(_listClients.length, (index) => false),
+            }
+          else
+            {
+              _listClients = [],
+              _selected = [],
+            }
+        });
 
     await AppPsyDatabase.instance.readAllTypeActe().then((value) => {
-      if (value.isNotEmpty) {
-        _listTypeActes = value,
-        _dropdownSelectionnerTypeActe = _listTypeActes[0].nom,
-        _afficherPrixDansController(),
-      } else {
-        _listTypeActes = [],
-        _dropdownSelectionnerTypeActe = "",
-      }
-    });
+          if (value.isNotEmpty)
+            {
+              _listTypeActes = value,
+              _dropdownSelectionnerTypeActe = _listTypeActes[0].nom,
+              _afficherPrixDansController(),
+            }
+          else
+            {
+              _listTypeActes = [],
+              _dropdownSelectionnerTypeActe = "",
+            }
+        });
 
     setState(() => _isLoading = false);
   }
@@ -205,15 +220,17 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
   void _afficherAvertissementEtConditionPourPoursuivre() {
     var title = "✋ Vous allez trop vite";
     var body = "Verifiez les informations saisies.";
-    if(_clientSelectionner.isEmpty) {
+    if (_clientSelectionner.isEmpty) {
       title = "✋ Il faut d'abord séléctionner un client";
       body = "Assurez-vous de selectionner au moins un client.";
     } else if (_listSeances.isEmpty) {
       title = "⛔ Il faut au moins ajouter une séance";
-      body = "Assurez-vous d'enregistrer au moins une séance pour votre/vos client(s) et cliqué sur ajouter. Ils vous suffit de remplir tous les champs.";
+      body =
+          "Assurez-vous d'enregistrer au moins une séance pour votre/vos client(s) et cliqué sur ajouter. Ils vous suffit de remplir tous les champs.";
     } else if (_indexStepper == 2) {
       title = "Remplissez tous les champs";
-      body = "Assurez-vous de remplir bien le bon numero de facture et une signature.";
+      body =
+          "Assurez-vous de remplir bien le bon numero de facture et une signature.";
     }
 
     var richText = RichText(
@@ -221,42 +238,40 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
           style: const TextStyle(
             fontSize: 20.0,
           ),
-          children: <TextSpan> [
-            TextSpan(text: title,
+          children: <TextSpan>[
+            TextSpan(
+                text: title,
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
-                )
-            ),
-          ]
-      ),
+                )),
+          ]),
     );
 
     showDialog(
       context: context,
-      builder: (BuildContext context) =>
-          AlertDialog(
-            title: richText,
-            content: Text(body),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context, 'RETOUR'),
-                child: const Text("OK"),
-              ),
-            ],
-            elevation: 24.0,
+      builder: (BuildContext context) => AlertDialog(
+        title: richText,
+        content: Text(body),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, 'RETOUR'),
+            child: const Text("OK"),
           ),
+        ],
+        elevation: 24.0,
+      ),
     );
   }
 
   bool _checkConditionsPourContinuer() {
     switch (_indexStepper) {
       case 0:
-        if(_clientSelectionner.isEmpty) {
+        if (_clientSelectionner.isEmpty) {
           return false;
         }
         return true;
       case 1:
-        if(_listSeances.isEmpty) {
+        if (_listSeances.isEmpty) {
           return false;
         }
         return true;
@@ -272,13 +287,19 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
         listClients: _clientSelectionner,
         listSeances: _listSeances,
         dateLimitePayement: _dateLimitePayement,
-        signaturePNG: await _controllerSignature.toPngBytes()
-    );
+        signaturePNG: await _controllerSignature.toPngBytes());
 
     PdfFactureApi.generate(facture).then((value) {
-      Navigator.of(context).push(MaterialPageRoute(builder: (context) => PreviewPdf(fichier: value,)));
+      if (value == null) {
+        const SnackBar(
+            content: Text("Mots de passe trop faible ajouter des caractères."));
+        return;
+      }
+      Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) => PreviewPdf(
+                fichier: value,
+              )));
     });
-
   }
 
   @override
@@ -299,8 +320,8 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
 
     _controllerChampDate.dispose();
     _controllerChampPrix.dispose();
-    _controllerChampNombreUH .dispose();
-    _controllerNumeroFacture .dispose();
+    _controllerChampNombreUH.dispose();
+    _controllerNumeroFacture.dispose();
     _controllerChampDateLimitePayement.dispose();
     _controllerSignature.dispose();
   }
@@ -313,115 +334,138 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
 
   @override
   Widget build(BuildContext context) {
-    return _isLoading ? const Center(child: CircularProgressIndicator()) : Stepper(
-      type: StepperType.horizontal,
-      currentStep: _indexStepper,
-      onStepCancel: () {
-        if (_indexStepper > 0) {
-          setStateIfMounted(() => _indexStepper--);
-        }
-      },
-      onStepContinue: () {
-        if (_indexStepper < 2 && _indexStepper >= 0) {
-          if (_checkConditionsPourContinuer()) {
-            setStateIfMounted(() => _indexStepper++);
-          } else {
-            _afficherAvertissementEtConditionPourPoursuivre();
-          }
-        } else if (_indexStepper == 2) {
-            if( _formKeyFacture.currentState!.validate()) {
-              //_afficherAvertissementEtConditionPourPoursuivre();
-              _creationPdfEtOuverture();
-            }
-        }
-      },
-      controlsBuilder: (BuildContext context, ControlsDetails details) {
-        return Row(
-          children: <Widget>[
-            ElevatedButton(
-              onPressed: details.onStepContinue,
-              child: const Text('CONTINUER'),
-            ),
-            const SizedBox(
-              width: 10,
-            ),
-            TextButton(
-              onPressed: details.onStepCancel,
-              child: const Text('RETOUR', style: TextStyle(color: Colors.white70),),
-            ),
-          ],
-        );
-      },
-      steps: [
-        Step(title: const Text("Client(s)"), isActive: _indexStepper >= 0, content: buildClient()),
-        Step(title: const Text("Séance(s)"), isActive: _indexStepper >= 1, content: buildSeance()),
-        Step(title: const Text("Facture"), isActive: _indexStepper >= 2, content: buildFacture())
-      ],
-    );
+    return _isLoading
+        ? const Center(child: CircularProgressIndicator())
+        : Stepper(
+            type: StepperType.horizontal,
+            currentStep: _indexStepper,
+            onStepCancel: () {
+              if (_indexStepper > 0) {
+                setStateIfMounted(() => _indexStepper--);
+              }
+            },
+            onStepContinue: () {
+              if (_indexStepper < 2 && _indexStepper >= 0) {
+                if (_checkConditionsPourContinuer()) {
+                  setStateIfMounted(() => _indexStepper++);
+                } else {
+                  _afficherAvertissementEtConditionPourPoursuivre();
+                }
+              } else if (_indexStepper == 2) {
+                if (_formKeyFacture.currentState!.validate()) {
+                  //_afficherAvertissementEtConditionPourPoursuivre();
+                  _creationPdfEtOuverture();
+                }
+              }
+            },
+            controlsBuilder: (BuildContext context, ControlsDetails details) {
+              return Row(
+                children: <Widget>[
+                  ElevatedButton(
+                    onPressed: details.onStepContinue,
+                    child: const Text('CONTINUER'),
+                  ),
+                  const SizedBox(
+                    width: 10,
+                  ),
+                  TextButton(
+                    onPressed: details.onStepCancel,
+                    child: const Text(
+                      'RETOUR',
+                      style: TextStyle(color: Colors.white70),
+                    ),
+                  ),
+                ],
+              );
+            },
+            steps: [
+              Step(
+                  title: const Text("Client(s)"),
+                  isActive: _indexStepper >= 0,
+                  content: buildClient()),
+              Step(
+                  title: const Text("Séance(s)"),
+                  isActive: _indexStepper >= 1,
+                  content: buildSeance()),
+              Step(
+                  title: const Text("Facture"),
+                  isActive: _indexStepper >= 2,
+                  content: buildFacture())
+            ],
+          );
   }
 
   Widget buildClient() {
     return ListView(
-        shrinkWrap: true,
-        physics: const BouncingScrollPhysics(),
-        padding: const EdgeInsets.only(left: 0, top: 20, right: 0,),
-        children: [
-          const Text("Sélectionner client(s)",
+      shrinkWrap: true,
+      physics: const BouncingScrollPhysics(),
+      padding: const EdgeInsets.only(
+        left: 0,
+        top: 20,
+        right: 0,
+      ),
+      children: [
+        const Text(
+          "Sélectionner client(s)",
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            inherit: true,
+            letterSpacing: 0.4,
+          ),
+        ),
+        const SizedBox(
+          height: 15,
+        ),
+        if (_listClients.isEmpty)
+          const Text(
+            "🤔​ Aucun clients ",
             style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                inherit: true,
-                letterSpacing: 0.4,
-              ),
-          ),
-
-
-          const SizedBox(
-            height: 15,
-          ),
-
-        if(_listClients.isEmpty)
-          const Text("🤔​ Aucun clients ", style: TextStyle(fontSize: 18,),)
+              fontSize: 18,
+            ),
+          )
         else
           SizedBox(
-              height: 150,
-              child: Card(
-                  borderOnForeground: true,
-                  child: ListView(
-                      scrollDirection: Axis.vertical,
-                      shrinkWrap: true,
-                      addAutomaticKeepAlives: false,
-                      children: [
-                        for(var i = 0; i < _listClients.length; i++)
-                          ListTile(
-                            title: Text("${_listClients[i].prenom} ${_listClients[i].nom} / ${_listClients[i].email}"),
-                            leading: const Icon(Icons.account_circle_sharp),
-                            selected: _selected[i],
-                            onTap: () => setStateIfMounted(() => {
-                              if (!_clientSelectionner.contains(_listClients[i])) {
-                              _clientSelectionner.add(_listClients[i]),
-                              _selected[i] = true,
-                              } else {
-                              _clientSelectionner.remove(_listClients[i]),
-                              _selected[i] = false,
-                              }
-                            })
-                          ),
-                      ],
-                  ),
+            height: 150,
+            child: Card(
+              borderOnForeground: true,
+              child: ListView(
+                scrollDirection: Axis.vertical,
+                shrinkWrap: true,
+                addAutomaticKeepAlives: false,
+                children: [
+                  for (var i = 0; i < _listClients.length; i++)
+                    ListTile(
+                        title: Text(
+                            "${_listClients[i].prenom} ${_listClients[i].nom} / ${_listClients[i].email}"),
+                        leading: const Icon(Icons.account_circle_sharp),
+                        selected: _selected[i],
+                        onTap: () => setStateIfMounted(() => {
+                              if (!_clientSelectionner
+                                  .contains(_listClients[i]))
+                                {
+                                  _clientSelectionner.add(_listClients[i]),
+                                  _selected[i] = true,
+                                }
+                              else
+                                {
+                                  _clientSelectionner.remove(_listClients[i]),
+                                  _selected[i] = false,
+                                }
+                            })),
+                ],
               ),
+            ),
           ),
-
-          const Divider(height: 30,),
-
-          for(Client client in _clientSelectionner)
-            Text(" - ${client.nom} ${client.prenom} / ${client.email}"),
-
-          const SizedBox(
-            height: 20,
-          ),
-
-        ],
+        const Divider(
+          height: 30,
+        ),
+        for (Client client in _clientSelectionner)
+          Text(" - ${client.nom} ${client.prenom} / ${client.email}"),
+        const SizedBox(
+          height: 20,
+        ),
+      ],
     );
   }
 
@@ -429,61 +473,52 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
     return SingleChildScrollView(
       child: Form(
         key: _formKeySeance,
-        child:
-
-        Column(
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-
             Row(
               children: [
                 Expanded(
                   flex: 3,
-                  child:
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 10,),
-                      child:
-                      DropdownButtonFormField(
-                        isExpanded: true,
-                        decoration: const InputDecoration(
-                            border: OutlineInputBorder(),
-                            labelText: 'Type de préstation',
-                            icon: Icon(Icons.assignment_outlined)
-                        ),
-                        value: _dropdownSelectionnerTypeActe,
-                        items: _listTypeActes.map((typeActe) =>
-                            DropdownMenuItem(
-                              value: typeActe.nom,
-                              child:  Text(
-                                //overflow: TextOverflow.,
-                                  typeActe.nom.toString()
-                              ),
-                            )
-                        ).toList(),
-                        onChanged: (String? value) {
-                          setState(() {
-                            _dropdownSelectionnerTypeActe = value!;
-                            _afficherPrixDansController();
-                          });
-                        },
-                      ),
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                      bottom: 10,
                     ),
+                    child: DropdownButtonFormField(
+                      isExpanded: true,
+                      decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          labelText: 'Type de préstation',
+                          icon: Icon(Icons.assignment_outlined)),
+                      value: _dropdownSelectionnerTypeActe,
+                      items: _listTypeActes
+                          .map((typeActe) => DropdownMenuItem(
+                                value: typeActe.nom,
+                                child: Text(
+                                    //overflow: TextOverflow.,
+                                    typeActe.nom.toString()),
+                              ))
+                          .toList(),
+                      onChanged: (String? value) {
+                        setState(() {
+                          _dropdownSelectionnerTypeActe = value!;
+                          _afficherPrixDansController();
+                        });
+                      },
+                    ),
+                  ),
                 ),
-
-
                 Expanded(
                   flex: 2,
-                  child:
-                  Padding(padding: const EdgeInsets.only( left: 8, bottom: 10),
-                    child:
-                    TextFormField(
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 8, bottom: 10),
+                    child: TextFormField(
                       controller: _controllerChampPrix,
                       keyboardType: TextInputType.number,
                       decoration: const InputDecoration(
                           border: OutlineInputBorder(),
                           labelText: 'Prix HT',
-                          icon: Icon(Icons.euro_outlined)
-                      ),
+                          icon: Icon(Icons.euro_outlined)),
                       // The validator receives the text that the user has entered.
                       validator: (value) {
                         if (value == null || value.isEmpty) {
@@ -494,43 +529,40 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
                     ),
                   ),
                 ),
-                ],
-              ),
+              ],
+            ),
+            Row(
+              children: [
+                Expanded(
+                  flex: 3,
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 10),
+                    child: TextFormField(
+                      controller: _controllerChampDate,
+                      keyboardType: TextInputType.datetime,
+                      onTap: () {
+                        FocusScope.of(context).requestFocus(FocusNode());
 
-
-            Row(children: [
-              Expanded(
-                flex: 3,
-                child:
-                Padding(padding: const EdgeInsets.only( bottom: 10),
-                  child: TextFormField(
-                    controller: _controllerChampDate,
-                    keyboardType: TextInputType.datetime,
-                    onTap: () {
-                      FocusScope.of(context).requestFocus(FocusNode());
-
-                      _selectDateSeance();
-                    },
-                    decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: "Date d'emission",
-                        icon: Icon(Icons.date_range_outlined)
+                        _selectDateSeance();
+                      },
+                      decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          labelText: "Date d'emission",
+                          icon: Icon(Icons.date_range_outlined)),
                     ),
                   ),
                 ),
-              ),
-
-              Expanded(
+                Expanded(
                   flex: 3,
-                  child: Padding(padding: const EdgeInsets.only( left: 10, bottom: 10),
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 10, bottom: 10),
                     child: TextFormField(
                       controller: _controllerChampNombreUH,
                       keyboardType: TextInputType.number,
                       decoration: const InputDecoration(
                           border: OutlineInputBorder(),
                           labelText: 'Quantité',
-                          icon: Icon(Icons.onetwothree_outlined)
-                      ),
+                          icon: Icon(Icons.onetwothree_outlined)),
                       // The validator receives the text that the user has entered.
                       validator: (value) {
                         if (value == null || value.isEmpty) {
@@ -540,21 +572,19 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
                       },
                     ),
                   ),
-              ),
-            ],),
-
-            ElevatedButton.icon(
-                onPressed: () {
-                  if (_formKeySeance.currentState!.validate()) {
-                    setState(() => _ajouterSeance());
-                  }
-                },
-                label: const Text("AJOUTER"),
-                icon: const Icon(Icons.add),
+                ),
+              ],
             ),
-
+            ElevatedButton.icon(
+              onPressed: () {
+                if (_formKeySeance.currentState!.validate()) {
+                  setState(() => _ajouterSeance());
+                }
+              },
+              label: const Text("AJOUTER"),
+              icon: const Icon(Icons.add),
+            ),
             const Divider(),
-
             SizedBox(
               height: 200,
               child: ListView(
@@ -564,18 +594,17 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
                   children: [
                     for (Seance seance in _listSeances)
                       Card(
-                        child:
-                          ListTile(
-                            title: Text("${seance.quantite} ${seance.nom} le (${seance.date.day}/${seance.date.month}/${seance.date.year})"),
-                            leading: const Icon(Icons.work_history_outlined),
-                            onTap: () {
-                              _afficherAvertissementAvantSuppression(seance);
-                            },
-                          ),
+                        child: ListTile(
+                          title: Text(
+                              "${seance.quantite} ${seance.nom} le (${seance.date.day}/${seance.date.month}/${seance.date.year})"),
+                          leading: const Icon(Icons.work_history_outlined),
+                          onTap: () {
+                            _afficherAvertissementAvantSuppression(seance);
+                          },
+                        ),
                       ),
                   ]),
             ),
-
             const SizedBox(
               height: 20,
             )
@@ -586,126 +615,109 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> w
   }
 
   Widget buildFacture() {
-    return
-      SingleChildScrollView(
-        child:
-            Form(
-              key: _formKeyFacture,
-                child: Column(
-                  children: [
+    return SingleChildScrollView(
+      child: Form(
+        key: _formKeyFacture,
+        child: Column(children: [
+          Row(
+            children: [
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 10),
+                  child: TextFormField(
+                    controller: _controllerNumeroFacture,
+                    keyboardType: TextInputType.number,
+                    decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: 'Numero de facture',
+                        icon: Icon(Icons.numbers_outlined)),
+                    // The validator receives the text that the user has entered.
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Entrer un numéro de facture';
+                      }
+                      return null;
+                    },
+                  ),
+                ),
+              ),
+              Expanded(
+                child: CheckboxListTile(
+                  title: const Text("Sauvegarder"),
+                  value: _sauvegarderIdFacture,
+                  onChanged: (bool? value) {
+                    setState(
+                        () => _sauvegarderIdFacture = !_sauvegarderIdFacture);
+                  },
+                  controlAffinity: ListTileControlAffinity.leading,
+                ),
+              ),
+            ],
+          ),
+          const Divider(),
+          Row(
+            children: [
+              Switch(
+                  value: _aUneDateLimite,
+                  onChanged: (bool value) {
+                    setState(() => _aUneDateLimite = !_aUneDateLimite);
+                  }),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 10, bottom: 10),
+                  child: TextFormField(
+                    enabled: _aUneDateLimite,
+                    controller: _controllerChampDateLimitePayement,
+                    keyboardType: TextInputType.datetime,
+                    onTap: () {
+                      FocusScope.of(context).requestFocus(FocusNode());
 
-                    Row(
-                      children: [
-                        Expanded(
-                          child:
-                            Padding(padding: const EdgeInsets.only( bottom: 10),
-                              child: TextFormField(
-                                controller: _controllerNumeroFacture,
-                                keyboardType: TextInputType.number,
-                                decoration: const InputDecoration(
-                                    border: OutlineInputBorder(),
-                                    labelText: 'Numero de facture',
-                                    icon: Icon(Icons.numbers_outlined)
-                                ),
-                                // The validator receives the text that the user has entered.
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Entrer un numéro de facture';
-                                  }
-                                  return null;
-                                },
-                              ),
-                            ),
-                        ),
-
-                        Expanded(
-                            child:
-                              CheckboxListTile(
-                                title: const Text("Sauvegarder"),
-                                value: _sauvegarderIdFacture,
-                                onChanged: (bool? value) {
-                                  setState(() => _sauvegarderIdFacture = !_sauvegarderIdFacture);
-                                },
-                                controlAffinity: ListTileControlAffinity.leading,
-                              ),
-                        ),
-                      ],
-                    ),
-
-                    const Divider(),
-
-                    Row(
-                      children: [
-
-                        Switch(
-                            value: _aUneDateLimite,
-                            onChanged: (bool value) {
-                              setState(() => _aUneDateLimite = !_aUneDateLimite);
-                            }),
-
-
-                        Expanded(
-                          child: Padding(padding: const EdgeInsets.only(top: 10, bottom: 10),
-                            child:
-                              TextFormField(
-                                enabled: _aUneDateLimite,
-                                controller: _controllerChampDateLimitePayement,
-                                keyboardType: TextInputType.datetime,
-                                onTap: () {
-                                  FocusScope.of(context).requestFocus(FocusNode());
-
-                                  _selectDateLimitePayement();
-                                },
-                                decoration: const InputDecoration(
-                                    border: OutlineInputBorder(),
-                                    labelText: "Date limite de payement",
-                                    icon: Icon(Icons.date_range_outlined)
-                                ),
-                              ),
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    const Divider(),
-
-                    const Padding(
-                        padding: EdgeInsets.only(top: 10, bottom: 10),
-                        child: Text("Signature", style: TextStyle(fontSize: 18),),
-                    ),
-
-                    buildSignature(),
-
-                    const SizedBox(
-                      height: 20,
-                    )
-
-                  ]),
-        ),
-      );
+                      _selectDateLimitePayement();
+                    },
+                    decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: "Date limite de payement",
+                        icon: Icon(Icons.date_range_outlined)),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const Divider(),
+          const Padding(
+            padding: EdgeInsets.only(top: 10, bottom: 10),
+            child: Text(
+              "Signature",
+              style: TextStyle(fontSize: 18),
+            ),
+          ),
+          buildSignature(),
+          const SizedBox(
+            height: 20,
+          )
+        ]),
+      ),
+    );
   }
 
   Widget buildSignature() {
     return Row(
       children: [
         ClipRect(
-          child:
-              SizedBox(
-                height: 100,
-                child: Signature(
-                  width: 200,
-                  height: 100,
-                  controller: _controllerSignature,
-              ),
+          child: SizedBox(
+            height: 100,
+            child: Signature(
+              width: 200,
+              height: 100,
+              controller: _controllerSignature,
+            ),
           ),
         ),
-
         IconButton(
             onPressed: () {
               setState(() => _controllerSignature.clear());
             },
-            icon: const Icon(Icons.refresh_outlined)
-        )
+            icon: const Icon(Icons.refresh_outlined))
       ],
     );
   }

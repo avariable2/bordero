@@ -37,7 +37,7 @@ class InfosPraticien {
   final String email;
   final int numeroSIRET;
   final int numeroADELI;
-  final List<String> payements;
+  final List<dynamic> payements;
 
   const InfosPraticien(
       {required this.nom,
@@ -62,7 +62,7 @@ class InfosPraticien {
           String? email,
           int? numeroADELI,
           int? numeroSIRET,
-          List<String>? payements}) =>
+          List<dynamic>? payements}) =>
       InfosPraticien(
         nom: nom ?? this.nom,
         prenom: prenom ?? this.prenom,
@@ -76,7 +76,7 @@ class InfosPraticien {
         payements: payements ?? this.payements,
       );
 
-  static InfosPraticien fromJson(Map<String, Object?> json) => InfosPraticien(
+  static InfosPraticien fromJson(Map<dynamic, dynamic> json) => InfosPraticien(
         nom: json[InfosPraticienChamps.nom] as String,
         prenom: json[InfosPraticienChamps.prenom] as String,
         adresse: json[InfosPraticienChamps.adresse] as String,
@@ -86,7 +86,7 @@ class InfosPraticien {
         email: json[InfosPraticienChamps.email] as String,
         numeroADELI: json[InfosPraticienChamps.numeroADELI] as int,
         numeroSIRET: json[InfosPraticienChamps.numeroSIRET] as int,
-        payements: json[InfosPraticienChamps.payements] as List<String>,
+        payements: json[InfosPraticienChamps.payements] as List<dynamic>,
       );
 
   Map<String, Object?> toJson() => {

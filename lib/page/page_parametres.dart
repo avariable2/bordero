@@ -50,7 +50,9 @@ class _ParametresGlobauxState extends State<ParametresGlobaux> {
             children: [
               ListTile(
                 title: const Text("Mes informations"),
-                onTap: () {},
+                onTap: () {
+
+                },
               ),
               ListTile(
                 title: const Text("Theme"),
