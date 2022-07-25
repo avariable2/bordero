@@ -10,6 +10,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:sp_util/sp_util.dart';
 
+import 'model/infos_praticien.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

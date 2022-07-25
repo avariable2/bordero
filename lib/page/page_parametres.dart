@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:sp_util/sp_util.dart';
 
+import '../model/infos_praticien.dart';
 import 'connexion.dart';
 
 class PageParametres extends StatelessWidget {
@@ -76,6 +77,7 @@ class _ParametresGlobauxState extends State<ParametresGlobaux> {
               ListTile(
                 title: const Text("Déconnexion"),
                 onTap: () async {
+                  SpUtil.remove(InfosPraticien.keyObjInfosPraticien);
                   await FirebaseAuth.instance.signOut();
                 },
               ),

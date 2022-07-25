@@ -39,9 +39,12 @@ class _MonAccueilState extends State<MonAccueil> with WidgetsBindingObserver {
     refreshLists();
   }
 
+  void setStateIfMounted(f) {
+    if (mounted) setState(f);
+  }
+
   Future refreshLists() async {
-    if (!mounted) return;
-    setState(() => isLoading = true);
+    setStateIfMounted(() => isLoading = true);
 
     await AppPsyDatabase.instance.readAllClient().then((value) => {
       if (value.isNotEmpty) {
@@ -59,7 +62,7 @@ class _MonAccueilState extends State<MonAccueil> with WidgetsBindingObserver {
       }
     });
 
-    setState(() => isLoading = false);
+    setStateIfMounted(() => isLoading = false);
   }
 
   @override

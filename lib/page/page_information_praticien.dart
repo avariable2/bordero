@@ -1,5 +1,7 @@
+import 'package:app_psy/model/infos_praticien.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
+import 'package:sp_util/sp_util.dart';
 
 class FullScreenDialogInformationPraticien extends StatelessWidget {
   const FullScreenDialogInformationPraticien({Key? key}) : super(key: key);
@@ -77,7 +79,13 @@ class DialogInfoPraticienState extends State<DialogInfoPraticien> {
       },
       onStepContinue: () {
         if (_indexStepper < 1 && _indexStepper >= 0) {
-          setStateIfMounted(() => _indexStepper++);
+          if (_formPersonnelKey.currentState!.validate()) {
+            setStateIfMounted(() => _indexStepper++);
+          }
+        } else if (_indexStepper == 1 && _formProfessionelKey.currentState!.validate()) {
+          Object obj = _creerInfosPraticien().toJson();
+          SpUtil.putObject( InfosPraticien.keyObjInfosPraticien, obj);
+          Navigator.of(context).pop();
         }
       },
       controlsBuilder: (BuildContext context, ControlsDetails details) {
@@ -135,7 +143,7 @@ class DialogInfoPraticienState extends State<DialogInfoPraticien> {
                 Expanded(
                   child: Padding(
                     padding:
-                        const EdgeInsets.only(top: 10, left: 8, bottom: 10),
+                        const EdgeInsets.only(top: 10, bottom: 10),
                     child: TextFormField(
                       controller: controllerChampNom,
                       keyboardType: TextInputType.name,
@@ -159,7 +167,7 @@ class DialogInfoPraticienState extends State<DialogInfoPraticien> {
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.only(
-                        top: 10, right: 8, left: 8, bottom: 10),
+                        top: 10, bottom: 10),
                     child: TextFormField(
                       controller: controllerChampPrenom,
                       keyboardType: TextInputType.name,
@@ -182,7 +190,7 @@ class DialogInfoPraticienState extends State<DialogInfoPraticien> {
             /* PARTIE Adresse, code postal et ville */
 
             Padding(
-              padding: const EdgeInsets.only(right: 8, left: 8),
+              padding: const EdgeInsets.only(),
               child: TextFormField(
                 controller: controllerChampAdresse,
                 keyboardType: TextInputType.streetAddress,
@@ -203,7 +211,7 @@ class DialogInfoPraticienState extends State<DialogInfoPraticien> {
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.only(
-                        top: 10, right: 8, left: 8, bottom: 10),
+                        top: 10, bottom: 10, right: 3),
                     child: TextFormField(
                       controller: controllerChampCodePostal,
                       keyboardType: TextInputType.number,
@@ -226,7 +234,7 @@ class DialogInfoPraticienState extends State<DialogInfoPraticien> {
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.only(
-                        top: 10, right: 8, left: 8, bottom: 10),
+                        top: 10, bottom: 10),
                     child: TextFormField(
                       controller: controllerChampVille,
                       keyboardType: TextInputType.streetAddress,
@@ -249,7 +257,7 @@ class DialogInfoPraticienState extends State<DialogInfoPraticien> {
             /* PARTIE Numero de téléphone et EMAIl */
 
             Padding(
-              padding: const EdgeInsets.only(right: 8, left: 8),
+              padding: const EdgeInsets.only(),
               child: TextFormField(
                 controller: controllerChampNumero,
                 keyboardType: TextInputType.phone,
@@ -267,7 +275,7 @@ class DialogInfoPraticienState extends State<DialogInfoPraticien> {
             ),
             Padding(
               padding:
-                  const EdgeInsets.only(top: 10, right: 8, left: 8, bottom: 20),
+                  const EdgeInsets.only(top: 10, bottom: 20),
               child: TextFormField(
                 controller: controllerChampEmail,
                 keyboardType: TextInputType.emailAddress,
@@ -302,7 +310,7 @@ class DialogInfoPraticienState extends State<DialogInfoPraticien> {
                   Padding(
                     padding: const EdgeInsets.only(top: 10, bottom: 10),
                     child: TextFormField(
-                      controller: controllerChampCodePostal,
+                      controller: controllerChampNumeroSIRET,
                       keyboardType: TextInputType.number,
                       decoration: const InputDecoration(
                           border: OutlineInputBorder(),
@@ -326,7 +334,7 @@ class DialogInfoPraticienState extends State<DialogInfoPraticien> {
                   Padding(
                     padding: const EdgeInsets.only(top: 10, bottom: 10),
                     child: TextFormField(
-                      controller: controllerChampVille,
+                      controller: controllerChampNumeroADELI,
                       keyboardType: TextInputType.streetAddress,
                       decoration: const InputDecoration(
                         border: OutlineInputBorder(),
@@ -402,8 +410,26 @@ class DialogInfoPraticienState extends State<DialogInfoPraticien> {
                   ),
                 ])));
   }
-}
 
-class InfosPraticien {
-  static String keyObjInfosPraticien = "keyObjInfosPraticien";
+  InfosPraticien _creerInfosPraticien() {
+    List<String> listTypePayements = ["Virement bancaire", "Liquide", "Carte bleu", "Chèque"];
+    List<String> listCopie = listTypePayements;
+    for (int i = 0; i < _listCheckbox.length - 1; i++) {
+      if (!_listCheckbox[i]) {
+        listCopie.removeAt(i);
+      }
+    }
+    return InfosPraticien(
+      nom: controllerChampNom.text.trim(),
+      prenom: controllerChampPrenom.text.trim(),
+      adresse: controllerChampAdresse.text.trim(),
+      codePostal: controllerChampCodePostal.text.trim(),
+      ville: controllerChampVille.text.trim(),
+      numeroTelephone: controllerChampNumero.text.trim(),
+      email: controllerChampEmail.text.trim(),
+      numeroSIRET : int.parse(controllerChampNumeroSIRET.text.trim()),
+      numeroADELI: int.parse(controllerChampNumeroADELI.text.trim()),
+      payements: listCopie,
+    );
+  }
 }
