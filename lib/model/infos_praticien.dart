@@ -10,7 +10,8 @@ class InfosPraticienChamps {
     email,
     numeroSIRET,
     numeroADELI,
-    payements
+    payements,
+    exonererTVA,
   ];
 
   static const String nom = 'nom';
@@ -23,6 +24,7 @@ class InfosPraticienChamps {
   static const String numeroSIRET = 'numeroSIRET';
   static const String numeroADELI = 'numeroADELI';
   static const String payements = 'payements';
+  static const String exonererTVA = 'exonererTVA';
 }
 
 class InfosPraticien {
@@ -38,6 +40,7 @@ class InfosPraticien {
   final int numeroSIRET;
   final int numeroADELI;
   final List<dynamic> payements;
+  final bool exonererTVA;
 
   const InfosPraticien(
       {required this.nom,
@@ -49,7 +52,8 @@ class InfosPraticien {
       required this.email,
       required this.numeroADELI,
       required this.numeroSIRET,
-      required this.payements});
+      required this.payements,
+      required this.exonererTVA});
 
   InfosPraticien copy(
           {int? id,
@@ -62,7 +66,8 @@ class InfosPraticien {
           String? email,
           int? numeroADELI,
           int? numeroSIRET,
-          List<dynamic>? payements}) =>
+          List<dynamic>? payements,
+          bool? exonererTVA}) =>
       InfosPraticien(
         nom: nom ?? this.nom,
         prenom: prenom ?? this.prenom,
@@ -74,20 +79,21 @@ class InfosPraticien {
         numeroADELI: numeroADELI ?? this.numeroADELI,
         numeroSIRET: numeroSIRET ?? this.numeroSIRET,
         payements: payements ?? this.payements,
+        exonererTVA: exonererTVA ?? this.exonererTVA,
       );
 
   static InfosPraticien fromJson(Map<dynamic, dynamic> json) => InfosPraticien(
-        nom: json[InfosPraticienChamps.nom] as String,
-        prenom: json[InfosPraticienChamps.prenom] as String,
-        adresse: json[InfosPraticienChamps.adresse] as String,
-        codePostal: json[InfosPraticienChamps.codePostal] as String,
-        ville: json[InfosPraticienChamps.ville] as String,
-        numeroTelephone: json[InfosPraticienChamps.numeroTelephone] as String,
-        email: json[InfosPraticienChamps.email] as String,
-        numeroADELI: json[InfosPraticienChamps.numeroADELI] as int,
-        numeroSIRET: json[InfosPraticienChamps.numeroSIRET] as int,
-        payements: json[InfosPraticienChamps.payements] as List<dynamic>,
-      );
+      nom: json[InfosPraticienChamps.nom] as String,
+      prenom: json[InfosPraticienChamps.prenom] as String,
+      adresse: json[InfosPraticienChamps.adresse] as String,
+      codePostal: json[InfosPraticienChamps.codePostal] as String,
+      ville: json[InfosPraticienChamps.ville] as String,
+      numeroTelephone: json[InfosPraticienChamps.numeroTelephone] as String,
+      email: json[InfosPraticienChamps.email] as String,
+      numeroADELI: json[InfosPraticienChamps.numeroADELI] as int,
+      numeroSIRET: json[InfosPraticienChamps.numeroSIRET] as int,
+      payements: json[InfosPraticienChamps.payements] as List<dynamic>,
+      exonererTVA: json[InfosPraticienChamps.exonererTVA] as bool);
 
   Map<String, Object?> toJson() => {
         InfosPraticienChamps.nom: nom,
@@ -100,5 +106,6 @@ class InfosPraticien {
         InfosPraticienChamps.numeroADELI: numeroADELI,
         InfosPraticienChamps.numeroSIRET: numeroSIRET,
         InfosPraticienChamps.payements: payements,
+        InfosPraticienChamps.exonererTVA: exonererTVA,
       };
 }

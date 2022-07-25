@@ -1,4 +1,5 @@
 import 'package:app_psy/main.dart';
+import 'package:app_psy/page/page_information_praticien.dart';
 import 'package:app_psy/page/presentation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -51,7 +52,13 @@ class _ParametresGlobauxState extends State<ParametresGlobaux> {
               ListTile(
                 title: const Text("Mes informations"),
                 onTap: () {
-
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute<void>(
+                      builder: (BuildContext context) => const FullScreenDialogInformationPraticien(),
+                      fullscreenDialog: true,
+                    )
+                  );
                 },
               ),
               ListTile(

@@ -1,4 +1,3 @@
-import 'dart:ffi';
 import 'dart:io';
 
 import 'package:app_psy/model/facture.dart';
@@ -13,8 +12,11 @@ import '../model/client.dart';
 
 class PdfFactureApi {
   static Future<File?> generate(Facture facture) async {
-    final resultBuildTitre = buildTitre(facture);
-    if (resultBuildTitre == null) {
+    InfosPraticien infos;
+    try {
+      infos = SpUtil.getObj(InfosPraticien.keyObjInfosPraticien,
+              (v) => InfosPraticien.fromJson(v))!;
+    } on Exception catch (_) {
       return null;
     }
 
@@ -22,12 +24,12 @@ class PdfFactureApi {
     pdf.addPage(MultiPage(
         pageFormat: PdfPageFormat.a4,
         build: (context) => [
-              resultBuildTitre,
+              buildTitre(facture, infos),
               buildInformationsClients(facture),
               buildInformationsSeances(facture),
               Divider(),
               buildTotal(facture),
-              buildPayement(facture),
+              buildPayement(facture, infos),
               buildSignature(facture),
             ]));
 
@@ -40,16 +42,7 @@ class PdfFactureApi {
     return PdfApi.saveDocument(name: titre, pdf: pdf);
   }
 
-  static Widget? buildTitre(Facture facture) {
-    InfosPraticien infos;
-
-    try {
-      infos = SpUtil.getObj(InfosPraticien.keyObjInfosPraticien,
-          (v) => InfosPraticien.fromJson(v))!;
-    } on Exception catch (_) {
-      return null;
-    }
-
+  static Widget buildTitre(Facture facture, InfosPraticien infos) {
     return Row(children: [
       Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Text("${infos.nom} ${infos.prenom}",
@@ -201,15 +194,19 @@ class PdfFactureApi {
         ]));
   }
 
-  static Widget buildPayement(Facture facture) {
+  static Widget buildPayement(Facture facture,InfosPraticien infos) {
     var dateLimite = "";
     if (facture.dateLimitePayement != null) {
       dateLimite = AppPsyUtils.toDateString(facture.dateLimitePayement!);
     }
+    var listePayement = "";
+    for (String type in infos.payements) {
+      listePayement += "$type,";
+    }
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       SizedBox(height: 30),
       Text('Echéance : $dateLimite'),
-      Text('Règlement : '),
+      Text('Règlement : $listePayement'),
     ]);
   }
 

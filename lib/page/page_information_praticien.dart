@@ -41,13 +41,26 @@ class DialogInfoPraticienState extends State<DialogInfoPraticien> {
   final controllerChampEmail = TextEditingController();
   final controllerChampNumeroSIRET = TextEditingController();
   final controllerChampNumeroADELI = TextEditingController();
+  bool estExonererDeTVA = false;
 
   int _indexStepper = 0;
 
-  final List<bool> _listCheckbox = [false,false,false,false,];
+  final List<bool> _listCheckbox = [
+    false,
+    false,
+    false,
+    false,
+  ];
 
   void setStateIfMounted(f) {
     if (mounted) setState(f);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    _castTextToController();
   }
 
   @override
@@ -82,9 +95,10 @@ class DialogInfoPraticienState extends State<DialogInfoPraticien> {
           if (_formPersonnelKey.currentState!.validate()) {
             setStateIfMounted(() => _indexStepper++);
           }
-        } else if (_indexStepper == 1 && _formProfessionelKey.currentState!.validate()) {
+        } else if (_indexStepper == 1 &&
+            _formProfessionelKey.currentState!.validate()) {
           Object obj = _creerInfosPraticien().toJson();
-          SpUtil.putObject( InfosPraticien.keyObjInfosPraticien, obj);
+          SpUtil.putObject(InfosPraticien.keyObjInfosPraticien, obj);
           Navigator.of(context).pop();
         }
       },
@@ -142,8 +156,7 @@ class DialogInfoPraticienState extends State<DialogInfoPraticien> {
               children: [
                 Expanded(
                   child: Padding(
-                    padding:
-                        const EdgeInsets.only(top: 10, bottom: 10),
+                    padding: const EdgeInsets.only(top: 10, bottom: 10),
                     child: TextFormField(
                       controller: controllerChampNom,
                       keyboardType: TextInputType.name,
@@ -166,8 +179,7 @@ class DialogInfoPraticienState extends State<DialogInfoPraticien> {
                 ),
                 Expanded(
                   child: Padding(
-                    padding: const EdgeInsets.only(
-                        top: 10, bottom: 10),
+                    padding: const EdgeInsets.only(top: 10, bottom: 10),
                     child: TextFormField(
                       controller: controllerChampPrenom,
                       keyboardType: TextInputType.name,
@@ -210,8 +222,8 @@ class DialogInfoPraticienState extends State<DialogInfoPraticien> {
               children: [
                 Expanded(
                   child: Padding(
-                    padding: const EdgeInsets.only(
-                        top: 10, bottom: 10, right: 3),
+                    padding:
+                        const EdgeInsets.only(top: 10, bottom: 10, right: 3),
                     child: TextFormField(
                       controller: controllerChampCodePostal,
                       keyboardType: TextInputType.number,
@@ -233,8 +245,7 @@ class DialogInfoPraticienState extends State<DialogInfoPraticien> {
                 ),
                 Expanded(
                   child: Padding(
-                    padding: const EdgeInsets.only(
-                        top: 10, bottom: 10),
+                    padding: const EdgeInsets.only(top: 10, bottom: 10),
                     child: TextFormField(
                       controller: controllerChampVille,
                       keyboardType: TextInputType.streetAddress,
@@ -274,8 +285,7 @@ class DialogInfoPraticienState extends State<DialogInfoPraticien> {
               ),
             ),
             Padding(
-              padding:
-                  const EdgeInsets.only(top: 10, bottom: 20),
+              padding: const EdgeInsets.only(top: 10, bottom: 20),
               child: TextFormField(
                 controller: controllerChampEmail,
                 keyboardType: TextInputType.emailAddress,
@@ -307,6 +317,11 @@ class DialogInfoPraticienState extends State<DialogInfoPraticien> {
             child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
+                  SwitchListTile(
+                      title: const Text("Etes-vous exonéré de TVA ?"),
+                      value: estExonererDeTVA,
+                      onChanged: (bool) =>
+                          setStateIfMounted(() => estExonererDeTVA = bool)),
                   Padding(
                     padding: const EdgeInsets.only(top: 10, bottom: 10),
                     child: TextFormField(
@@ -354,8 +369,13 @@ class DialogInfoPraticienState extends State<DialogInfoPraticien> {
                     ),
                   ),
                   const Padding(
-                    padding: EdgeInsets.only(top: 10, bottom: 10, ),
-                    child: Text("Type de payement autorisé *", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                    padding: EdgeInsets.only(
+                      top: 10,
+                      bottom: 10,
+                    ),
+                    child: Text("Type de payement autorisé *",
+                        style: TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.bold)),
                   ),
                   Row(
                     children: [
@@ -364,7 +384,8 @@ class DialogInfoPraticienState extends State<DialogInfoPraticien> {
                           title: const Text("Virement bancaire"),
                           value: _listCheckbox[0],
                           onChanged: (bool? value) => {
-                            setStateIfMounted(() => _listCheckbox[0] = !_listCheckbox[0])
+                            setStateIfMounted(
+                                () => _listCheckbox[0] = !_listCheckbox[0])
                           },
                           controlAffinity: ListTileControlAffinity.leading,
                         ),
@@ -374,7 +395,8 @@ class DialogInfoPraticienState extends State<DialogInfoPraticien> {
                           title: const Text("Liquide"),
                           value: _listCheckbox[1],
                           onChanged: (bool? value) => {
-                            setStateIfMounted(() => _listCheckbox[1] = !_listCheckbox[1])
+                            setStateIfMounted(
+                                () => _listCheckbox[1] = !_listCheckbox[1])
                           },
                           controlAffinity: ListTileControlAffinity.leading,
                         ),
@@ -388,7 +410,8 @@ class DialogInfoPraticienState extends State<DialogInfoPraticien> {
                           title: const Text("Carte bleu"),
                           value: _listCheckbox[2],
                           onChanged: (bool? value) => {
-                            setStateIfMounted(() => _listCheckbox[2] = !_listCheckbox[2])
+                            setStateIfMounted(
+                                () => _listCheckbox[2] = !_listCheckbox[2])
                           },
                           controlAffinity: ListTileControlAffinity.leading,
                         ),
@@ -398,7 +421,8 @@ class DialogInfoPraticienState extends State<DialogInfoPraticien> {
                           title: const Text("Chèque"),
                           value: _listCheckbox[3],
                           onChanged: (bool? value) => {
-                            setStateIfMounted(() => _listCheckbox[3] = !_listCheckbox[3])
+                            setStateIfMounted(
+                                () => _listCheckbox[3] = !_listCheckbox[3])
                           },
                           controlAffinity: ListTileControlAffinity.leading,
                         ),
@@ -412,11 +436,16 @@ class DialogInfoPraticienState extends State<DialogInfoPraticien> {
   }
 
   InfosPraticien _creerInfosPraticien() {
-    List<String> listTypePayements = ["Virement bancaire", "Liquide", "Carte bleu", "Chèque"];
-    List<String> listCopie = listTypePayements;
+    List<String> listTypePayements = [
+      "Virement bancaire",
+      "Liquide",
+      "Carte bleu",
+      "Chèque"
+    ];
+    List<String> listCopie = [];
     for (int i = 0; i < _listCheckbox.length - 1; i++) {
-      if (!_listCheckbox[i]) {
-        listCopie.removeAt(i);
+      if (_listCheckbox[i]) {
+        listCopie.add(listTypePayements[i]);
       }
     }
     return InfosPraticien(
@@ -427,9 +456,27 @@ class DialogInfoPraticienState extends State<DialogInfoPraticien> {
       ville: controllerChampVille.text.trim(),
       numeroTelephone: controllerChampNumero.text.trim(),
       email: controllerChampEmail.text.trim(),
-      numeroSIRET : int.parse(controllerChampNumeroSIRET.text.trim()),
+      numeroSIRET: int.parse(controllerChampNumeroSIRET.text.trim()),
       numeroADELI: int.parse(controllerChampNumeroADELI.text.trim()),
       payements: listCopie,
+      exonererTVA: estExonererDeTVA,
     );
+  }
+
+  void _castTextToController() {
+    var info = SpUtil.getObj(
+        InfosPraticien.keyObjInfosPraticien, (v) => InfosPraticien.fromJson(v));
+    if (info != null) {
+      controllerChampNom.text = info.nom;
+      controllerChampPrenom.text = info.prenom;
+      controllerChampAdresse.text = info.adresse;
+      controllerChampCodePostal.text = info.codePostal;
+      controllerChampVille.text = info.ville;
+      controllerChampNumero.text = info.numeroTelephone;
+      controllerChampEmail.text = info.email;
+      controllerChampNumeroSIRET.text = info.numeroSIRET.toString();
+      controllerChampNumeroADELI.text = info.numeroADELI.toString();
+      estExonererDeTVA = info.exonererTVA;
+    }
   }
 }
