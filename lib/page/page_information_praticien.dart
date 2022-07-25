@@ -26,7 +26,8 @@ class DialogInfoPraticien extends StatefulWidget {
 }
 
 class DialogInfoPraticienState extends State<DialogInfoPraticien> {
-  final _formKey = GlobalKey<FormState>();
+  final _formPersonnelKey = GlobalKey<FormState>();
+  final _formProfessionelKey = GlobalKey<FormState>();
 
   // Permet de recuperer les champs à la fin
   final controllerChampNom = TextEditingController();
@@ -38,7 +39,10 @@ class DialogInfoPraticienState extends State<DialogInfoPraticien> {
   final controllerChampEmail = TextEditingController();
   final controllerChampNumeroSIRET = TextEditingController();
   final controllerChampNumeroADELI = TextEditingController();
+
   int _indexStepper = 0;
+
+  final List<bool> _listCheckbox = [false,false,false,false,];
 
   void setStateIfMounted(f) {
     if (mounted) setState(f);
@@ -104,7 +108,7 @@ class DialogInfoPraticienState extends State<DialogInfoPraticien> {
         Step(
             title: const Text("Professionel"),
             isActive: _indexStepper >= 1,
-            content: Container()),
+            content: buildProfessionel()),
       ],
     );
   }
@@ -112,7 +116,7 @@ class DialogInfoPraticienState extends State<DialogInfoPraticien> {
   Widget buildInfos() {
     return SingleChildScrollView(
       child: Form(
-        key: _formKey,
+        key: _formPersonnelKey,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
@@ -262,7 +266,8 @@ class DialogInfoPraticienState extends State<DialogInfoPraticien> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.only(top: 10, right: 8, left: 8),
+              padding:
+                  const EdgeInsets.only(top: 10, right: 8, left: 8, bottom: 20),
               child: TextFormField(
                 controller: controllerChampEmail,
                 keyboardType: TextInputType.emailAddress,
@@ -290,71 +295,111 @@ class DialogInfoPraticienState extends State<DialogInfoPraticien> {
   Widget buildProfessionel() {
     return SingleChildScrollView(
         child: Form(
-            key: _formKey,
+            key: _formProfessionelKey,
             child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  const Padding(
-                    padding: EdgeInsets.only(top: 10, bottom: 10),
-                    child: Text(
-                      "Données globaux",
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 10, bottom: 10),
+                    child: TextFormField(
+                      controller: controllerChampCodePostal,
+                      keyboardType: TextInputType.number,
+                      decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          labelText: 'Numéro SIRET *',
+                          hintText: "Il est composé de 9 chiffres",
+                          icon: Icon(Icons.pin_outlined)),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Entrer un numéro de SIRET';
+                        }
+                        if (value.length != 9) {
+                          return 'Entrer un numéro de SIRET valide';
+                        }
+                        return null;
+                      },
                     ),
                   ),
-
+                  const SizedBox(
+                    width: 20,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 10, bottom: 10),
+                    child: TextFormField(
+                      controller: controllerChampVille,
+                      keyboardType: TextInputType.streetAddress,
+                      decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: 'Code ADELI *',
+                        icon: Icon(Icons.medical_information_outlined),
+                        hintText: "Il est composé de 9 chiffres",
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Entrer une code ADELI';
+                        }
+                        if (value.length != 9) {
+                          return 'Entrer un code ADELI valide';
+                        }
+                        return null;
+                      },
+                    ),
+                  ),
+                  const Padding(
+                    padding: EdgeInsets.only(top: 10, bottom: 10, ),
+                    child: Text("Type de payement autorisé *", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                  ),
                   Row(
                     children: [
                       Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.only(
-                              top: 10, right: 8, left: 8, bottom: 10),
-                          child: TextFormField(
-                            controller: controllerChampCodePostal,
-                            keyboardType: TextInputType.number,
-                            decoration: const InputDecoration(
-                                border: OutlineInputBorder(),
-                                labelText: 'Code postal *',
-                                icon: Icon(Icons.domain_outlined)),
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Entrer un code postal';
-                              }
-                              if (value.length != 5) {
-                                return 'Entrer un code postal valide';
-                              }
-                              return null;
-                            },
-                          ),
+                        child: CheckboxListTile(
+                          title: const Text("Virement bancaire"),
+                          value: _listCheckbox[0],
+                          onChanged: (bool? value) => {
+                            setStateIfMounted(() => _listCheckbox[0] = !_listCheckbox[0])
+                          },
+                          controlAffinity: ListTileControlAffinity.leading,
                         ),
                       ),
-                      const SizedBox(
-                        width: 20,
-                      ),
                       Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.only(
-                              top: 10, right: 8, left: 8, bottom: 10),
-                          child: TextFormField(
-                            controller: controllerChampVille,
-                            keyboardType: TextInputType.streetAddress,
-                            decoration: const InputDecoration(
-                                border: OutlineInputBorder(),
-                                labelText: 'Ville *',
-                                icon: Icon(Icons.location_city_outlined)),
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Entrer une ville';
-                              }
-                              return null;
-                            },
-                          ),
+                        child: CheckboxListTile(
+                          title: const Text("Liquide"),
+                          value: _listCheckbox[1],
+                          onChanged: (bool? value) => {
+                            setStateIfMounted(() => _listCheckbox[1] = !_listCheckbox[1])
+                          },
+                          controlAffinity: ListTileControlAffinity.leading,
                         ),
                       ),
                     ],
                   ),
-
-
+                  Row(
+                    children: [
+                      Expanded(
+                        child: CheckboxListTile(
+                          title: const Text("Carte bleu"),
+                          value: _listCheckbox[2],
+                          onChanged: (bool? value) => {
+                            setStateIfMounted(() => _listCheckbox[2] = !_listCheckbox[2])
+                          },
+                          controlAffinity: ListTileControlAffinity.leading,
+                        ),
+                      ),
+                      Expanded(
+                        child: CheckboxListTile(
+                          title: const Text("Chèque"),
+                          value: _listCheckbox[3],
+                          onChanged: (bool? value) => {
+                            setStateIfMounted(() => _listCheckbox[3] = !_listCheckbox[3])
+                          },
+                          controlAffinity: ListTileControlAffinity.leading,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
                 ])));
   }
 }
