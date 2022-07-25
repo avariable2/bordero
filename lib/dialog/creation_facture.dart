@@ -292,7 +292,7 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture>
     PdfFactureApi.generate(facture).then((value) {
       if (value == null) {
         const SnackBar(
-            content: Text("Mots de passe trop faible ajouter des caractères."));
+            content: Text("Il viens de se produire une erreur, nous sommes désolé."));
         return;
       }
       Navigator.of(context).push(MaterialPageRoute(
