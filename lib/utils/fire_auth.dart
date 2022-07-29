@@ -2,19 +2,24 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class FireAuth {
-  static Future<User?> inscriptionUtilisantEmailMotDePasse({
+  final FirebaseAuth _firebaseAuth;
+
+  Stream<User?> get authStateChanges => FirebaseAuth.instance.authStateChanges();
+
+  FireAuth(this._firebaseAuth);
+
+  Future<User?> inscriptionUtilisantEmailMotDePasse({
     required BuildContext context,
     required String email,
     required String password,
   }) async {
-    FirebaseAuth auth = FirebaseAuth.instance;
     User? user;
     try {
-      UserCredential userCredential = await auth.createUserWithEmailAndPassword(
+      UserCredential userCredential = await _firebaseAuth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
-      user = auth.currentUser;
+      user = _firebaseAuth.currentUser;
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -35,16 +40,15 @@ class FireAuth {
     return user;
   }
 
-  static Future<User?> connexionUtilisantEmailMotDePasse({
+  Future<User?> connexionUtilisantEmailMotDePasse({
     required String email,
     required String password,
     required BuildContext context,
   }) async {
-    FirebaseAuth auth = FirebaseAuth.instance;
     User? user;
 
     try {
-      UserCredential userCredential = await auth.signInWithEmailAndPassword(
+      UserCredential userCredential = await _firebaseAuth.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
@@ -64,7 +68,7 @@ class FireAuth {
     return user;
   }
 
-  static Future reinitialiserMotDePasse({
+  Future reinitialiserMotDePasse({
     required BuildContext context,
     required String email
   }) async {
@@ -76,7 +80,7 @@ class FireAuth {
               child: CircularProgressIndicator(),
             ));
     try {
-      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+      await _firebaseAuth.sendPasswordResetEmail(email: email);
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Un email de reinitialisation à été envoyer. Verifier vos spam.")),
@@ -87,5 +91,9 @@ class FireAuth {
         const SnackBar(content: Text("Désolé, une erreur est survenu.")),
       );
     }
+  }
+
+  Future<void> signOut() async {
+    await _firebaseAuth.signOut();
   }
 }

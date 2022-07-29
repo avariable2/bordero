@@ -3,6 +3,7 @@ import 'package:app_psy/utils/animation_delais.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../utils/fire_auth.dart';
 
@@ -108,9 +109,9 @@ class _PageConnexionState extends State<PageConnexion> {
                   padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
                   child: ElevatedButton(
                     child: const Text('Se connecter'),
-                    onPressed: () {
+                    onPressed: () async {
                       if (_formKey.currentState!.validate()) {
-                        FireAuth.connexionUtilisantEmailMotDePasse(
+                        await context.read<FireAuth>().connexionUtilisantEmailMotDePasse(
                                 email: _emailConnexionController.text.trim(),
                                 password:
                                     _motDePasseConnexionController.text.trim(),
@@ -240,10 +241,10 @@ class _PageConnexionState extends State<PageConnexion> {
                     padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
                     child: ElevatedButton(
                       child: const Text("S'inscrire"),
-                      onPressed: () => {
+                      onPressed: () async {
                         if (_formInscriptionKey.currentState!.validate())
                           {
-                            FireAuth.inscriptionUtilisantEmailMotDePasse(
+                            await context.read<FireAuth>().inscriptionUtilisantEmailMotDePasse(
                                     context: context,
                                     email: _emailInscrireController.text.trim(),
                                     password: _motDePasseInscrireController.text
@@ -252,7 +253,7 @@ class _PageConnexionState extends State<PageConnexion> {
                               if (user != null) {
                                 Navigator.of(context).pop();
                               }
-                            })
+                            });
                           }
                       },
                     )),

@@ -4,11 +4,13 @@ import 'package:app_psy/page/page_factures.dart';
 import 'package:app_psy/page/page_information_praticien.dart';
 import 'package:app_psy/page/page_parametres.dart';
 import 'package:app_psy/page/presentation.dart';
+import 'package:app_psy/utils/fire_auth.dart';
 import 'package:app_psy/utils/firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:sp_util/sp_util.dart';
+import 'package:provider/provider.dart';
 
 import 'model/infos_praticien.dart';
 
@@ -29,7 +31,41 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const AppPsy();
+    return MultiProvider(
+      providers: [
+        Provider<FireAuth>(
+          create: (_) => FireAuth(FirebaseAuth.instance),
+        ),
+        StreamProvider(create: (context) => context.read<FireAuth>().authStateChanges, initialData: null,),
+      ],
+      child: MaterialApp(
+          title: "Bordero",
+          theme: ThemeData(
+            colorScheme: darkColorScheme,
+          ),
+          home: const AuthWrapper()),
+    );
+  }
+}
+
+class AuthWrapper extends StatelessWidget {
+  const AuthWrapper({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final firebaseUser = context.watch<User?>();
+
+    if (firebaseUser != null) {
+      //If the user is successfully Logged-In.
+      if (SpUtil.haveKey(InfosPraticien.keyObjInfosPraticien) ?? false) {
+        return const AppPsy();
+      } else {
+        return const FullScreenDialogInformationPraticien();
+      }
+    } else {
+      //If the user is not Logged-In.
+      return const PresentationPage();
+    }
   }
 }
 
@@ -37,81 +73,55 @@ class AppPsy extends StatefulWidget {
   const AppPsy({Key? key}) : super(key: key);
 
   @override
-  State<AppPsy> createState() => _NavigationExampleState();
+  State<AppPsy> createState() => _AppPsyState();
 }
 
-class _NavigationExampleState extends State<AppPsy> {
+class _AppPsyState extends State<AppPsy> {
   int currentPageIndex = 0;
-
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-        title: "Bordero",
-        theme: ThemeData(
-          colorScheme: darkColorScheme,
-        ),
-        home: StreamBuilder<User?>(
-          stream: FirebaseAuth.instance.authStateChanges(),
-          builder: (context, snapshot) {
-            if (snapshot.hasError) {
-              return const Center(child: Text("Connexion impossible à nos services ! Nous en sommes désolé."),);
-            } else if (snapshot.hasData) {
-              if (SpUtil.haveKey(InfosPraticien.keyObjInfosPraticien) ?? false) {
-                return buildApp();
-              } else {
-                return const FullScreenDialogInformationPraticien();
-              }
-            } else {
-              return const PresentationPage();
-            }
-          },
-        ),
-    );
-  }
-
-  Widget buildApp() {
     return Scaffold(
-          bottomNavigationBar: NavigationBar(
-            onDestinationSelected: (int index) {
-              setState(() {
-                currentPageIndex = index;
-              });
-            },
-            selectedIndex: currentPageIndex,
-            destinations: const <Widget>[
-              NavigationDestination(
-                selectedIcon: Icon(Icons.home_outlined),
-                icon: Icon(Icons.home),
-                label: 'Accueil',
-              ),
-              NavigationDestination(
-                selectedIcon: Icon(Icons.description_outlined),
-                icon: Icon(Icons.description),
-                label: 'Factures',
-              ),
-              NavigationDestination(
-                selectedIcon: Icon(Icons.receipt_long_outlined),
-                icon: Icon(Icons.receipt_long),
-                label: 'Devis',
-              ),
-              NavigationDestination(
-                selectedIcon: Icon(Icons.settings_outlined),
-                icon: Icon(Icons.settings),
-                label: 'Paramètres',
-              )
-            ],
+      bottomNavigationBar: NavigationBar(
+        onDestinationSelected: (int index) {
+          setState(() {
+            currentPageIndex = index;
+          });
+        },
+        selectedIndex: currentPageIndex,
+        destinations: const <Widget>[
+          NavigationDestination(
+            selectedIcon: Icon(Icons.home_outlined),
+            icon: Icon(Icons.home),
+            label: 'Accueil',
           ),
-          body: <Widget>[
-            const PageAccueil(),
-            const PageFactures(),
-            Container(
-              color: Colors.blue,
-              alignment: Alignment.center,
-              child: const Text('Page 3'),
-            ),
-            const PageParametres(),
-          ][currentPageIndex],
-        );
+          NavigationDestination(
+            selectedIcon: Icon(Icons.description_outlined),
+            icon: Icon(Icons.description),
+            label: 'Factures',
+          ),
+          NavigationDestination(
+            selectedIcon: Icon(Icons.receipt_long_outlined),
+            icon: Icon(Icons.receipt_long),
+            label: 'Devis',
+          ),
+          NavigationDestination(
+            selectedIcon: Icon(Icons.settings_outlined),
+            icon: Icon(Icons.settings),
+            label: 'Paramètres',
+          )
+        ],
+      ),
+      body: <Widget>[
+        const PageAccueil(),
+        const PageFactures(),
+        Container(
+          color: Colors.blue,
+          alignment: Alignment.center,
+          child: const Text('Page 3'),
+        ),
+        const PageParametres(),
+      ][currentPageIndex],
+    );
   }
 }

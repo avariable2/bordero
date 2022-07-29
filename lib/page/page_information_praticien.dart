@@ -350,7 +350,7 @@ class DialogInfoPraticienState extends State<DialogInfoPraticien> {
                     padding: const EdgeInsets.only(top: 10, bottom: 10),
                     child: TextFormField(
                       controller: controllerChampNumeroADELI,
-                      keyboardType: TextInputType.streetAddress,
+                      keyboardType: TextInputType.number,
                       decoration: const InputDecoration(
                         border: OutlineInputBorder(),
                         labelText: 'Code ADELI *',

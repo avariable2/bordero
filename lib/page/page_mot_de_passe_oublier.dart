@@ -1,6 +1,7 @@
 import 'package:app_psy/utils/fire_auth.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class MotDePasseOublier extends StatefulWidget {
   const MotDePasseOublier({Key? key}) : super(key: key);
@@ -75,7 +76,7 @@ class _MotDePasseOublierState extends State<MotDePasseOublier> {
                     child: const Text('Réinitialiser mot de passe'),
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
-                        FireAuth.reinitialiserMotDePasse(context: context, email: _emailController.text.trim());
+                        _reinitialiserMotDePasse();
                       }
                     })),
           ],
@@ -84,5 +85,8 @@ class _MotDePasseOublierState extends State<MotDePasseOublier> {
     );
   }
 
+  _reinitialiserMotDePasse() async {
+    await context.read<FireAuth>().reinitialiserMotDePasse(context: context, email: _emailController.text.trim());
+  }
 
 }
