@@ -641,6 +641,7 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture>
                   ),
                 ),
               ),
+              /*
               Expanded(
                 child: CheckboxListTile(
                   title: const Text("Sauvegarder"),
@@ -651,7 +652,7 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture>
                   },
                   controlAffinity: ListTileControlAffinity.leading,
                 ),
-              ),
+              ),*/
             ],
           ),
           const Divider(),
