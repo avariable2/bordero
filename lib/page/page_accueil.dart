@@ -4,7 +4,6 @@ import 'package:app_psy/dialog/modifier_client.dart';
 import 'package:app_psy/dialog/modifier_type_acte.dart';
 import 'package:app_psy/model/type_acte.dart';
 import 'package:flutter/material.dart';
-import 'package:sp_util/sp_util.dart';
 
 import '../dialog/ajouter_client.dart';
 import '../model/client.dart';
@@ -119,7 +118,7 @@ class _MonAccueilState extends State<MonAccueil> with WidgetsBindingObserver {
                 decoration: const InputDecoration(
                   border: OutlineInputBorder(),
                   labelText: 'Recherche client',
-                  helperText: 'Essayer le nom du client ou bien son prénom',
+                  helperText: 'Essayer le nom du client ou son prénom',
                 ),
                 onChanged: (String? entree) => setState(() {
                   if (entree != null && entree.length > 1) {

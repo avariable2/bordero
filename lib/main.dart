@@ -78,6 +78,16 @@ class AppPsy extends StatefulWidget {
 
 class _AppPsyState extends State<AppPsy> {
   int currentPageIndex = 0;
+  List<Widget> pageList = [
+    const PageAccueil(),
+    const PageFactures(),
+    Container(
+      color: Colors.blue,
+      alignment: Alignment.center,
+      child: const Text('Page 3'),
+    ),
+    const PageParametres(),
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -112,16 +122,7 @@ class _AppPsyState extends State<AppPsy> {
           )
         ],
       ),
-      body: <Widget>[
-        const PageAccueil(),
-        const PageFactures(),
-        Container(
-          color: Colors.blue,
-          alignment: Alignment.center,
-          child: const Text('Page 3'),
-        ),
-        const PageParametres(),
-      ][currentPageIndex],
+      body: IndexedStack(index: currentPageIndex, children: pageList,),
     );
   }
 }

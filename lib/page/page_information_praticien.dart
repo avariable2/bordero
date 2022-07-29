@@ -1,3 +1,4 @@
+import 'package:app_psy/main.dart';
 import 'package:app_psy/model/infos_praticien.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
@@ -100,6 +101,12 @@ class DialogInfoPraticienState extends State<DialogInfoPraticien> {
           Object obj = _creerInfosPraticien().toJson();
           SpUtil.putObject(InfosPraticien.keyObjInfosPraticien, obj);
           Navigator.of(context).pop();
+          Navigator.push(
+              context,
+              MaterialPageRoute<void>(
+              builder: (BuildContext context) => const AppPsy(),
+
+          ));
         }
       },
       controlsBuilder: (BuildContext context, ControlsDetails details) {
