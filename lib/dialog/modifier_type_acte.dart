@@ -78,7 +78,7 @@ class FullScreenDialogModifierTypeActe extends StatelessWidget {
     // Le client a bien été modifier
     if (value > 0) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("'${typeActe.nom}' à bien été supprimer")),
+        SnackBar(content: Text("'${typeActe.nom.trim()}' à bien été supprimer")),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -123,7 +123,7 @@ class DialogModifierTypeActeState extends State<DialogModifierTypeActe> {
   Future<void> _updateTypeActeDansBDD() async {
     TypeActe typeActe = TypeActe(
       id: widget.typeActe.id,
-      nom: _controllerChampNom.text,
+      nom: _controllerChampNom.text.trim(),
       prix: AppPsyUtils.tryParseDouble(_controllerChampPrix.text),
     );
 

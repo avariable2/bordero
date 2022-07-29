@@ -31,13 +31,15 @@ class _ParametresGlobauxState extends State<ParametresGlobaux> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Padding(
             padding: EdgeInsets.only(
               top: 70,
+              left: 20
             ),
             child: Text(
-              "Mes Paramètres",
+              "Mes paramètres",
               style: TextStyle(
                 fontSize: 35,
                 fontWeight: FontWeight.bold,
@@ -53,12 +55,12 @@ class _ParametresGlobauxState extends State<ParametresGlobaux> {
                 title: const Text("Mes informations"),
                 onTap: () {
                   Navigator.push(
-                    context,
-                    MaterialPageRoute<void>(
-                      builder: (BuildContext context) => const FullScreenDialogInformationPraticien(),
-                      fullscreenDialog: true,
-                    )
-                  );
+                      context,
+                      MaterialPageRoute<void>(
+                        builder: (BuildContext context) =>
+                            const FullScreenDialogInformationPraticien(),
+                        fullscreenDialog: true,
+                      ));
                 },
               ),
               ListTile(

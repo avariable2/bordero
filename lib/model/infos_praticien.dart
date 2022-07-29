@@ -39,7 +39,7 @@ class InfosPraticien {
   final String email;
   final int numeroSIRET;
   final int numeroADELI;
-  final List<dynamic> payements;
+  final String payements;
   final bool exonererTVA;
 
   const InfosPraticien(
@@ -66,7 +66,7 @@ class InfosPraticien {
           String? email,
           int? numeroADELI,
           int? numeroSIRET,
-          List<dynamic>? payements,
+          String? payements,
           bool? exonererTVA}) =>
       InfosPraticien(
         nom: nom ?? this.nom,
@@ -92,7 +92,7 @@ class InfosPraticien {
       email: json[InfosPraticienChamps.email] as String,
       numeroADELI: json[InfosPraticienChamps.numeroADELI] as int,
       numeroSIRET: json[InfosPraticienChamps.numeroSIRET] as int,
-      payements: json[InfosPraticienChamps.payements] as List<dynamic>,
+      payements: json[InfosPraticienChamps.payements] as String,
       exonererTVA: json[InfosPraticienChamps.exonererTVA] as bool);
 
   Map<String, Object?> toJson() => {
@@ -108,4 +108,41 @@ class InfosPraticien {
         InfosPraticienChamps.payements: payements,
         InfosPraticienChamps.exonererTVA: exonererTVA,
       };
+}
+
+class TypePayementChamps {
+  static final List<String> values = [
+    // Ajouter tous les champs
+    key,
+    selectionner,
+  ];
+
+  static const String key = 'key';
+  static const String selectionner = 'selectionner';
+}
+
+class TypePayement {
+  String key;
+  bool selectionner;
+
+  TypePayement({required this.key, required this.selectionner});
+
+  static TypePayement fromJson(Map<String, dynamic> json) => TypePayement(
+        key: json[TypePayementChamps.key] as String,
+        selectionner: json[TypePayementChamps.selectionner] as bool,
+      );
+
+  static List<TypePayement> getListTypePaymentFromDynamic(List<dynamic> l) {
+    List<TypePayement> listReturn = [];
+    for (dynamic element in l) {
+      listReturn.add(TypePayement(key: element["key"], selectionner: element["selectionner"]));
+    }
+    return listReturn;
+  }
+
+  Map<String, Object?> toJson() => {
+        TypePayementChamps.key: key,
+        TypePayementChamps.selectionner: selectionner,
+      };
+
 }

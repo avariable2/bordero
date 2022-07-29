@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:app_psy/main.dart';
 import 'package:app_psy/model/infos_praticien.dart';
 import 'package:email_validator/email_validator.dart';
@@ -32,6 +34,13 @@ class DialogInfoPraticienState extends State<DialogInfoPraticien> {
   final _formPersonnelKey = GlobalKey<FormState>();
   final _formProfessionelKey = GlobalKey<FormState>();
 
+  List<TypePayement> listTypePayements = [
+    TypePayement(key: "Virement bancaire", selectionner: false),
+    TypePayement(key: "Liquide", selectionner: false),
+    TypePayement(key: "Carte bleu", selectionner: false),
+    TypePayement(key: "Chèque", selectionner: false)
+  ];
+
   // Permet de recuperer les champs à la fin
   final controllerChampNom = TextEditingController();
   final controllerChampPrenom = TextEditingController();
@@ -45,13 +54,6 @@ class DialogInfoPraticienState extends State<DialogInfoPraticien> {
   bool estExonererDeTVA = false;
 
   int _indexStepper = 0;
-
-  final List<bool> _listCheckbox = [
-    false,
-    false,
-    false,
-    false,
-  ];
 
   void setStateIfMounted(f) {
     if (mounted) setState(f);
@@ -101,12 +103,21 @@ class DialogInfoPraticienState extends State<DialogInfoPraticien> {
           Object obj = _creerInfosPraticien().toJson();
           SpUtil.putObject(InfosPraticien.keyObjInfosPraticien, obj);
           Navigator.of(context).pop();
-          Navigator.push(
-              context,
-              MaterialPageRoute<void>(
-              builder: (BuildContext context) => const AppPsy(),
+          if (SpUtil.haveKey(InfosPraticien.keyObjInfosPraticien) ?? false) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                  content:
+                  Text("Vos informations ont bien été modifiées.")),
+            );
+          } else {
+            Navigator.push(
+                context,
+                MaterialPageRoute<void>(
+                  builder: (BuildContext context) => const AppPsy(),
 
-          ));
+                ));
+          }
+
         }
       },
       controlsBuilder: (BuildContext context, ControlsDetails details) {
@@ -388,22 +399,22 @@ class DialogInfoPraticienState extends State<DialogInfoPraticien> {
                     children: [
                       Expanded(
                         child: CheckboxListTile(
-                          title: const Text("Virement bancaire"),
-                          value: _listCheckbox[0],
+                          title: Text(listTypePayements[0].key),
+                          value: listTypePayements[0].selectionner,
                           onChanged: (bool? value) => {
                             setStateIfMounted(
-                                () => _listCheckbox[0] = !_listCheckbox[0])
+                                () => listTypePayements[0].selectionner = !listTypePayements[0].selectionner)
                           },
                           controlAffinity: ListTileControlAffinity.leading,
                         ),
                       ),
                       Expanded(
                         child: CheckboxListTile(
-                          title: const Text("Liquide"),
-                          value: _listCheckbox[1],
+                          title: Text(listTypePayements[1].key),
+                          value: listTypePayements[1].selectionner,
                           onChanged: (bool? value) => {
                             setStateIfMounted(
-                                () => _listCheckbox[1] = !_listCheckbox[1])
+                                () => listTypePayements[1].selectionner = !listTypePayements[1].selectionner)
                           },
                           controlAffinity: ListTileControlAffinity.leading,
                         ),
@@ -414,22 +425,22 @@ class DialogInfoPraticienState extends State<DialogInfoPraticien> {
                     children: [
                       Expanded(
                         child: CheckboxListTile(
-                          title: const Text("Carte bleu"),
-                          value: _listCheckbox[2],
+                          title: Text(listTypePayements[2].key),
+                          value: listTypePayements[2].selectionner,
                           onChanged: (bool? value) => {
                             setStateIfMounted(
-                                () => _listCheckbox[2] = !_listCheckbox[2])
+                                    () => listTypePayements[2].selectionner = !listTypePayements[2].selectionner)
                           },
                           controlAffinity: ListTileControlAffinity.leading,
                         ),
                       ),
                       Expanded(
                         child: CheckboxListTile(
-                          title: const Text("Chèque"),
-                          value: _listCheckbox[3],
+                          title: Text(listTypePayements[3].key),
+                          value: listTypePayements[3].selectionner,
                           onChanged: (bool? value) => {
                             setStateIfMounted(
-                                () => _listCheckbox[3] = !_listCheckbox[3])
+                                    () => listTypePayements[3].selectionner = !listTypePayements[3].selectionner)
                           },
                           controlAffinity: ListTileControlAffinity.leading,
                         ),
@@ -443,18 +454,6 @@ class DialogInfoPraticienState extends State<DialogInfoPraticien> {
   }
 
   InfosPraticien _creerInfosPraticien() {
-    List<String> listTypePayements = [
-      "Virement bancaire",
-      "Liquide",
-      "Carte bleu",
-      "Chèque"
-    ];
-    List<String> listCopie = [];
-    for (int i = 0; i < _listCheckbox.length - 1; i++) {
-      if (_listCheckbox[i]) {
-        listCopie.add(listTypePayements[i]);
-      }
-    }
     return InfosPraticien(
       nom: controllerChampNom.text.trim(),
       prenom: controllerChampPrenom.text.trim(),
@@ -465,8 +464,8 @@ class DialogInfoPraticienState extends State<DialogInfoPraticien> {
       email: controllerChampEmail.text.trim(),
       numeroSIRET: int.parse(controllerChampNumeroSIRET.text.trim()),
       numeroADELI: int.parse(controllerChampNumeroADELI.text.trim()),
-      payements: listCopie,
       exonererTVA: estExonererDeTVA,
+      payements: jsonEncode(listTypePayements),
     );
   }
 
@@ -484,6 +483,7 @@ class DialogInfoPraticienState extends State<DialogInfoPraticien> {
       controllerChampNumeroSIRET.text = info.numeroSIRET.toString();
       controllerChampNumeroADELI.text = info.numeroADELI.toString();
       estExonererDeTVA = info.exonererTVA;
+      listTypePayements = TypePayement.getListTypePaymentFromDynamic(jsonDecode(info.payements));
     }
   }
 }

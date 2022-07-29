@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:app_psy/model/facture.dart';
@@ -35,7 +36,7 @@ class PdfFactureApi {
 
     var prenoms = "";
     for (Client c in facture.listClients) {
-      prenoms += "-${c.prenom}-${c.nom}";
+      prenoms += "-${c.prenom.trim()}-${c.nom.trim()}";
     }
     final titre =
         'Facture#${facture.id}$prenoms(${facture.dateCreationFacture.month}-${facture.dateCreationFacture.year}).pdf';
@@ -194,14 +195,15 @@ class PdfFactureApi {
         ]));
   }
 
-  static Widget buildPayement(Facture facture,InfosPraticien infos) {
+  static Widget buildPayement(Facture facture, InfosPraticien infos) {
     var dateLimite = "";
     if (facture.dateLimitePayement != null) {
       dateLimite = AppPsyUtils.toDateString(facture.dateLimitePayement!);
     }
     var listePayement = "";
-    for (String type in infos.payements) {
-      listePayement += "$type,";
+    List<TypePayement> listPayements = TypePayement.getListTypePaymentFromDynamic(jsonDecode(infos.payements));
+    for (TypePayement type in listPayements) {
+      if (type.selectionner) listePayement += "${type.key},";
     }
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       SizedBox(height: 30),
