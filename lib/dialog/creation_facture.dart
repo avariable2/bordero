@@ -577,7 +577,7 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture>
             ),
             ElevatedButton.icon(
               onPressed: () {
-                if (_formKeySeance.currentState!.validate()) {
+                if (_formKeySeance.currentState!.validate() && _dropdownSelectionnerTypeActe.isNotEmpty) {
                   setState(() => _ajouterSeance());
                 }
               },

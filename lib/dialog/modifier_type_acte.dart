@@ -69,7 +69,7 @@ class FullScreenDialogModifierTypeActe extends StatelessWidget {
   }
 
   Future<void> _deleteTypeActeDansBDD(BuildContext context) async {
-    await AppPsyDatabase.instance.deleteClient(typeActe.id!).then((value) => {
+    await AppPsyDatabase.instance.deleteTypeActe(typeActe.id!).then((value) => {
       _afficherResultatSnackbarPuisRetourEnArriere(context, value),
     });
   }
@@ -78,7 +78,7 @@ class FullScreenDialogModifierTypeActe extends StatelessWidget {
     // Le client a bien été modifier
     if (value > 0) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('${typeActe.nom.toUpperCase()} à bien été supprimer')),
+        SnackBar(content: Text("'${typeActe.nom}' à bien été supprimer")),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(

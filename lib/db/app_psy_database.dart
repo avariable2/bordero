@@ -4,7 +4,7 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart' as p;
 
 class AppPsyDatabase {
-  final int VERSION_DBB = 10;
+  final int VERSION_DBB = 11;
 
   static final AppPsyDatabase instance = AppPsyDatabase._init();
 
@@ -222,6 +222,18 @@ class AppPsyDatabase {
       whereArgs: [typeActe.id],
     );
   }
+
+  Future<int> deleteTypeActe(int id) async {
+    final db = await instance.database;
+
+    return await db.delete(
+      tableTypeActe,
+      where: '${TypeActeChamps.id} = ?',
+      whereArgs: [id],
+    );
+  }
+
+  /// BDDD
 
   Future close() async {
     final db = await instance.database;
