@@ -54,13 +54,13 @@ class FullScreenDialogModifierClient extends StatelessWidget {
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context, 'Cancel'),
-                child: const Text("Non"),
+                child: const Text("ANNULER"),
               ),
               TextButton(
                 onPressed: () {
                   _deleteClientDansBDD(context);
                 },
-                child: const Text("Oui"),),
+                child: const Text("SUPPRIMER"),),
             ],
             elevation: 24.0,
           ),

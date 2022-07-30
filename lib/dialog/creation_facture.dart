@@ -121,7 +121,7 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture>
               } else if (_indexStepper == 2) {
                 if (_formKeyFacture.currentState!.validate()) {
                   //_afficherAvertissementEtConditionPourPoursuivre();
-                  _creationPdfEtOuverture();
+                  _creationPdfEtOuverture(_aUneDateLimite);
                 }
               }
             },
@@ -445,6 +445,7 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture>
                   child: TextFormField(
                     enabled: _aUneDateLimite,
                     controller: _controllerChampDateLimitePayement,
+                    enableInteractiveSelection: false,
                     keyboardType: TextInputType.datetime,
                     onTap: () {
                       FocusScope.of(context).requestFocus(FocusNode());
@@ -711,13 +712,13 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture>
     }
   }
 
-  Future<void> _creationPdfEtOuverture() async {
+  Future<void> _creationPdfEtOuverture(bool aDateLimite) async {
     Facture facture = Facture(
         id: _controllerNumeroFacture.text,
         dateCreationFacture: DateTime.now(),
         listClients: _clientSelectionner,
         listSeances: _listSeances,
-        dateLimitePayement: _dateLimitePayement,
+        dateLimitePayement: aDateLimite == true ? _dateLimitePayement : null,
         signaturePNG: await _controllerSignature.toPngBytes());
 
     PdfFactureApi.generate(facture).then((value) {
