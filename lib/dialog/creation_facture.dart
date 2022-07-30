@@ -65,8 +65,461 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture>
   int _indexStepper = 0;
   bool _isLoading = false;
   bool _aUneDateLimite = false;
+
   //bool _sauvegarderIdFacture = SpUtil.getBool(AppPsyUtils.CACHE_SAUVEGARDER_NUMERO_FACTURE) ?? false;
   late String _dropdownSelectionnerTypeActe;
+
+  @override
+  void initState() {
+    WidgetsBinding.instance.addObserver(this);
+    super.initState();
+
+    _getListClients();
+    //_getSpUtilsInitialisation();
+
+    _controllerChampDate.text = AppPsyUtils.toDateString(_dateEmission);
+    _controllerChampNombreUH.text = "1";
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+
+    _controllerChampDate.dispose();
+    _controllerChampPrix.dispose();
+    _controllerChampNombreUH.dispose();
+    _controllerNumeroFacture.dispose();
+    _controllerChampDateLimitePayement.dispose();
+    _controllerSignature.dispose();
+  }
+
+  /// Pour empecher les fuites memoires et les potenciel bugs.
+  /// Uniquement pour les setState dans une fonction await
+  void setStateIfMounted(f) {
+    if (mounted) setState(f);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return _isLoading
+        ? const Center(child: CircularProgressIndicator())
+        : Stepper(
+            type: StepperType.horizontal,
+            currentStep: _indexStepper,
+            onStepCancel: () {
+              if (_indexStepper > 0) {
+                setStateIfMounted(() => _indexStepper--);
+              }
+            },
+            onStepContinue: () {
+              if (_indexStepper < 2 && _indexStepper >= 0) {
+                if (_checkConditionsPourContinuer()) {
+                  setStateIfMounted(() => _indexStepper++);
+                } else {
+                  _afficherAvertissementEtConditionPourPoursuivre();
+                }
+              } else if (_indexStepper == 2) {
+                if (_formKeyFacture.currentState!.validate()) {
+                  //_afficherAvertissementEtConditionPourPoursuivre();
+                  _creationPdfEtOuverture();
+                }
+              }
+            },
+            controlsBuilder: (BuildContext context, ControlsDetails details) {
+              return Row(
+                children: <Widget>[
+                  ElevatedButton(
+                    onPressed: details.onStepContinue,
+                    child: const Text('CONTINUER'),
+                  ),
+                  const SizedBox(
+                    width: 10,
+                  ),
+                  TextButton(
+                    onPressed: details.onStepCancel,
+                    child: const Text(
+                      'RETOUR',
+                      style: TextStyle(color: Colors.white70),
+                    ),
+                  ),
+                ],
+              );
+            },
+            steps: [
+              Step(
+                  title: const Text("Client(s)"),
+                  isActive: _indexStepper >= 0,
+                  content: buildClient()),
+              Step(
+                  title: const Text("Séance(s)"),
+                  isActive: _indexStepper >= 1,
+                  content: buildSeance()),
+              Step(
+                  title: const Text("Facture"),
+                  isActive: _indexStepper >= 2,
+                  content: buildFacture())
+            ],
+          );
+  }
+
+  Widget buildClient() {
+    return ListView(
+      shrinkWrap: true,
+      physics: const BouncingScrollPhysics(),
+      padding: const EdgeInsets.only(
+        left: 0,
+        top: 20,
+        right: 0,
+      ),
+      children: [
+        const Text(
+          "Sélectionner client(s)",
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            inherit: true,
+            letterSpacing: 0.4,
+          ),
+        ),
+        const SizedBox(
+          height: 15,
+        ),
+        if (_listClients.isEmpty)
+          const Text(
+            "🤔​ Aucun clients ",
+            style: TextStyle(
+              fontSize: 18,
+            ),
+          )
+        else
+          SizedBox(
+            height: 150,
+            child: Card(
+              borderOnForeground: true,
+              child: ListView(
+                scrollDirection: Axis.vertical,
+                shrinkWrap: true,
+                addAutomaticKeepAlives: false,
+                children: [
+                  for (var i = 0; i < _listClients.length; i++)
+                    ListTile(
+                        title: Text(
+                            "${_listClients[i].prenom} ${_listClients[i].nom} / ${_listClients[i].email}"),
+                        leading: const Icon(Icons.account_circle_sharp),
+                        selected: _selected[i],
+                        onTap: () => setStateIfMounted(() => {
+                              if (!_clientSelectionner
+                                  .contains(_listClients[i]))
+                                {
+                                  _clientSelectionner.add(_listClients[i]),
+                                  _selected[i] = true,
+                                }
+                              else
+                                {
+                                  _clientSelectionner.remove(_listClients[i]),
+                                  _selected[i] = false,
+                                }
+                            })),
+                ],
+              ),
+            ),
+          ),
+        const Divider(
+          height: 30,
+        ),
+        for (Client client in _clientSelectionner)
+          Text(" - ${client.nom} ${client.prenom} / ${client.email}"),
+        const SizedBox(
+          height: 20,
+        ),
+      ],
+    );
+  }
+
+  Widget buildSeance() {
+    return SingleChildScrollView(
+      child: Form(
+        key: _formKeySeance,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  flex: 3,
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                      bottom: 10,
+                    ),
+                    child: DropdownButtonFormField(
+                      validator: (String? value) {
+                        if (value == null || value.isEmpty) {
+                          return "Sélectionnez un type de séance";
+                        }
+                        return null;
+                      },
+                      hint: const Text(
+                          "Le service que vous avez rendu a votre client"),
+                      isExpanded: true,
+                      decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          labelText: "Type d'acte",
+                          icon: Icon(Icons.assignment_outlined)),
+                      value: _dropdownSelectionnerTypeActe,
+                      items: _listTypeActes
+                          .map((typeActe) => DropdownMenuItem(
+                                value: typeActe.nom,
+                                child: Text(
+                                    //overflow: TextOverflow.,
+                                    typeActe.nom.toString()),
+                              ))
+                          .toList(),
+                      onChanged: (String? value) {
+                        setState(() {
+                          _dropdownSelectionnerTypeActe = value!;
+                          _afficherPrixDansController();
+                        });
+                      },
+                    ),
+                  ),
+                ),
+                Expanded(
+                  flex: 2,
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 8, bottom: 10),
+                    child: TextFormField(
+                      controller: _controllerChampPrix,
+                      keyboardType: TextInputType.number,
+                      decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          labelText: 'Prix HT',
+                          icon: Icon(Icons.euro_outlined)),
+                      // The validator receives the text that the user has entered.
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Entrer un prix HT';
+                        }
+                        return null;
+                      },
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            Row(
+              children: [
+                Expanded(
+                  flex: 3,
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 10),
+                    child: TextFormField(
+                      controller: _controllerChampDate,
+                      keyboardType: TextInputType.datetime,
+                      onTap: () {
+                        FocusScope.of(context).requestFocus(FocusNode());
+
+                        _selectDateSeance();
+                      },
+                      decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          labelText: "Date d'emission",
+                          icon: Icon(Icons.date_range_outlined)),
+                    ),
+                  ),
+                ),
+                Expanded(
+                  flex: 3,
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 10, bottom: 10),
+                    child: TextFormField(
+                      controller: _controllerChampNombreUH,
+                      keyboardType: TextInputType.number,
+                      decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          labelText: 'Quantité',
+                          icon: Icon(Icons.onetwothree_outlined)),
+                      // The validator receives the text that the user has entered.
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Entrer un nombre valide';
+                        }
+                        return null;
+                      },
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            ElevatedButton.icon(
+              onPressed: () {
+                if (_formKeySeance.currentState!.validate() &&
+                    dropdownEstNonEmptyOuAfficheErreur()) {
+                  setState(() => _ajouterSeance());
+                }
+              },
+              label: const Text("AJOUTER"),
+              icon: const Icon(Icons.add),
+            ),
+            const Divider(),
+            SizedBox(
+              height: 200,
+              child: ListView(
+                  scrollDirection: Axis.vertical,
+                  shrinkWrap: true,
+                  addAutomaticKeepAlives: false,
+                  children: [
+                    for (Seance seance in _listSeances)
+                      Card(
+                        child: ListTile(
+                          title: Text(
+                              "${seance.quantite} ${seance.nom} le (${seance.date.day}/${seance.date.month}/${seance.date.year})"),
+                          leading: const Icon(Icons.work_history_outlined),
+                          onTap: () {
+                            _afficherAvertissementAvantSuppression(seance);
+                          },
+                        ),
+                      ),
+                  ]),
+            ),
+            const SizedBox(
+              height: 20,
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget buildFacture() {
+    return SingleChildScrollView(
+      child: Form(
+        key: _formKeyFacture,
+        child: Column(children: [
+          Row(
+            children: [
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 10),
+                  child: TextFormField(
+                    controller: _controllerNumeroFacture,
+                    keyboardType: TextInputType.number,
+                    decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: 'Numero de facture',
+                        icon: Icon(Icons.numbers_outlined)),
+                    // The validator receives the text that the user has entered.
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Entrer un numéro de facture';
+                      }
+                      return null;
+                    },
+                  ),
+                ),
+              ),
+              /*
+              Expanded(
+                child: CheckboxListTile(
+                  title: const Text("Sauvegarder"),
+                  value: _sauvegarderIdFacture,
+                  onChanged: (bool? value) {
+                    setState(
+                        () => _sauvegarderIdFacture = !_sauvegarderIdFacture);
+                  },
+                  controlAffinity: ListTileControlAffinity.leading,
+                ),
+              ),*/
+            ],
+          ),
+          const Divider(),
+          Row(
+            children: [
+              Switch(
+                  value: _aUneDateLimite,
+                  onChanged: (bool value) {
+                    setState(() => _aUneDateLimite = !_aUneDateLimite);
+                  }),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 10, bottom: 10),
+                  child: TextFormField(
+                    enabled: _aUneDateLimite,
+                    controller: _controllerChampDateLimitePayement,
+                    keyboardType: TextInputType.datetime,
+                    onTap: () {
+                      FocusScope.of(context).requestFocus(FocusNode());
+
+                      _selectDateLimitePayement();
+                    },
+                    decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: "Date limite de payement",
+                        icon: Icon(Icons.date_range_outlined)),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const Divider(),
+          const Padding(
+            padding: EdgeInsets.only(top: 10, bottom: 10),
+            child: Text(
+              "Signature",
+              style: TextStyle(fontSize: 18),
+            ),
+          ),
+          buildSignature(),
+          const SizedBox(
+            height: 20,
+          )
+        ]),
+      ),
+    );
+  }
+
+  Widget buildSignature() {
+    return Row(
+      children: [
+        ClipRect(
+          child: SizedBox(
+            height: 100,
+            child: Signature(
+              width: 200,
+              height: 100,
+              controller: _controllerSignature,
+            ),
+          ),
+        ),
+        IconButton(
+            onPressed: () {
+              setState(() => _controllerSignature.clear());
+            },
+            icon: const Icon(Icons.refresh_outlined))
+      ],
+    );
+  }
+
+  bool dropdownEstNonEmptyOuAfficheErreur() {
+    if (_dropdownSelectionnerTypeActe.isEmpty) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+          title: const Text("Aucun type d'acte séléctionner"),
+          content: const Text(
+              "Vous devez séléctionner ou creer au moins un type d'acte pour ajouter une séance sur votre facture."),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, 'RETOUR'),
+              child: const Text("OK"),
+            ),
+          ],
+          elevation: 24.0,
+        ),
+      );
+      return false;
+    }
+    return true;
+  }
 
   /// Il affiche une boîte de dialogue avec un message d'avertissement et deux
   /// boutons, un pour annuler l'action et un pour la confirmer
@@ -291,7 +744,8 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture>
     PdfFactureApi.generate(facture).then((value) {
       if (value == null) {
         const SnackBar(
-            content: Text("Il viens de se produire une erreur, nous sommes désolé."));
+            content: Text(
+                "Il viens de se produire une erreur, nous sommes désolé."));
         return;
       }
       Navigator.of(context).push(MaterialPageRoute(
@@ -299,426 +753,5 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture>
                 fichier: value,
               )));
     });
-  }
-
-  @override
-  void initState() {
-    WidgetsBinding.instance.addObserver(this);
-    super.initState();
-
-    _getListClients();
-    //_getSpUtilsInitialisation();
-
-    _controllerChampDate.text = AppPsyUtils.toDateString(_dateEmission);
-    _controllerChampNombreUH.text = "1";
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-
-    _controllerChampDate.dispose();
-    _controllerChampPrix.dispose();
-    _controllerChampNombreUH.dispose();
-    _controllerNumeroFacture.dispose();
-    _controllerChampDateLimitePayement.dispose();
-    _controllerSignature.dispose();
-  }
-
-  /// Pour empecher les fuites memoires et les potenciel bugs.
-  /// Uniquement pour les setState dans une fonction await
-  void setStateIfMounted(f) {
-    if (mounted) setState(f);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return _isLoading
-        ? const Center(child: CircularProgressIndicator())
-        : Stepper(
-            type: StepperType.horizontal,
-            currentStep: _indexStepper,
-            onStepCancel: () {
-              if (_indexStepper > 0) {
-                setStateIfMounted(() => _indexStepper--);
-              }
-            },
-            onStepContinue: () {
-              if (_indexStepper < 2 && _indexStepper >= 0) {
-                if (_checkConditionsPourContinuer()) {
-                  setStateIfMounted(() => _indexStepper++);
-                } else {
-                  _afficherAvertissementEtConditionPourPoursuivre();
-                }
-              } else if (_indexStepper == 2) {
-                if (_formKeyFacture.currentState!.validate()) {
-                  //_afficherAvertissementEtConditionPourPoursuivre();
-                  _creationPdfEtOuverture();
-                }
-              }
-            },
-            controlsBuilder: (BuildContext context, ControlsDetails details) {
-              return Row(
-                children: <Widget>[
-                  ElevatedButton(
-                    onPressed: details.onStepContinue,
-                    child: const Text('CONTINUER'),
-                  ),
-                  const SizedBox(
-                    width: 10,
-                  ),
-                  TextButton(
-                    onPressed: details.onStepCancel,
-                    child: const Text(
-                      'RETOUR',
-                      style: TextStyle(color: Colors.white70),
-                    ),
-                  ),
-                ],
-              );
-            },
-            steps: [
-              Step(
-                  title: const Text("Client(s)"),
-                  isActive: _indexStepper >= 0,
-                  content: buildClient()),
-              Step(
-                  title: const Text("Séance(s)"),
-                  isActive: _indexStepper >= 1,
-                  content: buildSeance()),
-              Step(
-                  title: const Text("Facture"),
-                  isActive: _indexStepper >= 2,
-                  content: buildFacture())
-            ],
-          );
-  }
-
-  Widget buildClient() {
-    return ListView(
-      shrinkWrap: true,
-      physics: const BouncingScrollPhysics(),
-      padding: const EdgeInsets.only(
-        left: 0,
-        top: 20,
-        right: 0,
-      ),
-      children: [
-        const Text(
-          "Sélectionner client(s)",
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            inherit: true,
-            letterSpacing: 0.4,
-          ),
-        ),
-        const SizedBox(
-          height: 15,
-        ),
-        if (_listClients.isEmpty)
-          const Text(
-            "🤔​ Aucun clients ",
-            style: TextStyle(
-              fontSize: 18,
-            ),
-          )
-        else
-          SizedBox(
-            height: 150,
-            child: Card(
-              borderOnForeground: true,
-              child: ListView(
-                scrollDirection: Axis.vertical,
-                shrinkWrap: true,
-                addAutomaticKeepAlives: false,
-                children: [
-                  for (var i = 0; i < _listClients.length; i++)
-                    ListTile(
-                        title: Text(
-                            "${_listClients[i].prenom} ${_listClients[i].nom} / ${_listClients[i].email}"),
-                        leading: const Icon(Icons.account_circle_sharp),
-                        selected: _selected[i],
-                        onTap: () => setStateIfMounted(() => {
-                              if (!_clientSelectionner
-                                  .contains(_listClients[i]))
-                                {
-                                  _clientSelectionner.add(_listClients[i]),
-                                  _selected[i] = true,
-                                }
-                              else
-                                {
-                                  _clientSelectionner.remove(_listClients[i]),
-                                  _selected[i] = false,
-                                }
-                            })),
-                ],
-              ),
-            ),
-          ),
-        const Divider(
-          height: 30,
-        ),
-        for (Client client in _clientSelectionner)
-          Text(" - ${client.nom} ${client.prenom} / ${client.email}"),
-        const SizedBox(
-          height: 20,
-        ),
-      ],
-    );
-  }
-
-  Widget buildSeance() {
-    return SingleChildScrollView(
-      child: Form(
-        key: _formKeySeance,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Row(
-              children: [
-                Expanded(
-                  flex: 3,
-                  child: Padding(
-                    padding: const EdgeInsets.only(
-                      bottom: 10,
-                    ),
-                    child: DropdownButtonFormField(
-                      isExpanded: true,
-                      decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: 'Type de préstation',
-                          icon: Icon(Icons.assignment_outlined)),
-                      value: _dropdownSelectionnerTypeActe,
-                      items: _listTypeActes
-                          .map((typeActe) => DropdownMenuItem(
-                                value: typeActe.nom,
-                                child: Text(
-                                    //overflow: TextOverflow.,
-                                    typeActe.nom.toString()),
-                              ))
-                          .toList(),
-                      onChanged: (String? value) {
-                        setState(() {
-                          _dropdownSelectionnerTypeActe = value!;
-                          _afficherPrixDansController();
-                        });
-                      },
-                    ),
-                  ),
-                ),
-                Expanded(
-                  flex: 2,
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 8, bottom: 10),
-                    child: TextFormField(
-                      controller: _controllerChampPrix,
-                      keyboardType: TextInputType.number,
-                      decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: 'Prix HT',
-                          icon: Icon(Icons.euro_outlined)),
-                      // The validator receives the text that the user has entered.
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Entrer un prix HT';
-                        }
-                        return null;
-                      },
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            Row(
-              children: [
-                Expanded(
-                  flex: 3,
-                  child: Padding(
-                    padding: const EdgeInsets.only(bottom: 10),
-                    child: TextFormField(
-                      controller: _controllerChampDate,
-                      keyboardType: TextInputType.datetime,
-                      onTap: () {
-                        FocusScope.of(context).requestFocus(FocusNode());
-
-                        _selectDateSeance();
-                      },
-                      decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: "Date d'emission",
-                          icon: Icon(Icons.date_range_outlined)),
-                    ),
-                  ),
-                ),
-                Expanded(
-                  flex: 3,
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 10, bottom: 10),
-                    child: TextFormField(
-                      controller: _controllerChampNombreUH,
-                      keyboardType: TextInputType.number,
-                      decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: 'Quantité',
-                          icon: Icon(Icons.onetwothree_outlined)),
-                      // The validator receives the text that the user has entered.
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Entrer un nombre valide';
-                        }
-                        return null;
-                      },
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            ElevatedButton.icon(
-              onPressed: () {
-                if (_formKeySeance.currentState!.validate() && _dropdownSelectionnerTypeActe.isNotEmpty) {
-                  setState(() => _ajouterSeance());
-                }
-              },
-              label: const Text("AJOUTER"),
-              icon: const Icon(Icons.add),
-            ),
-            const Divider(),
-            SizedBox(
-              height: 200,
-              child: ListView(
-                  scrollDirection: Axis.vertical,
-                  shrinkWrap: true,
-                  addAutomaticKeepAlives: false,
-                  children: [
-                    for (Seance seance in _listSeances)
-                      Card(
-                        child: ListTile(
-                          title: Text(
-                              "${seance.quantite} ${seance.nom} le (${seance.date.day}/${seance.date.month}/${seance.date.year})"),
-                          leading: const Icon(Icons.work_history_outlined),
-                          onTap: () {
-                            _afficherAvertissementAvantSuppression(seance);
-                          },
-                        ),
-                      ),
-                  ]),
-            ),
-            const SizedBox(
-              height: 20,
-            )
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget buildFacture() {
-    return SingleChildScrollView(
-      child: Form(
-        key: _formKeyFacture,
-        child: Column(children: [
-          Row(
-            children: [
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.only(bottom: 10),
-                  child: TextFormField(
-                    controller: _controllerNumeroFacture,
-                    keyboardType: TextInputType.number,
-                    decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: 'Numero de facture',
-                        icon: Icon(Icons.numbers_outlined)),
-                    // The validator receives the text that the user has entered.
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Entrer un numéro de facture';
-                      }
-                      return null;
-                    },
-                  ),
-                ),
-              ),
-              /*
-              Expanded(
-                child: CheckboxListTile(
-                  title: const Text("Sauvegarder"),
-                  value: _sauvegarderIdFacture,
-                  onChanged: (bool? value) {
-                    setState(
-                        () => _sauvegarderIdFacture = !_sauvegarderIdFacture);
-                  },
-                  controlAffinity: ListTileControlAffinity.leading,
-                ),
-              ),*/
-            ],
-          ),
-          const Divider(),
-          Row(
-            children: [
-              Switch(
-                  value: _aUneDateLimite,
-                  onChanged: (bool value) {
-                    setState(() => _aUneDateLimite = !_aUneDateLimite);
-                  }),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 10, bottom: 10),
-                  child: TextFormField(
-                    enabled: _aUneDateLimite,
-                    controller: _controllerChampDateLimitePayement,
-                    keyboardType: TextInputType.datetime,
-                    onTap: () {
-                      FocusScope.of(context).requestFocus(FocusNode());
-
-                      _selectDateLimitePayement();
-                    },
-                    decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: "Date limite de payement",
-                        icon: Icon(Icons.date_range_outlined)),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const Divider(),
-          const Padding(
-            padding: EdgeInsets.only(top: 10, bottom: 10),
-            child: Text(
-              "Signature",
-              style: TextStyle(fontSize: 18),
-            ),
-          ),
-          buildSignature(),
-          const SizedBox(
-            height: 20,
-          )
-        ]),
-      ),
-    );
-  }
-
-  Widget buildSignature() {
-    return Row(
-      children: [
-        ClipRect(
-          child: SizedBox(
-            height: 100,
-            child: Signature(
-              width: 200,
-              height: 100,
-              controller: _controllerSignature,
-            ),
-          ),
-        ),
-        IconButton(
-            onPressed: () {
-              setState(() => _controllerSignature.clear());
-            },
-            icon: const Icon(Icons.refresh_outlined))
-      ],
-    );
   }
 }
