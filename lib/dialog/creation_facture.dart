@@ -315,6 +315,7 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture>
                     child: TextFormField(
                       controller: _controllerChampDate,
                       keyboardType: TextInputType.datetime,
+                      enableInteractiveSelection: false,
                       onTap: () {
                         FocusScope.of(context).requestFocus(FocusNode());
 
@@ -352,8 +353,7 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture>
             ),
             ElevatedButton.icon(
               onPressed: () {
-                if (_formKeySeance.currentState!.validate() &&
-                    dropdownEstNonEmptyOuAfficheErreur()) {
+                if (_formKeySeance.currentState!.validate()) {
                   setState(() => _ajouterSeance());
                 }
               },
@@ -499,28 +499,6 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture>
     );
   }
 
-  bool dropdownEstNonEmptyOuAfficheErreur() {
-    if (_dropdownSelectionnerTypeActe.isEmpty) {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) => AlertDialog(
-          title: const Text("Aucun type d'acte séléctionner"),
-          content: const Text(
-              "Vous devez séléctionner ou creer au moins un type d'acte pour ajouter une séance sur votre facture."),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context, 'RETOUR'),
-              child: const Text("OK"),
-            ),
-          ],
-          elevation: 24.0,
-        ),
-      );
-      return false;
-    }
-    return true;
-  }
-
   /// Il affiche une boîte de dialogue avec un message d'avertissement et deux
   /// boutons, un pour annuler l'action et un pour la confirmer
   ///
@@ -607,6 +585,7 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture>
       initialDate: _dateEmission,
       firstDate: DateTime(2015),
       lastDate: DateTime(2100),
+      locale: const Locale("fr", "FR"),
       helpText: 'Selectionner une date',
     );
     if (newDate != null) {

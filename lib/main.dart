@@ -11,6 +11,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:sp_util/sp_util.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'model/infos_praticien.dart';
 
@@ -40,6 +41,14 @@ class MyApp extends StatelessWidget {
       ],
       child: MaterialApp(
           title: "Bordero",
+          localizationsDelegates: const [
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: const [
+            Locale('fr'), // French, no country code
+          ],
           theme: ThemeData(
             colorScheme: darkColorScheme,
           ),
