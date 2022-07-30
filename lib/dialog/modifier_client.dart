@@ -149,13 +149,13 @@ class DialogModifierClientState extends State<DialogModifierClient> {
   Future<void> updateClientDansBDD() async {
     Client c = Client(
         id: widget.client.id,
-        nom: _controllerChampNom.text,
-        prenom: _controllerChampPrenom.text,
-        adresse: _controllerChampAdresse.text,
-        codePostal: _controllerChampCodePostal.text,
-        ville: _controllerChampVille.text,
-        numeroTelephone: _controllerChampNumero.text,
-        email: _controllerChampEmail.text
+        nom: _controllerChampNom.text.trim(),
+        prenom: _controllerChampPrenom.text.trim(),
+        adresse: _controllerChampAdresse.text.trim(),
+        codePostal: _controllerChampCodePostal.text.trim(),
+        ville: _controllerChampVille.text.trim(),
+        numeroTelephone: _controllerChampNumero.text.trim(),
+        email: _controllerChampEmail.text.trim()
     );
 
     await AppPsyDatabase.instance.updateClient(c).then((value) => {
@@ -167,7 +167,7 @@ class DialogModifierClientState extends State<DialogModifierClient> {
     // Le client a bien été modifier
     if (value > 0) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('${_controllerChampPrenom.text.toUpperCase()} à bien été modifier')),
+        SnackBar(content: Text('${_controllerChampPrenom.text.trim().toUpperCase()} à bien été modifier')),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(

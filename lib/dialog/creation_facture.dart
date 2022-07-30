@@ -65,8 +65,7 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture>
   int _indexStepper = 0;
   bool _isLoading = false;
   bool _aUneDateLimite = false;
-  bool _sauvegarderIdFacture =
-      SpUtil.getBool(AppPsyUtils.CACHE_SAUVEGARDER_NUMERO_FACTURE) ?? false;
+  //bool _sauvegarderIdFacture = SpUtil.getBool(AppPsyUtils.CACHE_SAUVEGARDER_NUMERO_FACTURE) ?? false;
   late String _dropdownSelectionnerTypeActe;
 
   /// Il affiche une boîte de dialogue avec un message d'avertissement et deux
@@ -123,10 +122,10 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture>
 
   void _ajouterSeance() {
     Seance s = Seance(
-      nom: _dropdownSelectionnerTypeActe,
+      nom: _dropdownSelectionnerTypeActe.trim(),
       date: _dateEmission,
-      prix: AppPsyUtils.tryParseDouble(_controllerChampPrix.text),
-      quantite: int.parse(_controllerChampNombreUH.text),
+      prix: AppPsyUtils.tryParseDouble(_controllerChampPrix.text.trim()),
+      quantite: int.parse(_controllerChampNombreUH.text.trim()),
       uniteTemps: null,
     );
     _listSeances.add(s);

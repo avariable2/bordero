@@ -72,7 +72,7 @@ class DialogAjouterTypeActeState extends State<DialogAjouterTypeActe> {
   Future<void> insertionClientDansBDD() async {
     TypeActe typeActe = TypeActe(
         nom: controllerChampNom.text.trim(),
-        prix: AppPsyUtils.tryParseDouble(controllerChampPrix.text),
+        prix: AppPsyUtils.tryParseDouble(controllerChampPrix.text.trim()),
     );
 
 

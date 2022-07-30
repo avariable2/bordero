@@ -124,7 +124,7 @@ class DialogModifierTypeActeState extends State<DialogModifierTypeActe> {
     TypeActe typeActe = TypeActe(
       id: widget.typeActe.id,
       nom: _controllerChampNom.text.trim(),
-      prix: AppPsyUtils.tryParseDouble(_controllerChampPrix.text),
+      prix: AppPsyUtils.tryParseDouble(_controllerChampPrix.text.trim()),
     );
 
 

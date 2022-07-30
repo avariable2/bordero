@@ -73,13 +73,13 @@ class DialogAjouterClientState extends State<DialogAjouterClient> {
 
   Future<void> insertionClientDansBDD() async {
     Client c = Client(
-        nom: controllerChampNom.text,
-        prenom: controllerChampPrenom.text,
-        adresse: controllerChampAdresse.text,
-        codePostal: controllerChampCodePostal.text,
-        ville: controllerChampVille.text,
-        numeroTelephone: controllerChampNumero.text,
-        email: controllerChampEmail.text
+        nom: controllerChampNom.text.trim(),
+        prenom: controllerChampPrenom.text.trim(),
+        adresse: controllerChampAdresse.text.trim(),
+        codePostal: controllerChampCodePostal.text.trim(),
+        ville: controllerChampVille.text.trim(),
+        numeroTelephone: controllerChampNumero.text.trim(),
+        email: controllerChampEmail.text.trim()
     );
 
 
