@@ -29,7 +29,7 @@ class PdfFactureApi {
               buildInformationsClients(facture),
               buildInformationsSeances(facture),
               Divider(),
-              buildTotal(facture),
+              buildTotal(facture, infos.exonererTVA),
               buildPayement(facture, infos),
               buildSignature(facture),
             ]));
@@ -131,12 +131,13 @@ class PdfFactureApi {
     );
   }
 
-  static Widget buildTotal(Facture facture) {
-    final netTotal = facture.listSeances
+  static Widget buildTotal(Facture facture, bool exonererTVA) {
+    final totalHT = facture.listSeances
         .map((item) => item.prix * item.quantite)
         .reduce((item1, item2) => item1 + item2);
-    final tva = netTotal * 0.20;
-    final total = netTotal + tva;
+    // Si pas exonéré tva ? calcul classique : sinon 0
+    final coutTVA = !exonererTVA ? totalHT * 0.20 : 0;
+    final totalNET = totalHT + coutTVA;
 
     return Container(
       alignment: Alignment.centerRight,
@@ -150,14 +151,15 @@ class PdfFactureApi {
                 children: [
                   buildText(
                     title: 'TOTAL HT',
-                    value: netTotal.toStringAsFixed(2),
+                    value: totalHT.toStringAsFixed(2),
                     unite: true,
                   ),
-                  buildText(
-                    title: 'TVA 20%',
-                    value: tva.toStringAsFixed(2),
-                    unite: true,
-                  ),
+                  if (!exonererTVA)
+                    buildText(
+                      title: 'TVA 20%',
+                      value: coutTVA.toStringAsFixed(2),
+                      unite: true,
+                    ),
                   Divider(),
                   buildText(
                     title: 'TOTAL TTC',
@@ -165,13 +167,14 @@ class PdfFactureApi {
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
                     ),
-                    value: total.toStringAsFixed(2),
+                    value: totalNET.toStringAsFixed(2),
                     unite: true,
                   ),
                   SizedBox(height: 15),
-                  Text(
-                      "Exonéré de TVA au titre de l'article 261-4-1° du Code Général des Impôts",
-                      style: const TextStyle(fontSize: 10)),
+                  if (exonererTVA)
+                    Text(
+                        "Exonéré de TVA au titre de l'article 261-4-1° du Code Général des Impôts",
+                        style: const TextStyle(fontSize: 10)),
                 ],
               )),
         ],
