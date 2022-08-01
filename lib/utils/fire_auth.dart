@@ -1,10 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
 class FireAuth {
   final FirebaseAuth _firebaseAuth;
 
-  Stream<User?> get authStateChanges => FirebaseAuth.instance.authStateChanges();
+  Stream<User?> get authStateChanges =>
+      FirebaseAuth.instance.authStateChanges();
 
   FireAuth(this._firebaseAuth);
 
@@ -15,7 +17,8 @@ class FireAuth {
   }) async {
     User? user;
     try {
-      UserCredential userCredential = await _firebaseAuth.createUserWithEmailAndPassword(
+      UserCredential userCredential =
+          await _firebaseAuth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
@@ -32,7 +35,8 @@ class FireAuth {
           const SnackBar(content: Text("Email déjà utiliser.")),
         );
       }
-    } catch (e) {
+    } catch (exception, stackTrace) {
+      await Sentry.captureException(exception, stackTrace: stackTrace);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Une erreur c'est produite.")),
       );
@@ -48,7 +52,8 @@ class FireAuth {
     User? user;
 
     try {
-      UserCredential userCredential = await _firebaseAuth.signInWithEmailAndPassword(
+      UserCredential userCredential =
+          await _firebaseAuth.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
@@ -63,16 +68,18 @@ class FireAuth {
           const SnackBar(content: Text("Mauvais mot de passe.")),
         );
       }
+    } catch (exception, stackTrace) {
+      await Sentry.captureException(exception, stackTrace: stackTrace);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Une erreur c'est produite.")),
+      );
     }
 
     return user;
   }
 
-  Future reinitialiserMotDePasse({
-    required BuildContext context,
-    required String email
-  }) async {
-
+  Future reinitialiserMotDePasse(
+      {required BuildContext context, required String email}) async {
     showDialog(
         context: context,
         barrierDismissible: false,
@@ -83,12 +90,19 @@ class FireAuth {
       await _firebaseAuth.sendPasswordResetEmail(email: email);
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Un email de reinitialisation à été envoyer. Verifier vos spam.")),
+        const SnackBar(
+            content: Text(
+                "Un email de reinitialisation à été envoyer. Verifier vos spam.")),
       );
       Navigator.of(context).popUntil((route) => route.isFirst);
     } on FirebaseAuthException catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Désolé, une erreur est survenu.")),
+      );
+    } catch (exception, stackTrace) {
+      await Sentry.captureException(exception, stackTrace: stackTrace);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Une erreur c'est produite.")),
       );
     }
   }

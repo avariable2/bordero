@@ -1,5 +1,6 @@
 import 'package:app_psy/model/client.dart';
 import 'package:app_psy/model/type_acte.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart' as p;
 
@@ -60,8 +61,9 @@ class AppPsyDatabase {
     int result = 0;
     try {
       result = db.rawQuery('SELECT COUNT(*) FROM $tableClient') as int;
-    } catch(e) {
-      print("ERROR requete : $e");
+    } catch(exception, stackTrace ) {
+      await Sentry.captureException(exception, stackTrace: stackTrace);
+      print("ERROR requete : $exception");
     }
     return result;
   }
@@ -77,8 +79,8 @@ class AppPsyDatabase {
     int result = 0;
     try {
       result = await db.insert(tableClient, client.toJson());
-    } catch(e) {
-      // ignore_for_file: avoid_print
+    } catch(exception, stackTrace ) {
+      await Sentry.captureException(exception, stackTrace: stackTrace);
       print("0 success for create client");
     }
 
@@ -153,8 +155,9 @@ class AppPsyDatabase {
     int result = 0;
     try {
       result = db.rawQuery('SELECT COUNT(*) FROM $tableTypeActe') as int;
-    } catch(e) {
-      print("ERROR requete : $e");
+    } catch(exception, stackTrace ) {
+      await Sentry.captureException(exception, stackTrace: stackTrace);
+      print("ERROR requete : $exception");
     }
     return result;
   }
@@ -165,7 +168,8 @@ class AppPsyDatabase {
 
     try {
       result = await db.insert(tableTypeActe, typeActe.toJson());
-    } catch(e) {
+    } catch(exception, stackTrace ) {
+      await Sentry.captureException(exception, stackTrace: stackTrace);
       print("0 success for create TypeActe");
     }
 
