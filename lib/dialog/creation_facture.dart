@@ -5,12 +5,9 @@ import 'package:app_psy/model/facture.dart';
 import 'package:app_psy/model/seance.dart';
 import 'package:app_psy/model/type_acte.dart';
 import 'package:app_psy/utils/app_psy_utils.dart';
-import 'package:app_psy/utils/pdf_api.dart';
 import 'package:app_psy/utils/pdf_facture_api.dart';
 import 'package:flutter/material.dart';
-import 'package:pdf_viewer_plugin/pdf_viewer_plugin.dart';
 import 'package:signature/signature.dart';
-import 'package:sp_util/sp_util.dart';
 
 import '../db/app_psy_database.dart';
 import '../model/client.dart';
@@ -39,8 +36,7 @@ class FormulaireCreationFacture extends StatefulWidget {
       _FormulaireCreationFactureState();
 }
 
-class _FormulaireCreationFactureState extends State<FormulaireCreationFacture>
-    with WidgetsBindingObserver {
+class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> {
   DateTime _dateEmission = DateTime.now();
   DateTime _dateLimitePayement = DateTime.now();
 
@@ -71,7 +67,6 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture>
 
   @override
   void initState() {
-    WidgetsBinding.instance.addObserver(this);
     super.initState();
 
     _getListClients();

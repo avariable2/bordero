@@ -25,7 +25,7 @@ class ViewFactures extends StatefulWidget {
   State<ViewFactures> createState() => _ViewFacturesState();
 }
 
-class _ViewFacturesState extends State<ViewFactures> with WidgetsBindingObserver {
+class _ViewFacturesState extends State<ViewFactures> {
   final _controllerChampRecherche = TextEditingController();
   late List<FileSystemEntity> listFichiers;
   late List<FileSystemEntity> listFichiersTrier = [];

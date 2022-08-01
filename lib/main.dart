@@ -12,7 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:sp_util/sp_util.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-
+import 'package:sentry_flutter/sentry_flutter.dart';
 import 'model/infos_praticien.dart';
 
 
@@ -22,8 +22,10 @@ void main() async {
       options: DefaultFirebaseOptions.currentPlatform
   );
   await SpUtil.getInstance();
-  runApp(const MyApp());
-
+  await SentryFlutter.init(
+      (options) => options.dsn = "https://34375a3ce1644b6b8a4b1f56df91f68e@o1342392.ingest.sentry.io/6616467",
+    appRunner: () => runApp(const MyApp()),
+  );
 }
 
 class MyApp extends StatelessWidget {

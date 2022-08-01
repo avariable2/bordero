@@ -114,11 +114,10 @@ class AffichageInfoPdf extends StatefulWidget {
   State<AffichageInfoPdf> createState() => _AffichageInfoPdfState();
 }
 
-class _AffichageInfoPdfState extends State<AffichageInfoPdf> with WidgetsBindingObserver {
+class _AffichageInfoPdfState extends State<AffichageInfoPdf> {
 
   @override
   void initState() {
-    WidgetsBinding.instance.addObserver(this);
     super.initState();
   }
 
@@ -126,14 +125,6 @@ class _AffichageInfoPdfState extends State<AffichageInfoPdf> with WidgetsBinding
   void dispose() {
     //PdfApi.deleteFile(widget.fichier);
     super.dispose();
-  }
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    // Methode pour chaque retour a l'page de refresh
-    if (state == AppLifecycleState.detached) {
-      //PdfApi.deleteAllFilesInCache();
-    }
   }
 
   @override

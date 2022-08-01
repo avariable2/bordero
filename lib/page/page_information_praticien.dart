@@ -13,7 +13,7 @@ class FullScreenDialogInformationPraticien extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Informations obligatoire à renseigner'),
+        title: const Text('Vos informations'),
       ),
       body: const DialogInfoPraticien(),
     );
@@ -338,8 +338,8 @@ class DialogInfoPraticienState extends State<DialogInfoPraticien> {
                   SwitchListTile(
                       title: const Text("Etes-vous exonéré de TVA ?"),
                       value: estExonererDeTVA,
-                      onChanged: (bool) =>
-                          setStateIfMounted(() => estExonererDeTVA = bool)),
+                      onChanged: (bool value) =>
+                          setStateIfMounted(() => estExonererDeTVA = value)),
                   Padding(
                     padding: const EdgeInsets.only(top: 10, bottom: 10),
                     child: TextFormField(

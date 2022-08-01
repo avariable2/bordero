@@ -23,7 +23,7 @@ class MonAccueil extends StatefulWidget {
   State<MonAccueil> createState() => _MonAccueilState();
 }
 
-class _MonAccueilState extends State<MonAccueil> with WidgetsBindingObserver {
+class _MonAccueilState extends State<MonAccueil> {
   final _controllerChampRecherche = TextEditingController();
   late List<Client> listClients;
   late List<TypeActe> listTypeActes;
@@ -32,7 +32,6 @@ class _MonAccueilState extends State<MonAccueil> with WidgetsBindingObserver {
 
   @override
   void initState() {
-    WidgetsBinding.instance.addObserver(this);
     super.initState();
 
     refreshLists();
