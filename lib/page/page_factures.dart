@@ -1,4 +1,5 @@
 import 'package:app_psy/dialog/creation_facture.dart';
+import 'package:app_psy/model/facture.dart';
 import 'package:app_psy/utils/pdf_api.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -6,6 +7,7 @@ import 'dart:io';
 
 import 'package:path/path.dart';
 
+import '../db/app_psy_database.dart';
 import '../dialog/preview_pdf.dart';
 
 class PageFactures extends StatelessWidget {
@@ -15,7 +17,6 @@ class PageFactures extends StatelessWidget {
   Widget build(BuildContext context) {
     return const ViewFactures();
   }
-
 }
 
 class ViewFactures extends StatefulWidget {
@@ -29,6 +30,7 @@ class _ViewFacturesState extends State<ViewFactures> {
   final _controllerChampRecherche = TextEditingController();
   late List<FileSystemEntity> listFichiers;
   late List<FileSystemEntity> listFichiersTrier = [];
+  late List<InfoPageFacture> listInfoPageFacture;
 
   bool isLoading = false;
   String _selectionnerChips = "";
@@ -41,31 +43,25 @@ class _ViewFacturesState extends State<ViewFactures> {
   }
 
   @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    // Methode pour chaque retour a l'page de refresh
-    if (state == AppLifecycleState.resumed) {
-      _getListFiles();
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add_outlined),
-        onPressed:() {
+        onPressed: () {
           Navigator.push(
             context,
             MaterialPageRoute<void>(
-              builder: (BuildContext context) => const FullScreenDialogCreationFacture(),
+              builder: (BuildContext context) =>
+                  const FullScreenDialogCreationFacture(),
               fullscreenDialog: true,
             ),
           ).then((value) => _getListFiles());
         },
       ),
       body: SafeArea(
-        child: isLoading ? const CircularProgressIndicator() : buildPageFacture()
-      ),
+          child: isLoading
+              ? const CircularProgressIndicator()
+              : buildPageFacture()),
     );
   }
 
@@ -80,17 +76,14 @@ class _ViewFacturesState extends State<ViewFactures> {
         children: [
           const Padding(
             padding: EdgeInsets.only(bottom: 20),
-            child :
-              Text(
-                "Mes factures",
-                style: TextStyle(
-                  fontSize: 35,
-                  fontWeight: FontWeight.bold,
-                ),
+            child: Text(
+              "Mes factures",
+              style: TextStyle(
+                fontSize: 35,
+                fontWeight: FontWeight.bold,
               ),
+            ),
           ),
-
-
           Flex(
             direction: Axis.vertical,
             children: [
@@ -100,56 +93,48 @@ class _ViewFacturesState extends State<ViewFactures> {
                 decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: 'Recherche facture',
-                    helperText: 'Essayer le nom du client ou son prénom'
-                ),
+                    helperText: 'Essayer le nom du client ou son prénom'),
                 onChanged: (String? entree) => setState(() {
                   listFichiersTrier = _sortParRecherche(entree) ?? [];
-
                 }),
               ),
-          ],),
-
-
-
-           Row(
-              children: [
-                  FilterChip(
-                    label: const Text("Mois actuel"),
-                    selected: _selectionnerChips == "Mois actuel",
-                    onSelected: (bool value) {
-                        setState(() {
-                          if(_selectionnerChips == "Mois actuel") {
-                            _selectionnerChips = "";
-                            _resetListFichierTrier();
-                          } else {
-                            _selectionnerChips = "Mois actuel";
-                            listFichiersTrier = _sort(true, false);
-                          }
-
-                        });
-                     },
-                  ),
-
-                  FilterChip(
-                    label: const Text("Année actuelle"),
-                    selected: _selectionnerChips == "Année actuelle",
-                    onSelected: (bool value) {
-                      setState(() {
-                        if(_selectionnerChips == "Année actuelle") {
-                          _selectionnerChips = "";
-                          _resetListFichierTrier();
-                        } else {
-                          _selectionnerChips = "Année actuelle";
-                          listFichiersTrier = _sort(false, true);
-                        }
-                      });
-                    },
-                  ),
-              ],
-            ),
-
+            ],
+          ),
+          Row(
+            children: [
+              FilterChip(
+                label: const Text("Mois actuel"),
+                selected: _selectionnerChips == "Mois actuel",
+                onSelected: (bool value) {
+                  setState(() {
+                    if (_selectionnerChips == "Mois actuel") {
+                      _selectionnerChips = "";
+                      _resetListFichierTrier();
+                    } else {
+                      _selectionnerChips = "Mois actuel";
+                      listFichiersTrier = _sort(true, false);
+                    }
+                  });
+                },
+              ),
+              FilterChip(
+                label: const Text("Année actuelle"),
+                selected: _selectionnerChips == "Année actuelle",
+                onSelected: (bool value) {
+                  setState(() {
+                    if (_selectionnerChips == "Année actuelle") {
+                      _selectionnerChips = "";
+                      _resetListFichierTrier();
+                    } else {
+                      _selectionnerChips = "Année actuelle";
+                      listFichiersTrier = _sort(false, true);
+                    }
+                  });
+                },
+              ),
+            ],
+          ),
           const Divider(),
-
           SizedBox(
             height: MediaQuery.of(this.context).size.height / 2.4,
             child: ListView(
@@ -163,23 +148,34 @@ class _ViewFacturesState extends State<ViewFactures> {
                       child: ListTile(
                         leading: const Icon(Icons.picture_as_pdf_outlined),
                         title: Text(basename(fichier.path)),
-                        onTap: () => Navigator.of(this.context).push(MaterialPageRoute(builder: (context) => PreviewPdf(fichier: File(fichier.path),))).then((value) => _getListFiles()),
+                        onTap: () => Navigator.of(this.context)
+                            .push(MaterialPageRoute(
+                                builder: (context) => PreviewPdf(
+                                      fichier: File(fichier.path),
+                                    )))
+                            .then((value) => _getListFiles()),
                       ),
                     )
                 else
                   // On n'affiche que les 20 premiers sinon liste trop lourde
-                  for (int index = 0 ; index < listFichiers.length && index < 20; index++)
+                  for (int index = 0;
+                      index < listFichiers.length && index < 20;
+                      index++)
                     Card(
                       child: ListTile(
                         leading: const Icon(Icons.picture_as_pdf_outlined),
                         title: Text(basename(listFichiers[index].path)),
-                        onTap: () => Navigator.of(this.context).push(MaterialPageRoute(builder: (context) => PreviewPdf(fichier: File(listFichiers[index].path),))).then((value) => _getListFiles()),
+                        onTap: () => Navigator.of(this.context)
+                            .push(MaterialPageRoute(
+                                builder: (context) => PreviewPdf(
+                                      fichier: File(listFichiers[index].path),
+                                    )))
+                            .then((value) => _getListFiles()),
                       ),
                     ),
               ],
             ),
           ),
-
         ]);
   }
 
@@ -187,6 +183,7 @@ class _ViewFacturesState extends State<ViewFactures> {
     setState(() => isLoading = true);
 
     listFichiers = await PdfApi.getAllFilesInCache();
+    //listInfoPageFacture = await AppPsyDatabase.instance.getAllFileName();
 
     setState(() => isLoading = false);
   }
@@ -203,7 +200,6 @@ class _ViewFacturesState extends State<ViewFactures> {
 
       RegExp regex = RegExp("([$month]-[$year])");
 
-
       for (FileSystemEntity f in listFichiers) {
         if (regex.firstMatch(basename(f.path)) != null) {
           listFinal.add(f);
@@ -212,7 +208,6 @@ class _ViewFacturesState extends State<ViewFactures> {
     } else if (annee) {
       String year = formatterYear.format(now);
       RegExp regex = RegExp("([$year])");
-
 
       for (FileSystemEntity f in listFichiers) {
         if (regex.firstMatch(basename(f.path)) != null) {
@@ -225,7 +220,7 @@ class _ViewFacturesState extends State<ViewFactures> {
   }
 
   List<FileSystemEntity>? _sortParRecherche(String? entree) {
-    if(entree == null) {
+    if (entree == null) {
       return null;
     }
     _resetListFichierTrier();
@@ -246,7 +241,7 @@ class _ViewFacturesState extends State<ViewFactures> {
   }
 
   bool _checkSiUserTrie() {
-    return _selectionnerChips.isNotEmpty || _controllerChampRecherche.text.isNotEmpty;
+    return _selectionnerChips.isNotEmpty ||
+        _controllerChampRecherche.text.isNotEmpty;
   }
-
 }

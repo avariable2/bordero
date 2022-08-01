@@ -13,7 +13,7 @@ import 'package:sp_util/sp_util.dart';
 import '../model/client.dart';
 
 class PdfFactureApi {
-  static Future<File?> generate(Facture facture) async {
+  static Future<File?> generate(CreationFacture facture) async {
     InfosPraticien infos;
     try {
       infos = SpUtil.getObj(InfosPraticien.keyObjInfosPraticien,
@@ -45,7 +45,7 @@ class PdfFactureApi {
     return PdfApi.saveDocument(name: titre, pdf: pdf);
   }
 
-  static Widget buildTitre(Facture facture, InfosPraticien infos) {
+  static Widget buildTitre(CreationFacture facture, InfosPraticien infos) {
     return Row(children: [
       Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Text("${infos.nom} ${infos.prenom}",
@@ -74,7 +74,7 @@ class PdfFactureApi {
     ]);
   }
 
-  static Widget buildInformationsClients(Facture facture) {
+  static Widget buildInformationsClients(CreationFacture facture) {
     return Column(children: [
       for (Client client in facture.listClients)
         Row(children: [
@@ -98,7 +98,7 @@ class PdfFactureApi {
     ]);
   }
 
-  static Widget buildInformationsSeances(Facture facture) {
+  static Widget buildInformationsSeances(CreationFacture facture) {
     final enTete = [
       "Prestations".toUpperCase(),
       "Quantité".toUpperCase(),
@@ -133,7 +133,7 @@ class PdfFactureApi {
     );
   }
 
-  static Widget buildTotal(Facture facture, bool exonererTVA) {
+  static Widget buildTotal(CreationFacture facture, bool exonererTVA) {
     final totalHT = facture.listSeances
         .map((item) => item.prix * item.quantite)
         .reduce((item1, item2) => item1 + item2);
@@ -200,7 +200,7 @@ class PdfFactureApi {
         ]));
   }
 
-  static Widget buildPayement(Facture facture, InfosPraticien infos) {
+  static Widget buildPayement(CreationFacture facture, InfosPraticien infos) {
     var dateLimite = "";
     if (facture.dateLimitePayement != null) {
       dateLimite = AppPsyUtils.toDateString(facture.dateLimitePayement!);
@@ -217,7 +217,7 @@ class PdfFactureApi {
     ]);
   }
 
-  static Widget buildSignature(Facture facture) {
+  static Widget buildSignature(CreationFacture facture) {
     final data = facture.signaturePNG;
     if (data != null) {
       var image = MemoryImage(data);

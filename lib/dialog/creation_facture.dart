@@ -7,7 +7,10 @@ import 'package:app_psy/model/type_acte.dart';
 import 'package:app_psy/utils/app_psy_utils.dart';
 import 'package:app_psy/utils/pdf_facture_api.dart';
 import 'package:flutter/material.dart';
+import 'package:path/path.dart' as path;
 import 'package:signature/signature.dart';
+import 'package:sqflite/utils/utils.dart';
+import 'package:sqflite_common/utils/utils.dart' as utils;
 
 import '../db/app_psy_database.dart';
 import '../model/client.dart';
@@ -708,7 +711,7 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> {
   }
 
   Future<void> _creationPdfEtOuverture(bool aDateLimite) async {
-    Facture facture = Facture(
+    CreationFacture donnesPourFacture = CreationFacture(
         id: _controllerNumeroFacture.text,
         dateCreationFacture: DateTime.now(),
         listClients: _clientSelectionner,
@@ -716,17 +719,35 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> {
         dateLimitePayement: aDateLimite == true ? _dateLimitePayement : null,
         signaturePNG: await _controllerSignature.toPngBytes());
 
-    PdfFactureApi.generate(facture).then((value) {
+    PdfFactureApi.generate(donnesPourFacture).then((value) {
       if (value == null) {
-        const SnackBar(
-            content: Text(
-                "Il viens de se produire une erreur, nous sommes désolé."));
+        afficherErreur();
         return;
       }
-      Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => PreviewPdf(
-                fichier: value,
-              )));
+      ajoutFactureFileDansBDD(value);
     });
+  }
+
+  void ajoutFactureFileDansBDD(File fichier) async {
+    Facture facture = Facture(
+        nom: path.basename(fichier.path),
+        fichier: fichier.readAsBytesSync(),
+        estFacture: 1);
+    await AppPsyDatabase.instance.createFactureInDB(facture).then((value) => {
+          if (!value) {
+              afficherErreur(),
+          } else {
+              Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => PreviewPdf(
+                        fichier: fichier,
+                      ))),
+          }
+        });
+  }
+
+  void afficherErreur() {
+    const SnackBar(
+        content:
+            Text("Il viens de se produire une erreur, nous sommes désolé."));
   }
 }

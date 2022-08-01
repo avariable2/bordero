@@ -1,11 +1,12 @@
 import 'package:app_psy/model/client.dart';
+import 'package:app_psy/model/facture.dart';
 import 'package:app_psy/model/type_acte.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart' as p;
 
 class AppPsyDatabase {
-  final int VERSION_DBB = 11;
+  final int VERSION_DBB = 14;
 
   static final AppPsyDatabase instance = AppPsyDatabase._init();
 
@@ -31,6 +32,8 @@ class AppPsyDatabase {
     const idType = 'INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL';
     const stringType = 'TEXT NOT NULL';
     const doubleType = 'REAL NOT NULL';
+    const boolType = 'INTEGER NOT NULL';
+    const blobType = 'BLOB NOT NULL';
 
     await db.execute(''' 
     CREATE TABLE $tableClient(
@@ -50,6 +53,15 @@ class AppPsyDatabase {
     ${TypeActeChamps.id} $idType,
     ${TypeActeChamps.nom} $stringType,
     ${TypeActeChamps.prix} $doubleType
+    )
+    ''');
+
+    await db.execute('''
+    CREATE TABLE $tableFacture(
+    ${FactureChamps.id} $idType,
+    ${FactureChamps.nom} $stringType,
+    ${FactureChamps.fichier} $blobType,
+    ${FactureChamps.estFacture} $boolType
     )
     ''');
   }
@@ -233,6 +245,81 @@ class AppPsyDatabase {
     return await db.delete(
       tableTypeActe,
       where: '${TypeActeChamps.id} = ?',
+      whereArgs: [id],
+    );
+  }
+
+  /// FACTURE
+
+  Future<bool> createFactureInDB(Facture facture) async {
+    final db = await instance.database;
+    int result = 0;
+
+    try {
+      result = await db.insert(tableFacture, facture.toJson());
+    } catch(exception, stackTrace ) {
+      await Sentry.captureException(exception, stackTrace: stackTrace);
+      print("0 success for create TypeActe");
+    }
+
+    return result > 0 ? true : false;
+  }
+
+  Future<List<InfoPageFacture>> getAllFileName() async {
+    final db = await instance.database;
+
+    final result = await db.query(
+      tableFacture,
+      columns: [FactureChamps.values[0], FactureChamps.values[1]],
+      where: '${FactureChamps.estFacture} = ?',
+      whereArgs: [1],
+    );
+
+    return result.map((json) => InfoPageFacture.fromJson(json)).toList();
+  }
+
+  Future<Facture?> readFacture(int id) async {
+    final db = await instance.database;
+
+    final maps = await db.query(
+      tableFacture,
+      columns: FactureChamps.values,
+      where: '${FactureChamps.id} = ?',
+      whereArgs: [id],
+    );
+
+    if (maps.isNotEmpty) {
+      return Facture.fromJson(maps.first);
+    } else {
+      return null;
+    }
+  }
+
+  Future<List<Facture>> readAllFacture() async {
+    final db = await instance.database;
+
+    final result = await db.query(tableFacture);
+
+    return result.map((json) => Facture.fromJson(json)).toList();
+  }
+
+  Future<int> updateFacture(Facture facture) async {
+    final db = await instance.database;
+
+    return db.update(
+      tableFacture,
+      facture.toJson(),
+      where: '${FactureChamps.id} = ?',
+      whereArgs: [facture.id],
+    );
+  }
+
+  Future<int> deleteFacture(int id) async {
+    final db = await instance.database;
+
+    return await db.delete(
+      tableFacture,
+      where: '${FactureChamps.id} = ?',
       whereArgs: [id],
     );
   }

@@ -7,6 +7,7 @@ import 'package:app_psy/page/presentation.dart';
 import 'package:app_psy/utils/environment.dart';
 import 'package:app_psy/utils/fire_auth.dart';
 import 'package:app_psy/utils/firebase_options.dart';
+import 'package:app_psy/utils/pdf_api.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -23,6 +24,7 @@ void main() async {
       options: DefaultFirebaseOptions.currentPlatform
   );
   await SpUtil.getInstance();
+  PdfApi.deleteAllFilesInCache();
   await SentryFlutter.init(
       (options) => options.dsn = Environment.SENTRY_DSN,
     appRunner: () => runApp(const MyApp()),
