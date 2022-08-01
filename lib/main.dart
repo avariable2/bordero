@@ -4,6 +4,7 @@ import 'package:app_psy/page/page_factures.dart';
 import 'package:app_psy/page/page_information_praticien.dart';
 import 'package:app_psy/page/page_parametres.dart';
 import 'package:app_psy/page/presentation.dart';
+import 'package:app_psy/utils/environment.dart';
 import 'package:app_psy/utils/fire_auth.dart';
 import 'package:app_psy/utils/firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -23,7 +24,7 @@ void main() async {
   );
   await SpUtil.getInstance();
   await SentryFlutter.init(
-      (options) => options.dsn = "https://34375a3ce1644b6b8a4b1f56df91f68e@o1342392.ingest.sentry.io/6616467",
+      (options) => options.dsn = Environment.SENTRY_DSN,
     appRunner: () => runApp(const MyApp()),
   );
 }
