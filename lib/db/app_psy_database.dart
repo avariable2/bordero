@@ -32,7 +32,6 @@ class AppPsyDatabase {
     const idType = 'INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL';
     const stringType = 'TEXT NOT NULL';
     const doubleType = 'REAL NOT NULL';
-    const boolType = 'INTEGER NOT NULL';
     const blobType = 'BLOB NOT NULL';
 
     await db.execute(''' 
@@ -61,7 +60,6 @@ class AppPsyDatabase {
     ${FactureChamps.id} $idType,
     ${FactureChamps.nom} $stringType,
     ${FactureChamps.fichier} $blobType,
-    ${FactureChamps.estFacture} $boolType
     )
     ''');
   }
@@ -271,8 +269,6 @@ class AppPsyDatabase {
     final result = await db.query(
       tableFacture,
       columns: [FactureChamps.values[0], FactureChamps.values[1]],
-      where: '${FactureChamps.estFacture} = ?',
-      whereArgs: [1],
     );
 
     return result.map((json) => InfoPageFacture.fromJson(json)).toList();

@@ -731,8 +731,7 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> {
   void ajoutFactureFileDansBDD(File fichier) async {
     Facture facture = Facture(
         nom: path.basename(fichier.path),
-        fichier: fichier.readAsBytesSync(),
-        estFacture: 1);
+        fichier: fichier.readAsBytesSync());
     await AppPsyDatabase.instance.createFactureInDB(facture).then((value) => {
           if (!value) {
               afficherErreur(),
