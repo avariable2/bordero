@@ -8,26 +8,27 @@ import 'package:app_psy/utils/pdf_api.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
-import 'package:sp_util/sp_util.dart';
 
+import '../db/app_psy_database.dart';
 import '../model/client.dart';
 
 class PdfFactureApi {
   static Future<File?> generate(CreationFacture facture) async {
-    InfosPraticien infos;
+    InfosPraticien? infos;
     try {
-      infos = SpUtil.getObj(InfosPraticien.keyObjInfosPraticien,
-              (v) => InfosPraticien.fromJson(v))!;
+      infos = await AppPsyDatabase.instance.readInfosPraticien();
     } on Exception catch (exception, stackTrace) {
       await Sentry.captureException(exception, stackTrace: stackTrace);
       return null;
     }
 
+    if (infos == null) return null;
+
     final pdf = Document();
     pdf.addPage(MultiPage(
         pageFormat: PdfPageFormat.a4,
         build: (context) => [
-              buildTitre(facture, infos),
+              buildTitre(facture, infos!),
               buildInformationsClients(facture),
               buildInformationsSeances(facture),
               Divider(),
@@ -206,10 +207,10 @@ class PdfFactureApi {
       dateLimite = AppPsyUtils.toDateString(facture.dateLimitePayement!);
     }
     var listePayement = "";
-    List<TypePayement> listPayements = TypePayement.getListTypePaymentFromDynamic(jsonDecode(infos.payements));
+    /*List<String> listPayements = []
     for (TypePayement type in listPayements) {
       if (type.selectionner) listePayement += "${type.key},";
-    }
+    }*/
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       SizedBox(height: 30),
       Text('Echéance : $dateLimite'),

@@ -1,12 +1,8 @@
-import 'package:app_psy/main.dart';
+import 'package:app_psy/db/app_psy_database.dart';
 import 'package:app_psy/page/page_information_praticien.dart';
-import 'package:app_psy/page/presentation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:sp_util/sp_util.dart';
 
-import '../model/infos_praticien.dart';
-import 'connexion.dart';
 
 class PageParametres extends StatelessWidget {
   const PageParametres({Key? key}) : super(key: key);
@@ -88,7 +84,7 @@ class _ParametresGlobauxState extends State<ParametresGlobaux> {
               ListTile(
                 title: const Text("Déconnexion"),
                 onTap: () async {
-                  SpUtil.remove(InfosPraticien.keyObjInfosPraticien);
+                  await AppPsyDatabase.instance.close();
                   await FirebaseAuth.instance.signOut();
                 },
               ),

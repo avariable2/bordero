@@ -1,10 +1,9 @@
-import 'dart:convert';
 
+import 'package:app_psy/db/app_psy_database.dart';
 import 'package:app_psy/main.dart';
 import 'package:app_psy/model/infos_praticien.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
-import 'package:sp_util/sp_util.dart';
 
 class FullScreenDialogInformationPraticien extends StatelessWidget {
   const FullScreenDialogInformationPraticien({Key? key}) : super(key: key);
@@ -100,24 +99,7 @@ class DialogInfoPraticienState extends State<DialogInfoPraticien> {
           }
         } else if (_indexStepper == 1 &&
             _formProfessionelKey.currentState!.validate()) {
-          Object obj = _creerInfosPraticien().toJson();
-          SpUtil.putObject(InfosPraticien.keyObjInfosPraticien, obj);
-          Navigator.of(context).pop();
-          if (SpUtil.haveKey(InfosPraticien.keyObjInfosPraticien) ?? false) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                  content:
-                  Text("Vos informations ont bien été modifiées.")),
-            );
-          } else {
-            Navigator.push(
-                context,
-                MaterialPageRoute<void>(
-                  builder: (BuildContext context) => const AppPsy(),
-
-                ));
-          }
-
+          sauvegardeDesDonneesEtAffichageMain();
         }
       },
       controlsBuilder: (BuildContext context, ControlsDetails details) {
@@ -241,7 +223,7 @@ class DialogInfoPraticienState extends State<DialogInfoPraticien> {
                 Expanded(
                   child: Padding(
                     padding:
-                        const EdgeInsets.only(top: 10, bottom: 10, right: 3),
+                    const EdgeInsets.only(top: 10, bottom: 10, right: 3),
                     child: TextFormField(
                       controller: controllerChampCodePostal,
                       keyboardType: TextInputType.number,
@@ -401,9 +383,12 @@ class DialogInfoPraticienState extends State<DialogInfoPraticien> {
                         child: CheckboxListTile(
                           title: Text(listTypePayements[0].key),
                           value: listTypePayements[0].selectionner,
-                          onChanged: (bool? value) => {
+                          onChanged: (bool? value) =>
+                          {
                             setStateIfMounted(
-                                () => listTypePayements[0].selectionner = !listTypePayements[0].selectionner)
+                                    () =>
+                                listTypePayements[0].selectionner =
+                                !listTypePayements[0].selectionner)
                           },
                           controlAffinity: ListTileControlAffinity.leading,
                         ),
@@ -412,9 +397,12 @@ class DialogInfoPraticienState extends State<DialogInfoPraticien> {
                         child: CheckboxListTile(
                           title: Text(listTypePayements[1].key),
                           value: listTypePayements[1].selectionner,
-                          onChanged: (bool? value) => {
+                          onChanged: (bool? value) =>
+                          {
                             setStateIfMounted(
-                                () => listTypePayements[1].selectionner = !listTypePayements[1].selectionner)
+                                    () =>
+                                listTypePayements[1].selectionner =
+                                !listTypePayements[1].selectionner)
                           },
                           controlAffinity: ListTileControlAffinity.leading,
                         ),
@@ -427,9 +415,12 @@ class DialogInfoPraticienState extends State<DialogInfoPraticien> {
                         child: CheckboxListTile(
                           title: Text(listTypePayements[2].key),
                           value: listTypePayements[2].selectionner,
-                          onChanged: (bool? value) => {
+                          onChanged: (bool? value) =>
+                          {
                             setStateIfMounted(
-                                    () => listTypePayements[2].selectionner = !listTypePayements[2].selectionner)
+                                    () =>
+                                listTypePayements[2].selectionner =
+                                !listTypePayements[2].selectionner)
                           },
                           controlAffinity: ListTileControlAffinity.leading,
                         ),
@@ -438,9 +429,12 @@ class DialogInfoPraticienState extends State<DialogInfoPraticien> {
                         child: CheckboxListTile(
                           title: Text(listTypePayements[3].key),
                           value: listTypePayements[3].selectionner,
-                          onChanged: (bool? value) => {
+                          onChanged: (bool? value) =>
+                          {
                             setStateIfMounted(
-                                    () => listTypePayements[3].selectionner = !listTypePayements[3].selectionner)
+                                    () =>
+                                listTypePayements[3].selectionner =
+                                !listTypePayements[3].selectionner)
                           },
                           controlAffinity: ListTileControlAffinity.leading,
                         ),
@@ -465,25 +459,51 @@ class DialogInfoPraticienState extends State<DialogInfoPraticien> {
       numeroSIRET: int.parse(controllerChampNumeroSIRET.text.trim()),
       numeroADELI: int.parse(controllerChampNumeroADELI.text.trim()),
       exonererTVA: estExonererDeTVA,
-      payements: jsonEncode(listTypePayements),
+      payementVirementBancaire: listTypePayements[0].selectionner,
+      payementCheque: listTypePayements[3].selectionner,
+      payementCarteBleu: listTypePayements[2].selectionner,
+      payementLiquide: listTypePayements[1].selectionner,
     );
   }
 
-  void _castTextToController() {
-    var info = SpUtil.getObj(
-        InfosPraticien.keyObjInfosPraticien, (v) => InfosPraticien.fromJson(v));
-    if (info != null) {
-      controllerChampNom.text = info.nom;
-      controllerChampPrenom.text = info.prenom;
-      controllerChampAdresse.text = info.adresse;
-      controllerChampCodePostal.text = info.codePostal;
-      controllerChampVille.text = info.ville;
-      controllerChampNumero.text = info.numeroTelephone;
-      controllerChampEmail.text = info.email;
-      controllerChampNumeroSIRET.text = info.numeroSIRET.toString();
-      controllerChampNumeroADELI.text = info.numeroADELI.toString();
-      estExonererDeTVA = info.exonererTVA;
-      listTypePayements = TypePayement.getListTypePaymentFromDynamic(jsonDecode(info.payements));
-    }
+  Future<void> _castTextToController() async {
+    await AppPsyDatabase.instance.readInfosPraticien().then((value) {
+      if (value != null) {
+        controllerChampNom.text = value.nom;
+        controllerChampPrenom.text = value.prenom;
+        controllerChampAdresse.text = value.adresse;
+        controllerChampCodePostal.text = value.codePostal;
+        controllerChampVille.text = value.ville;
+        controllerChampNumero.text = value.numeroTelephone;
+        controllerChampEmail.text = value.email;
+        controllerChampNumeroSIRET.text = value.numeroSIRET.toString();
+        controllerChampNumeroADELI.text = value.numeroADELI.toString();
+        estExonererDeTVA = value.exonererTVA;
+        /*listTypePayements = TypePayement.getListTypePaymentFromDynamic(
+            jsonDecode(value.payements));*/
+      }
+    });
+  }
+
+  Future<void> sauvegardeDesDonneesEtAffichageMain() async {
+    InfosPraticien infosPraticien = _creerInfosPraticien();
+    await AppPsyDatabase.instance.createInfosPraticien(infosPraticien).then((value) {
+      if (value) {
+        Navigator.of(context).pop();
+        Navigator.push(
+            context,
+            MaterialPageRoute<void>(
+              builder: (BuildContext context) => const AppPsy(),
+            )).then((value) => _afficherInfosEnregistrer());
+      }
+    });
+  }
+  
+  void _afficherInfosEnregistrer() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+          content:
+          Text("Vos informations ont bien été modifiées.")),
+    );
   }
 }

@@ -1,6 +1,8 @@
+const String tableInfosPraticien = 'infosPraticien';
+
 class InfosPraticienChamps {
   static final List<String> values = [
-    // Ajouter tous les champs
+    id,
     nom,
     prenom,
     adresse,
@@ -10,10 +12,14 @@ class InfosPraticienChamps {
     email,
     numeroSIRET,
     numeroADELI,
-    payements,
+    payementVirementBancaire,
+    payementLiquide,
+    payementCarteBleu,
+    payementCheque,
     exonererTVA,
   ];
 
+  static const String id = '_id';
   static const String nom = 'nom';
   static const String prenom = 'prenom';
   static const String adresse = 'adresse';
@@ -23,13 +29,15 @@ class InfosPraticienChamps {
   static const String email = 'email';
   static const String numeroSIRET = 'numeroSIRET';
   static const String numeroADELI = 'numeroADELI';
-  static const String payements = 'payements';
+  static const String payementVirementBancaire = 'payementVirementBancaire';
+  static const String payementLiquide = 'payementLiquide';
+  static const String payementCarteBleu = 'payementCarteBleu';
+  static const String payementCheque = 'payementCheque';
   static const String exonererTVA = 'exonererTVA';
 }
 
 class InfosPraticien {
-  static String keyObjInfosPraticien = "keyObjInfosPraticien";
-
+  final int? id;
   final String nom;
   final String prenom;
   final String adresse;
@@ -39,11 +47,15 @@ class InfosPraticien {
   final String email;
   final int numeroSIRET;
   final int numeroADELI;
-  final String payements;
+  final bool payementVirementBancaire;
+  final bool payementCheque;
+  final bool payementCarteBleu;
+  final bool payementLiquide;
   final bool exonererTVA;
 
   const InfosPraticien(
-      {required this.nom,
+      {this.id,
+      required this.nom,
       required this.prenom,
       required this.adresse,
       required this.codePostal,
@@ -52,7 +64,10 @@ class InfosPraticien {
       required this.email,
       required this.numeroADELI,
       required this.numeroSIRET,
-      required this.payements,
+      required this.payementVirementBancaire,
+      required this.payementCheque,
+      required this.payementCarteBleu,
+      required this.payementLiquide,
       required this.exonererTVA});
 
   InfosPraticien copy(
@@ -66,9 +81,13 @@ class InfosPraticien {
           String? email,
           int? numeroADELI,
           int? numeroSIRET,
-          String? payements,
+          bool? payementVirementBancaire,
+          bool? payementCheque,
+          bool? payementCarteBleu,
+          bool? payementLiquide,
           bool? exonererTVA}) =>
       InfosPraticien(
+        id: id ?? this.id,
         nom: nom ?? this.nom,
         prenom: prenom ?? this.prenom,
         adresse: adresse ?? this.adresse,
@@ -78,11 +97,16 @@ class InfosPraticien {
         email: email ?? this.email,
         numeroADELI: numeroADELI ?? this.numeroADELI,
         numeroSIRET: numeroSIRET ?? this.numeroSIRET,
-        payements: payements ?? this.payements,
+        payementVirementBancaire:
+            payementVirementBancaire ?? this.payementVirementBancaire,
+        payementCheque: payementCheque ?? this.payementCheque,
+        payementCarteBleu: payementCarteBleu ?? this.payementCarteBleu,
+        payementLiquide: payementLiquide ?? this.payementLiquide,
         exonererTVA: exonererTVA ?? this.exonererTVA,
       );
 
   static InfosPraticien fromJson(Map<dynamic, dynamic> json) => InfosPraticien(
+      id: json[InfosPraticienChamps.id] as int?,
       nom: json[InfosPraticienChamps.nom] as String,
       prenom: json[InfosPraticienChamps.prenom] as String,
       adresse: json[InfosPraticienChamps.adresse] as String,
@@ -92,10 +116,15 @@ class InfosPraticien {
       email: json[InfosPraticienChamps.email] as String,
       numeroADELI: json[InfosPraticienChamps.numeroADELI] as int,
       numeroSIRET: json[InfosPraticienChamps.numeroSIRET] as int,
-      payements: json[InfosPraticienChamps.payements] as String,
-      exonererTVA: json[InfosPraticienChamps.exonererTVA] as bool);
+      payementVirementBancaire:
+          json[InfosPraticienChamps.payementVirementBancaire] == 0 ? false : true,
+      payementCheque: json[InfosPraticienChamps.payementCheque]  == 0 ? false : true,
+      payementCarteBleu: json[InfosPraticienChamps.payementCarteBleu]  == 0 ? false : true,
+      payementLiquide: json[InfosPraticienChamps.payementLiquide]  == 0 ? false : true,
+      exonererTVA: json[InfosPraticienChamps.exonererTVA] == 0 ? false : true);
 
   Map<String, Object?> toJson() => {
+        InfosPraticienChamps.id: id,
         InfosPraticienChamps.nom: nom,
         InfosPraticienChamps.prenom: prenom,
         InfosPraticienChamps.adresse: adresse,
@@ -105,7 +134,10 @@ class InfosPraticien {
         InfosPraticienChamps.email: email,
         InfosPraticienChamps.numeroADELI: numeroADELI,
         InfosPraticienChamps.numeroSIRET: numeroSIRET,
-        InfosPraticienChamps.payements: payements,
+        InfosPraticienChamps.payementVirementBancaire: payementVirementBancaire,
+        InfosPraticienChamps.payementCheque: payementCheque,
+        InfosPraticienChamps.payementCarteBleu: payementCarteBleu,
+        InfosPraticienChamps.payementLiquide: payementLiquide,
         InfosPraticienChamps.exonererTVA: exonererTVA,
       };
 }
@@ -135,7 +167,8 @@ class TypePayement {
   static List<TypePayement> getListTypePaymentFromDynamic(List<dynamic> l) {
     List<TypePayement> listReturn = [];
     for (dynamic element in l) {
-      listReturn.add(TypePayement(key: element["key"], selectionner: element["selectionner"]));
+      listReturn.add(TypePayement(
+          key: element["key"], selectionner: element["selectionner"]));
     }
     return listReturn;
   }
@@ -144,5 +177,4 @@ class TypePayement {
         TypePayementChamps.key: key,
         TypePayementChamps.selectionner: selectionner,
       };
-
 }

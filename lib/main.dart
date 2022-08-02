@@ -8,13 +8,14 @@ import 'package:app_psy/utils/environment.dart';
 import 'package:app_psy/utils/fire_auth.dart';
 import 'package:app_psy/utils/firebase_options.dart';
 import 'package:app_psy/utils/pdf_api.dart';
+import 'package:app_psy/utils/shared_pref.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:sp_util/sp_util.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
+import 'db/app_psy_database.dart';
 import 'model/infos_praticien.dart';
 
 
@@ -23,7 +24,6 @@ void main() async {
   await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform
   );
-  await SpUtil.getInstance();
   PdfApi.deleteAllFilesInCache();
   await SentryFlutter.init(
       (options) => options.dsn = Environment.SENTRY_DSN,
@@ -70,8 +70,9 @@ class AuthWrapper extends StatelessWidget {
     final firebaseUser = context.watch<User?>();
 
     if (firebaseUser != null) {
+      /// TODO https://betterprogramming.pub/flutter-how-to-save-objects-in-sharedpreferences-b7880d0ee2e4
       //If the user is successfully Logged-In.
-      if (SpUtil.haveKey(InfosPraticien.keyObjInfosPraticien) ?? false) {
+      if (SharedPref.read(tableInfosPraticien).toString().isNotEmpty ) {
         return const AppPsy();
       } else {
         return const FullScreenDialogInformationPraticien();

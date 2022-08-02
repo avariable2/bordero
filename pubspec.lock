@@ -505,7 +505,7 @@ packages:
     source: hosted
     version: "3.0.1"
   shared_preferences:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: shared_preferences
       url: "https://pub.dartlang.org"
@@ -579,13 +579,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.8.2"
-  sp_util:
-    dependency: "direct main"
-    description:
-      name: sp_util
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "2.0.3"
   sqflite:
     dependency: "direct main"
     description:
