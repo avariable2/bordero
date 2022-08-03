@@ -16,23 +16,21 @@ import 'package:provider/provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'db/app_psy_database.dart';
-import 'model/infos_praticien.dart';
-
+import 'model/utilisateur.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   PdfApi.deleteAllFilesInCache();
   await SentryFlutter.init(
-      (options) => options.dsn = Environment.SENTRY_DSN,
+    (options) => options.dsn = Environment.SENTRY_DSN,
     appRunner: () => runApp(const MyApp()),
   );
 }
 
 class MyApp extends StatelessWidget {
   static const String keyUserEstCo = "USER_EST_CO";
+
   const MyApp({Key? key}) : super(key: key);
 
   @override
@@ -42,7 +40,10 @@ class MyApp extends StatelessWidget {
         Provider<FireAuth>(
           create: (_) => FireAuth(FirebaseAuth.instance),
         ),
-        StreamProvider(create: (context) => context.read<FireAuth>().authStateChanges, initialData: null,),
+        StreamProvider(
+          create: (context) => context.read<FireAuth>().authStateChanges,
+          initialData: null,
+        ),
       ],
       child: MaterialApp(
           title: "Bordero",
@@ -62,9 +63,14 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class AuthWrapper extends StatelessWidget {
+class AuthWrapper extends StatefulWidget {
   const AuthWrapper({Key? key}) : super(key: key);
 
+  @override
+  State<AuthWrapper> createState() => _AuthWrapperState();
+}
+
+class _AuthWrapperState extends State<AuthWrapper> {
   @override
   Widget build(BuildContext context) {
     final firebaseUser = context.watch<User?>();
@@ -72,11 +78,19 @@ class AuthWrapper extends StatelessWidget {
     if (firebaseUser != null) {
       /// TODO https://betterprogramming.pub/flutter-how-to-save-objects-in-sharedpreferences-b7880d0ee2e4
       //If the user is successfully Logged-In.
-      if (SharedPref.read(tableInfosPraticien).toString().isNotEmpty ) {
-        return const AppPsy();
-      } else {
-        return const FullScreenDialogInformationPraticien();
-      }
+
+      return FutureBuilder(
+          future: SharedPref().readIsSet(),
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              return snapshot.data == true
+                  ? const AppPsy()
+                  : const FullScreenDialogInformationPraticien();
+            } else {
+              return const CircularProgressIndicator();
+            }
+          }
+          );
     } else {
       //If the user is not Logged-In.
       return const PresentationPage();
@@ -137,7 +151,10 @@ class _AppPsyState extends State<AppPsy> {
           )
         ],
       ),
-      body: IndexedStack(index: currentPageIndex, children: pageList,),
+      body: IndexedStack(
+        index: currentPageIndex,
+        children: pageList,
+      ),
     );
   }
 }

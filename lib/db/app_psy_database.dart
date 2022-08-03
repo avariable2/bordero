@@ -1,6 +1,6 @@
 import 'package:app_psy/model/client.dart';
 import 'package:app_psy/model/facture.dart';
-import 'package:app_psy/model/infos_praticien.dart';
+import 'package:app_psy/model/utilisateur.dart';
 import 'package:app_psy/model/type_acte.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:sqflite/sqflite.dart';
@@ -63,26 +63,6 @@ class AppPsyDatabase {
     ${FactureChamps.id} $idType,
     ${FactureChamps.nom} $stringType,
     ${FactureChamps.fichier} $blobType
-    )
-    ''');
-
-    await db.execute('''
-    CREATE TABLE $tableInfosPraticien(
-    ${InfosPraticienChamps.id} $idType,
-    ${InfosPraticienChamps.nom} $stringType,
-    ${InfosPraticienChamps.prenom} $stringType,
-    ${InfosPraticienChamps.adresse} $stringType,
-    ${InfosPraticienChamps.codePostal} $stringType,
-    ${InfosPraticienChamps.ville} $stringType,
-    ${InfosPraticienChamps.numeroTelephone} $stringType,
-    ${InfosPraticienChamps.email} $stringType,
-    ${InfosPraticienChamps.numeroADELI} $integerType,
-    ${InfosPraticienChamps.numeroSIRET} $integerType,
-    ${InfosPraticienChamps.payementVirementBancaire} $booleanType,
-    ${InfosPraticienChamps.payementCheque} $booleanType,
-    ${InfosPraticienChamps.payementCarteBleu} $booleanType,
-    ${InfosPraticienChamps.payementLiquide} $booleanType,
-    ${InfosPraticienChamps.exonererTVA} $booleanType
     )
     ''');
   }
@@ -339,57 +319,6 @@ class AppPsyDatabase {
     return await db.delete(
       tableFacture,
       where: '${FactureChamps.id} = ?',
-      whereArgs: [id],
-    );
-  }
-
-  /// InfosPraticiens
-
-  Future<bool> createInfosPraticien(InfosPraticien infos) async {
-    final db = await instance.database;
-    int result = 0;
-    try {
-      result = await db.insert(tableInfosPraticien, infos.toJson());
-    } catch(exception, stackTrace ) {
-      await Sentry.captureException(exception, stackTrace: stackTrace);
-      print("0 success for create client");
-    }
-
-    return result > 0 ? true : false;
-  }
-
-  Future<bool> infosPraticienIsSet() async {
-    final db = await instance.database;
-
-    final result = await db.query(tableInfosPraticien);
-
-    return result.isNotEmpty;
-  }
-
-  Future<InfosPraticien?> readInfosPraticien() async {
-    final db = await instance.database;
-    final result = await db.query(tableInfosPraticien);
-
-    return result.isNotEmpty ? InfosPraticien.fromJson(result.first) : null;
-  }
-
-  Future<int> updateInfosPraticien(InfosPraticien infos) async {
-    final db = await instance.database;
-
-    return db.update(
-      tableInfosPraticien,
-      infos.toJson(),
-      where: '${InfosPraticienChamps.id} = ?',
-      whereArgs: [infos.id],
-    );
-  }
-
-  Future<int> deleteInfosPraticien(int id) async {
-    final db = await instance.database;
-
-    return await db.delete(
-      tableInfosPraticien,
-      where: '${InfosPraticienChamps.id} = ?',
       whereArgs: [id],
     );
   }

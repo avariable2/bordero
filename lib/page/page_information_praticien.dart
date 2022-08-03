@@ -1,7 +1,8 @@
 
 import 'package:app_psy/db/app_psy_database.dart';
 import 'package:app_psy/main.dart';
-import 'package:app_psy/model/infos_praticien.dart';
+import 'package:app_psy/model/utilisateur.dart';
+import 'package:app_psy/utils/shared_pref.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 
@@ -297,7 +298,7 @@ class DialogInfoPraticienState extends State<DialogInfoPraticien> {
                   if (value == null || value.isEmpty) {
                     return 'Entrer une email';
                   }
-                  if (!EmailValidator.validate(value)) {
+                  if (!EmailValidator.validate(value.trim())) {
                     return 'Entrer une email valide';
                   }
                   return null;
@@ -447,8 +448,8 @@ class DialogInfoPraticienState extends State<DialogInfoPraticien> {
                 ])));
   }
 
-  InfosPraticien _creerInfosPraticien() {
-    return InfosPraticien(
+  Utilisateur _creerInfosPraticien() {
+    return Utilisateur(
       nom: controllerChampNom.text.trim(),
       prenom: controllerChampPrenom.text.trim(),
       adresse: controllerChampAdresse.text.trim(),
@@ -467,36 +468,13 @@ class DialogInfoPraticienState extends State<DialogInfoPraticien> {
   }
 
   Future<void> _castTextToController() async {
-    await AppPsyDatabase.instance.readInfosPraticien().then((value) {
-      if (value != null) {
-        controllerChampNom.text = value.nom;
-        controllerChampPrenom.text = value.prenom;
-        controllerChampAdresse.text = value.adresse;
-        controllerChampCodePostal.text = value.codePostal;
-        controllerChampVille.text = value.ville;
-        controllerChampNumero.text = value.numeroTelephone;
-        controllerChampEmail.text = value.email;
-        controllerChampNumeroSIRET.text = value.numeroSIRET.toString();
-        controllerChampNumeroADELI.text = value.numeroADELI.toString();
-        estExonererDeTVA = value.exonererTVA;
-        /*listTypePayements = TypePayement.getListTypePaymentFromDynamic(
-            jsonDecode(value.payements));*/
-      }
-    });
+
   }
 
   Future<void> sauvegardeDesDonneesEtAffichageMain() async {
-    InfosPraticien infosPraticien = _creerInfosPraticien();
-    await AppPsyDatabase.instance.createInfosPraticien(infosPraticien).then((value) {
-      if (value) {
-        Navigator.of(context).pop();
-        Navigator.push(
-            context,
-            MaterialPageRoute<void>(
-              builder: (BuildContext context) => const AppPsy(),
-            )).then((value) => _afficherInfosEnregistrer());
-      }
-    });
+    Utilisateur infosPraticien = _creerInfosPraticien();
+    SharedPref().save(tableUtilisateur, infosPraticien);
+    SharedPref().saveIsSetOrNot(true);
   }
   
   void _afficherInfosEnregistrer() {

@@ -1,22 +1,20 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:app_psy/model/facture.dart';
-import 'package:app_psy/model/infos_praticien.dart';
+import 'package:app_psy/model/utilisateur.dart';
 import 'package:app_psy/utils/app_psy_utils.dart';
 import 'package:app_psy/utils/pdf_api.dart';
+import 'package:app_psy/utils/shared_pref.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
-
-import '../db/app_psy_database.dart';
 import '../model/client.dart';
 
 class PdfFactureApi {
   static Future<File?> generate(CreationFacture facture) async {
-    InfosPraticien? infos;
+    Utilisateur? infos;
     try {
-      infos = await AppPsyDatabase.instance.readInfosPraticien();
+      infos = SharedPref().read(tableUtilisateur);
     } on Exception catch (exception, stackTrace) {
       await Sentry.captureException(exception, stackTrace: stackTrace);
       return null;
@@ -46,7 +44,7 @@ class PdfFactureApi {
     return PdfApi.saveDocument(name: titre, pdf: pdf);
   }
 
-  static Widget buildTitre(CreationFacture facture, InfosPraticien infos) {
+  static Widget buildTitre(CreationFacture facture, Utilisateur infos) {
     return Row(children: [
       Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Text("${infos.nom} ${infos.prenom}",
@@ -201,7 +199,7 @@ class PdfFactureApi {
         ]));
   }
 
-  static Widget buildPayement(CreationFacture facture, InfosPraticien infos) {
+  static Widget buildPayement(CreationFacture facture, Utilisateur infos) {
     var dateLimite = "";
     if (facture.dateLimitePayement != null) {
       dateLimite = AppPsyUtils.toDateString(facture.dateLimitePayement!);

@@ -1,6 +1,7 @@
-const String tableInfosPraticien = 'infosPraticien';
+const String tableUtilisateur = 'utilisateur';
+const String aSetCesInfos = "aSetCesInfos";
 
-class InfosPraticienChamps {
+class UtilisateurChamps {
   static final List<String> values = [
     id,
     nom,
@@ -36,7 +37,7 @@ class InfosPraticienChamps {
   static const String exonererTVA = 'exonererTVA';
 }
 
-class InfosPraticien {
+class Utilisateur {
   final int? id;
   final String nom;
   final String prenom;
@@ -53,7 +54,7 @@ class InfosPraticien {
   final bool payementLiquide;
   final bool exonererTVA;
 
-  const InfosPraticien(
+  const Utilisateur(
       {this.id,
       required this.nom,
       required this.prenom,
@@ -70,7 +71,7 @@ class InfosPraticien {
       required this.payementLiquide,
       required this.exonererTVA});
 
-  InfosPraticien copy(
+  Utilisateur copy(
           {int? id,
           String? nom,
           String? prenom,
@@ -86,7 +87,7 @@ class InfosPraticien {
           bool? payementCarteBleu,
           bool? payementLiquide,
           bool? exonererTVA}) =>
-      InfosPraticien(
+      Utilisateur(
         id: id ?? this.id,
         nom: nom ?? this.nom,
         prenom: prenom ?? this.prenom,
@@ -105,40 +106,45 @@ class InfosPraticien {
         exonererTVA: exonererTVA ?? this.exonererTVA,
       );
 
-  static InfosPraticien fromJson(Map<dynamic, dynamic> json) => InfosPraticien(
-      id: json[InfosPraticienChamps.id] as int?,
-      nom: json[InfosPraticienChamps.nom] as String,
-      prenom: json[InfosPraticienChamps.prenom] as String,
-      adresse: json[InfosPraticienChamps.adresse] as String,
-      codePostal: json[InfosPraticienChamps.codePostal] as String,
-      ville: json[InfosPraticienChamps.ville] as String,
-      numeroTelephone: json[InfosPraticienChamps.numeroTelephone] as String,
-      email: json[InfosPraticienChamps.email] as String,
-      numeroADELI: json[InfosPraticienChamps.numeroADELI] as int,
-      numeroSIRET: json[InfosPraticienChamps.numeroSIRET] as int,
-      payementVirementBancaire:
-          json[InfosPraticienChamps.payementVirementBancaire] == 0 ? false : true,
-      payementCheque: json[InfosPraticienChamps.payementCheque]  == 0 ? false : true,
-      payementCarteBleu: json[InfosPraticienChamps.payementCarteBleu]  == 0 ? false : true,
-      payementLiquide: json[InfosPraticienChamps.payementLiquide]  == 0 ? false : true,
-      exonererTVA: json[InfosPraticienChamps.exonererTVA] == 0 ? false : true);
+  Utilisateur.fromJson(Map<String, dynamic> json)
+      : id = json[UtilisateurChamps.id] as int?,
+        nom = json[UtilisateurChamps.nom] as String,
+        prenom = json[UtilisateurChamps.prenom] as String,
+        adresse = json[UtilisateurChamps.adresse] as String,
+        codePostal = json[UtilisateurChamps.codePostal] as String,
+        ville = json[UtilisateurChamps.ville] as String,
+        numeroTelephone = json[UtilisateurChamps.numeroTelephone] as String,
+        email = json[UtilisateurChamps.email] as String,
+        numeroADELI = json[UtilisateurChamps.numeroADELI] as int,
+        numeroSIRET = json[UtilisateurChamps.numeroSIRET] as int,
+        payementVirementBancaire =
+            json[UtilisateurChamps.payementVirementBancaire] == 0
+                ? false
+                : true,
+        payementCheque =
+            json[UtilisateurChamps.payementCheque] == 0 ? false : true,
+        payementCarteBleu =
+            json[UtilisateurChamps.payementCarteBleu] == 0 ? false : true,
+        payementLiquide =
+            json[UtilisateurChamps.payementLiquide] == 0 ? false : true,
+        exonererTVA = json[UtilisateurChamps.exonererTVA] == 0 ? false : true;
 
-  Map<String, Object?> toJson() => {
-        InfosPraticienChamps.id: id,
-        InfosPraticienChamps.nom: nom,
-        InfosPraticienChamps.prenom: prenom,
-        InfosPraticienChamps.adresse: adresse,
-        InfosPraticienChamps.codePostal: codePostal,
-        InfosPraticienChamps.ville: ville,
-        InfosPraticienChamps.numeroTelephone: numeroTelephone,
-        InfosPraticienChamps.email: email,
-        InfosPraticienChamps.numeroADELI: numeroADELI,
-        InfosPraticienChamps.numeroSIRET: numeroSIRET,
-        InfosPraticienChamps.payementVirementBancaire: payementVirementBancaire,
-        InfosPraticienChamps.payementCheque: payementCheque,
-        InfosPraticienChamps.payementCarteBleu: payementCarteBleu,
-        InfosPraticienChamps.payementLiquide: payementLiquide,
-        InfosPraticienChamps.exonererTVA: exonererTVA,
+  Map<String, dynamic> toJson() => {
+        UtilisateurChamps.id: id,
+        UtilisateurChamps.nom: nom,
+        UtilisateurChamps.prenom: prenom,
+        UtilisateurChamps.adresse: adresse,
+        UtilisateurChamps.codePostal: codePostal,
+        UtilisateurChamps.ville: ville,
+        UtilisateurChamps.numeroTelephone: numeroTelephone,
+        UtilisateurChamps.email: email,
+        UtilisateurChamps.numeroADELI: numeroADELI,
+        UtilisateurChamps.numeroSIRET: numeroSIRET,
+        UtilisateurChamps.payementVirementBancaire: payementVirementBancaire,
+        UtilisateurChamps.payementCheque: payementCheque,
+        UtilisateurChamps.payementCarteBleu: payementCarteBleu,
+        UtilisateurChamps.payementLiquide: payementLiquide,
+        UtilisateurChamps.exonererTVA: exonererTVA,
       };
 }
 
