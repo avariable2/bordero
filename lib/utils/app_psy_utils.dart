@@ -1,7 +1,7 @@
 
-class AppPsyUtils {
+import 'package:app_psy/model/utilisateur.dart';
 
-  static String CACHE_SAUVEGARDER_NUMERO_FACTURE = "cache_sauvegarder_numero_facture";
+class AppPsyUtils {
 
   static bool isNumeric(String s) {
     if (s == null || s.isEmpty) {
@@ -17,4 +17,14 @@ class AppPsyUtils {
   static String toDateString(DateTime date) {
     return "${date.day}/${date.month}/${date.year}";
   }
+
+  static String getTypePayements(Utilisateur user) {
+    String res = "";
+    if (user.payementCheque == 1) res += "Chèque, ";
+    if (user.payementCarteBleu == 1) res += "Carte bleu, ";
+    if (user.payementLiquide == 1) res += "Liquide, ";
+    if (user.payementVirementBancaire == 1) res += "Virement bancaire,";
+    return res;
+  }
+
 }

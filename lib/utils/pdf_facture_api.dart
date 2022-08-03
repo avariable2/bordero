@@ -14,7 +14,7 @@ class PdfFactureApi {
   static Future<File?> generate(CreationFacture facture) async {
     Utilisateur? infos;
     try {
-      infos = SharedPref().read(tableUtilisateur);
+      infos = Utilisateur.fromJson( await SharedPref().read(tableUtilisateur));
     } on Exception catch (exception, stackTrace) {
       await Sentry.captureException(exception, stackTrace: stackTrace);
       return null;
@@ -204,11 +204,8 @@ class PdfFactureApi {
     if (facture.dateLimitePayement != null) {
       dateLimite = AppPsyUtils.toDateString(facture.dateLimitePayement!);
     }
-    var listePayement = "";
-    /*List<String> listPayements = []
-    for (TypePayement type in listPayements) {
-      if (type.selectionner) listePayement += "${type.key},";
-    }*/
+    var listePayement = AppPsyUtils.getTypePayements(infos);
+
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       SizedBox(height: 30),
       Text('Echéance : $dateLimite'),

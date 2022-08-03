@@ -312,7 +312,7 @@ class DialogAjouterClientState extends State<DialogAjouterClient> {
                   if (value == null || value.isEmpty ) {
                     return 'Entrer une email';
                   }
-                  if (!EmailValidator.validate(value)) {
+                  if (!EmailValidator.validate(value.trim())) {
                     return 'Entrer une email valide';
                   }
                   return null;

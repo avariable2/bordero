@@ -9,8 +9,6 @@ import 'package:app_psy/utils/pdf_facture_api.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart' as path;
 import 'package:signature/signature.dart';
-import 'package:sqflite/utils/utils.dart';
-import 'package:sqflite_common/utils/utils.dart' as utils;
 
 import '../db/app_psy_database.dart';
 import '../model/client.dart';
@@ -65,15 +63,12 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> {
   bool _isLoading = false;
   bool _aUneDateLimite = false;
 
-  //bool _sauvegarderIdFacture = SpUtil.getBool(AppPsyUtils.CACHE_SAUVEGARDER_NUMERO_FACTURE) ?? false;
   late String _dropdownSelectionnerTypeActe;
 
   @override
   void initState() {
     super.initState();
-
     _getListClients();
-    //_getSpUtilsInitialisation();
 
     _controllerChampDate.text = AppPsyUtils.toDateString(_dateEmission);
     _controllerChampNombreUH.text = "1";
@@ -415,18 +410,6 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> {
                   ),
                 ),
               ),
-              /*
-              Expanded(
-                child: CheckboxListTile(
-                  title: const Text("Sauvegarder"),
-                  value: _sauvegarderIdFacture,
-                  onChanged: (bool? value) {
-                    setState(
-                        () => _sauvegarderIdFacture = !_sauvegarderIdFacture);
-                  },
-                  controlAffinity: ListTileControlAffinity.leading,
-                ),
-              ),*/
             ],
           ),
           const Divider(),
@@ -721,8 +704,7 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> {
 
     PdfFactureApi.generate(donnesPourFacture).then((value) {
       if (value == null) {
-        afficherErreur();
-        return;
+        return afficherErreur();
       }
       ajoutFactureFileDansBDD(value);
     });
