@@ -54,7 +54,7 @@ class _ParametresGlobauxState extends State<ParametresGlobaux> {
                       context,
                       MaterialPageRoute<void>(
                         builder: (BuildContext context) =>
-                            const FullScreenDialogInformationPraticien(),
+                            const FullScreenDialogInformationPraticien(firstTime: false,),
                         fullscreenDialog: true,
                       ));
                 },

@@ -30,7 +30,7 @@ class PdfFactureApi {
               buildInformationsClients(facture),
               buildInformationsSeances(facture),
               Divider(),
-              buildTotal(facture, infos.exonererTVA),
+              buildTotal(facture, infos.exonererTVA == 0 ? false : true),
               buildPayement(facture, infos),
               buildSignature(facture),
             ]));

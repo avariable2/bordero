@@ -85,7 +85,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
             if (snapshot.hasData) {
               return snapshot.data == true
                   ? const AppPsy()
-                  : const FullScreenDialogInformationPraticien();
+                  : const FullScreenDialogInformationPraticien(firstTime: true);
             } else {
               return const CircularProgressIndicator();
             }
@@ -117,6 +117,9 @@ class _AppPsyState extends State<AppPsy> {
     ),
     const PageParametres(),
   ];
+
+  // TODO(https://codelabs.developers.google.com/codelabs/material-motion-flutter?hl=fr#4)
+  // Animation
 
   @override
   Widget build(BuildContext context) {

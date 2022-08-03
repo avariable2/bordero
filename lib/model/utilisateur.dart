@@ -48,11 +48,11 @@ class Utilisateur {
   final String email;
   final int numeroSIRET;
   final int numeroADELI;
-  final bool payementVirementBancaire;
-  final bool payementCheque;
-  final bool payementCarteBleu;
-  final bool payementLiquide;
-  final bool exonererTVA;
+  final int payementVirementBancaire;
+  final int payementCheque;
+  final int payementCarteBleu;
+  final int payementLiquide;
+  final int exonererTVA;
 
   const Utilisateur(
       {this.id,
@@ -82,11 +82,11 @@ class Utilisateur {
           String? email,
           int? numeroADELI,
           int? numeroSIRET,
-          bool? payementVirementBancaire,
-          bool? payementCheque,
-          bool? payementCarteBleu,
-          bool? payementLiquide,
-          bool? exonererTVA}) =>
+            int? payementVirementBancaire,
+            int? payementCheque,
+            int? payementCarteBleu,
+            int? payementLiquide,
+            int? exonererTVA}) =>
       Utilisateur(
         id: id ?? this.id,
         nom: nom ?? this.nom,
@@ -118,16 +118,14 @@ class Utilisateur {
         numeroADELI = json[UtilisateurChamps.numeroADELI] as int,
         numeroSIRET = json[UtilisateurChamps.numeroSIRET] as int,
         payementVirementBancaire =
-            json[UtilisateurChamps.payementVirementBancaire] == 0
-                ? false
-                : true,
+            json[UtilisateurChamps.payementVirementBancaire] as int,
         payementCheque =
-            json[UtilisateurChamps.payementCheque] == 0 ? false : true,
+            json[UtilisateurChamps.payementCheque]as int,
         payementCarteBleu =
-            json[UtilisateurChamps.payementCarteBleu] == 0 ? false : true,
+            json[UtilisateurChamps.payementCarteBleu]as int,
         payementLiquide =
-            json[UtilisateurChamps.payementLiquide] == 0 ? false : true,
-        exonererTVA = json[UtilisateurChamps.exonererTVA] == 0 ? false : true;
+            json[UtilisateurChamps.payementLiquide]as int,
+        exonererTVA = json[UtilisateurChamps.exonererTVA] as int;
 
   Map<String, dynamic> toJson() => {
         UtilisateurChamps.id: id,

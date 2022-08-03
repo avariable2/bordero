@@ -1,13 +1,14 @@
-
 import 'package:app_psy/db/app_psy_database.dart';
 import 'package:app_psy/main.dart';
 import 'package:app_psy/model/utilisateur.dart';
 import 'package:app_psy/utils/shared_pref.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
 class FullScreenDialogInformationPraticien extends StatelessWidget {
-  const FullScreenDialogInformationPraticien({Key? key}) : super(key: key);
+  final bool firstTime;
+  const FullScreenDialogInformationPraticien({Key? key,required this.firstTime,}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -15,14 +16,16 @@ class FullScreenDialogInformationPraticien extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Vos informations'),
       ),
-      body: const DialogInfoPraticien(),
+      body: DialogInfoPraticien(firstTime: firstTime),
     );
   }
 }
 
 // Create a Form widget.
 class DialogInfoPraticien extends StatefulWidget {
-  const DialogInfoPraticien({super.key});
+  final bool firstTime;
+
+  const DialogInfoPraticien({super.key, required this.firstTime,});
 
   @override
   DialogInfoPraticienState createState() {
@@ -224,7 +227,7 @@ class DialogInfoPraticienState extends State<DialogInfoPraticien> {
                 Expanded(
                   child: Padding(
                     padding:
-                    const EdgeInsets.only(top: 10, bottom: 10, right: 3),
+                        const EdgeInsets.only(top: 10, bottom: 10, right: 3),
                     child: TextFormField(
                       controller: controllerChampCodePostal,
                       keyboardType: TextInputType.number,
@@ -384,12 +387,10 @@ class DialogInfoPraticienState extends State<DialogInfoPraticien> {
                         child: CheckboxListTile(
                           title: Text(listTypePayements[0].key),
                           value: listTypePayements[0].selectionner,
-                          onChanged: (bool? value) =>
-                          {
-                            setStateIfMounted(
-                                    () =>
+                          onChanged: (bool? value) => {
+                            setStateIfMounted(() =>
                                 listTypePayements[0].selectionner =
-                                !listTypePayements[0].selectionner)
+                                    !listTypePayements[0].selectionner)
                           },
                           controlAffinity: ListTileControlAffinity.leading,
                         ),
@@ -398,12 +399,10 @@ class DialogInfoPraticienState extends State<DialogInfoPraticien> {
                         child: CheckboxListTile(
                           title: Text(listTypePayements[1].key),
                           value: listTypePayements[1].selectionner,
-                          onChanged: (bool? value) =>
-                          {
-                            setStateIfMounted(
-                                    () =>
+                          onChanged: (bool? value) => {
+                            setStateIfMounted(() =>
                                 listTypePayements[1].selectionner =
-                                !listTypePayements[1].selectionner)
+                                    !listTypePayements[1].selectionner)
                           },
                           controlAffinity: ListTileControlAffinity.leading,
                         ),
@@ -416,12 +415,10 @@ class DialogInfoPraticienState extends State<DialogInfoPraticien> {
                         child: CheckboxListTile(
                           title: Text(listTypePayements[2].key),
                           value: listTypePayements[2].selectionner,
-                          onChanged: (bool? value) =>
-                          {
-                            setStateIfMounted(
-                                    () =>
+                          onChanged: (bool? value) => {
+                            setStateIfMounted(() =>
                                 listTypePayements[2].selectionner =
-                                !listTypePayements[2].selectionner)
+                                    !listTypePayements[2].selectionner)
                           },
                           controlAffinity: ListTileControlAffinity.leading,
                         ),
@@ -430,12 +427,10 @@ class DialogInfoPraticienState extends State<DialogInfoPraticien> {
                         child: CheckboxListTile(
                           title: Text(listTypePayements[3].key),
                           value: listTypePayements[3].selectionner,
-                          onChanged: (bool? value) =>
-                          {
-                            setStateIfMounted(
-                                    () =>
+                          onChanged: (bool? value) => {
+                            setStateIfMounted(() =>
                                 listTypePayements[3].selectionner =
-                                !listTypePayements[3].selectionner)
+                                    !listTypePayements[3].selectionner)
                           },
                           controlAffinity: ListTileControlAffinity.leading,
                         ),
@@ -459,29 +454,66 @@ class DialogInfoPraticienState extends State<DialogInfoPraticien> {
       email: controllerChampEmail.text.trim(),
       numeroSIRET: int.parse(controllerChampNumeroSIRET.text.trim()),
       numeroADELI: int.parse(controllerChampNumeroADELI.text.trim()),
-      exonererTVA: estExonererDeTVA,
-      payementVirementBancaire: listTypePayements[0].selectionner,
-      payementCheque: listTypePayements[3].selectionner,
-      payementCarteBleu: listTypePayements[2].selectionner,
-      payementLiquide: listTypePayements[1].selectionner,
+      exonererTVA: estExonererDeTVA ? 1 : 0,
+      payementVirementBancaire: listTypePayements[0].selectionner ? 1 : 0,
+      payementCheque: listTypePayements[3].selectionner ? 1 : 0,
+      payementCarteBleu: listTypePayements[2].selectionner ? 1 : 0,
+      payementLiquide: listTypePayements[1].selectionner ? 1 : 0,
     );
   }
 
   Future<void> _castTextToController() async {
+    if (widget.firstTime) return;
+    Utilisateur infosPraticien;
+    try {
+      infosPraticien =
+          Utilisateur.fromJson(await SharedPref().read(tableUtilisateur));
+    } catch (exception, stackTrace) {
+      await Sentry.captureException(exception, stackTrace: stackTrace);
+      _afficherErreur();
+      print("ERROR requete : $exception");
+      return;
+    }
 
+    controllerChampNom.text = infosPraticien.nom;
+    controllerChampPrenom.text = infosPraticien.prenom;
+    controllerChampAdresse.text = infosPraticien.adresse;
+    controllerChampCodePostal.text = infosPraticien.codePostal;
+    controllerChampVille.text = infosPraticien.ville;
+    controllerChampNumero.text = infosPraticien.numeroTelephone;
+    controllerChampEmail.text = infosPraticien.email;
+    controllerChampNumeroSIRET.text = infosPraticien.numeroSIRET.toString();
+    controllerChampNumeroADELI.text = infosPraticien.numeroADELI.toString();
+    listTypePayements[0].selectionner =
+        infosPraticien.payementVirementBancaire == 0 ? false : true;
+    listTypePayements[3].selectionner =
+        infosPraticien.payementLiquide == 0 ? false : true;
+    listTypePayements[2].selectionner =
+        infosPraticien.payementCarteBleu == 0 ? false : true;
+    listTypePayements[1].selectionner =
+        infosPraticien.payementCheque == 0 ? false : true;
+    estExonererDeTVA = infosPraticien.exonererTVA == 0 ? false : true;
   }
 
   Future<void> sauvegardeDesDonneesEtAffichageMain() async {
     Utilisateur infosPraticien = _creerInfosPraticien();
     SharedPref().save(tableUtilisateur, infosPraticien);
     SharedPref().saveIsSetOrNot(true);
+    _afficherInfosEnregistrer();
   }
-  
-  void _afficherInfosEnregistrer() {
+
+  _afficherErreur() {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-          content:
-          Text("Vos informations ont bien été modifiées.")),
+          content: Text(
+              "Une erreur est sruvenue. Vos informations n'ont pas été charger.")),
+    );
+    Navigator.of(context).pop();
+  }
+
+  void _afficherInfosEnregistrer() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Vos informations ont bien été modifiées.")),
     );
   }
 }
