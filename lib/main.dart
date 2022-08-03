@@ -116,23 +116,23 @@ class _AppPsyState extends State<AppPsy> {
         selectedIndex: currentPageIndex,
         destinations: const <Widget>[
           NavigationDestination(
-            selectedIcon: Icon(Icons.home_outlined),
-            icon: Icon(Icons.home),
+            selectedIcon: Icon(Icons.home),
+            icon: Icon(Icons.home_outlined),
             label: 'Accueil',
           ),
           NavigationDestination(
-            selectedIcon: Icon(Icons.description_outlined),
-            icon: Icon(Icons.description),
+            selectedIcon: Icon(Icons.description),
+            icon: Icon(Icons.description_outlined),
             label: 'Factures',
           ),
           NavigationDestination(
-            selectedIcon: Icon(Icons.receipt_long_outlined),
-            icon: Icon(Icons.receipt_long),
+            selectedIcon: Icon(Icons.receipt_long),
+            icon: Icon(Icons.receipt_long_outlined),
             label: 'Devis',
           ),
           NavigationDestination(
-            selectedIcon: Icon(Icons.settings_outlined),
-            icon: Icon(Icons.settings),
+            selectedIcon: Icon(Icons.settings),
+            icon: Icon(Icons.settings_outlined),
             label: 'Paramètres',
           )
         ],
