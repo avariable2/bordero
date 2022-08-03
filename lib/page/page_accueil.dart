@@ -115,6 +115,7 @@ class _MonAccueilState extends State<MonAccueil> {
                 controller: _controllerChampRecherche,
                 keyboardType: TextInputType.name,
                 decoration: const InputDecoration(
+                  prefixIcon: Icon(Icons.search),
                   border: OutlineInputBorder(),
                   labelText: 'Recherche client',
                   helperText: 'Essayer le nom du client ou son prénom',

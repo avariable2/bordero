@@ -30,7 +30,7 @@ class _ViewFacturesState extends State<ViewFactures> {
   final _controllerChampRecherche = TextEditingController();
   late List<FileSystemEntity> listFichiers;
   late List<FileSystemEntity> listFichiersTrier = [];
-  late List<InfoPageFacture> listInfoPageFacture;
+  late List<InfoPageFacture> listInfoPageFacture= [];
 
   bool isLoading = false;
   String _selectionnerChips = "";
@@ -91,6 +91,7 @@ class _ViewFacturesState extends State<ViewFactures> {
                 controller: _controllerChampRecherche,
                 keyboardType: TextInputType.name,
                 decoration: const InputDecoration(
+                  prefixIcon: Icon(Icons.search),
                     border: OutlineInputBorder(),
                     labelText: 'Recherche facture',
                     helperText: 'Essayer le nom du client ou son prénom'),
@@ -135,7 +136,8 @@ class _ViewFacturesState extends State<ViewFactures> {
             ],
           ),
           const Divider(),
-          SizedBox(
+
+          /*SizedBox(
             height: MediaQuery.of(this.context).size.height / 2.4,
             child: ListView(
               scrollDirection: Axis.vertical,
@@ -175,15 +177,32 @@ class _ViewFacturesState extends State<ViewFactures> {
                     ),
               ],
             ),
-          ),
+          ),*/
+
+          SizedBox(
+              height: MediaQuery.of(this.context).size.height / 2.4,
+              child: ListView.builder(
+                  scrollDirection: Axis.vertical,
+                  shrinkWrap: true,
+                  padding: const EdgeInsets.all(8),
+                  itemCount: listInfoPageFacture.length,
+                  itemBuilder: (context, index) {
+                    return Card(
+                        child: ListTile(
+                          leading: const Icon(Icons.picture_as_pdf_outlined),
+                          title: Text(basename(listInfoPageFacture[index].nom)),
+                          onTap: () => null,
+                        ),
+                      );
+                  },)),
         ]);
   }
 
   Future<void> _getListFiles() async {
     setState(() => isLoading = true);
 
-    listFichiers = await PdfApi.getAllFilesInCache();
-    //listInfoPageFacture = await AppPsyDatabase.instance.getAllFileName();
+    //listFichiers = await PdfApi.getAllFilesInCache();
+    listInfoPageFacture = await AppPsyDatabase.instance.getAllFileName();
 
     setState(() => isLoading = false);
   }
