@@ -706,24 +706,80 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> {
       if (value == null) {
         return afficherErreur();
       }
-      ajoutFactureFileDansBDD(value);
+      checkSiFactureDejaCreerEtAjout(value);
     });
   }
 
   void ajoutFactureFileDansBDD(File fichier) async {
     Facture facture = Facture(
-        nom: path.basename(fichier.path),
-        fichier: fichier.readAsBytesSync());
+        nom: path.basename(fichier.path), fichier: fichier.readAsBytesSync());
     await AppPsyDatabase.instance.createFactureInDB(facture).then((value) => {
-          if (!value) {
+          if (!value)
+            {
               afficherErreur(),
-          } else {
+            }
+          else
+            {
               Navigator.of(context).push(MaterialPageRoute(
                   builder: (context) => PreviewPdf(
                         fichier: fichier,
                       ))),
-          }
+            }
         });
+  }
+
+  Future<void> checkSiFactureDejaCreerEtAjout(File fichier) async {
+    await AppPsyDatabase.instance
+        .readIfFactureIsAlreadySet(path.basename(fichier.path))
+        .then((value) => {
+              if (value)
+                {
+                  afficherDialogConfirmationModification(fichier),
+                }
+              else
+                {ajoutFactureFileDansBDD(fichier)}
+            });
+  }
+
+  //TODO('Corriger l'erreur a cette endroit avec l'impossibilite de mettre a jour')
+  changerFactureDansBDD(File fichier) async {
+    Facture facture = Facture(
+        nom: path.basename(fichier.path), fichier: fichier.readAsBytesSync());
+    await AppPsyDatabase.instance.updateFacture(facture).then((value) => {
+      if (value == 1) {
+        Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => PreviewPdf(
+              fichier: fichier,
+            ))),
+      } else {
+        afficherErreur(),
+      }
+    });
+  }
+
+  afficherDialogConfirmationModification(File fichier) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        title: const Text("Cette facture existe déjà !"),
+        content: const Text(
+            "Voulez-vous vraiment modifier cette facture ? Il est impossible de modifier une facture sur Bordero sauf si c'est le jour même. Nous déclinons de toutes responsabilités en cas de fraude."),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, 'Cancel'),
+            child: const Text("ANNULER"),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context, 'OK');
+              changerFactureDansBDD(fichier);
+            },
+            child: const Text("MODIFIER"),
+          ),
+        ],
+        elevation: 24.0,
+      ),
+    );
   }
 
   void afficherErreur() {

@@ -294,6 +294,19 @@ class AppPsyDatabase {
     }
   }
 
+  Future<bool> readIfFactureIsAlreadySet(String nom) async {
+    final db = await instance.database;
+
+    final maps = await db.query(
+      tableFacture,
+      columns: FactureChamps.values,
+      where: '${FactureChamps.nom} = ?',
+      whereArgs: [nom],
+    );
+
+    return maps.isEmpty ? false : true; // Si c'est vide pas de user
+  }
+
   Future<List<Facture>> readAllFacture() async {
     final db = await instance.database;
 
