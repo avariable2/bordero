@@ -57,6 +57,7 @@ class MyApp extends StatelessWidget {
           ],
           theme: ThemeData(
             colorScheme: darkColorScheme,
+            pageTransitionsTheme: pageTransitionsTheme,
           ),
           home: const AuthWrapper()),
     );

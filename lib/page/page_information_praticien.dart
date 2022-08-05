@@ -500,6 +500,10 @@ class DialogInfoPraticienState extends State<DialogInfoPraticien> {
     SharedPref().save(tableUtilisateur, infosPraticien);
     SharedPref().saveIsSetOrNot(true);
     _afficherInfosEnregistrer();
+    if (widget.firstTime) {
+      Navigator.of(context).pop();
+      Navigator.of(context).push(MaterialPageRoute(builder: (context) => const AppPsy()));
+    }
   }
 
   _afficherErreur() {

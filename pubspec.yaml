@@ -53,6 +53,7 @@ dependencies:
   provider: ^6.0.3
   sentry_flutter: ^6.9.0
   shared_preferences: ^2.0.15
+  animations: ^2.0.3
   #equatable: ^2.0.3
   #flutter_bloc: ^8.0.1
   #bloc: ^8.0.3
