@@ -517,9 +517,6 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> {
             },
             child: const Text(
               "SUPPRIMER",
-              style: TextStyle(
-                color: Colors.white,
-              ),
             ),
           ),
         ],

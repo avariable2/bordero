@@ -104,7 +104,6 @@ class _MonAccueilState extends State<MonAccueil> {
             ),
           ],
         ),
-
         const Padding(
           padding: EdgeInsets.only(top: 25, bottom: 15),
           child: Text(
@@ -117,7 +116,6 @@ class _MonAccueilState extends State<MonAccueil> {
             ),
           ),
         ),
-
         Row(
           children: [
             Expanded(
@@ -139,37 +137,13 @@ class _MonAccueilState extends State<MonAccueil> {
             ),
           ],
         ),
-
         const SizedBox(
           height: 15,
         ),
-
-        if (listClients.isEmpty) ...[
-          const Text(
-            "🤔​ Aucun clients ",
-            style: TextStyle(
-              fontSize: 18,
-            ),
-          )
-        ] else ...[
-          buildListClient(_checkSiUserTrie()),
-        ],
-
-
-        ElevatedButton.icon(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute<void>(
-                builder: (BuildContext context) => const FullScreenDialogAjouterClient(),
-                fullscreenDialog: true,
-              ),
-            ).then((value) => refreshLists());
-          },
-          icon: const Icon(Icons.add),
-          label: const Text("Ajouter"),
-        ),
-
+        buildListClient(_controllerChampRecherche.text.isNotEmpty
+            ? listClientsTrier
+            : listClients),
+        buildButton(true),
         const Padding(
           padding: EdgeInsets.only(top: 25, bottom: 15),
           child: Text(
@@ -182,65 +156,11 @@ class _MonAccueilState extends State<MonAccueil> {
             ),
           ),
         ),
-
-        if (listTypeActes.isEmpty)
-          const Text(
-            "🤔​ Aucune type de seance enregistré",
-            style: TextStyle(
-              fontSize: 18,
-            ),
-          )
-        else
-          SizedBox(
-            height: 150,
-            child: Card(
-              borderOnForeground: true,
-              child: ListView(
-                scrollDirection: Axis.vertical,
-                shrinkWrap: true,
-                addAutomaticKeepAlives: false,
-                children: [
-                  for (TypeActe typeActe in listTypeActes)
-                    ListTile(
-                      title: Text(typeActe.nom),
-                      leading: const Icon(Icons.work_outline),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute<void>(
-                            builder: (BuildContext context) =>
-                                FullScreenDialogModifierTypeActe(
-                              typeActe: typeActe,
-                            ),
-                            fullscreenDialog: true,
-                          ),
-                        ).then((value) => refreshLists());
-                      },
-                    ),
-                ],
-              ),
-            ),
-          ),
-
-        ElevatedButton.icon(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute<void>(
-                builder: (BuildContext context) =>
-                    const FullScreenDialogAjouterTypeActe(),
-                fullscreenDialog: true,
-              ),
-            ).then((value) => refreshLists());
-          },
-          icon: const Icon(Icons.add),
-          label: const Text("Ajouter"),
-        ),
-
+        buildListTypeActe(),
+        buildButton(false),
         const SizedBox(
           height: 15,
         ),
-
         const SizedBox(
             height: 200,
             child: Card(
@@ -252,8 +172,7 @@ class _MonAccueilState extends State<MonAccueil> {
     );
   }
 
-  Widget buildListClient(bool trier) {
-    List<Client> listUtiliser = trier ? listClientsTrier : listClients;
+  Widget buildListClient(List<Client> listUtiliser) {
     return SizedBox(
       height: 150,
       child: Card(
@@ -263,26 +182,96 @@ class _MonAccueilState extends State<MonAccueil> {
           shrinkWrap: true,
           addAutomaticKeepAlives: false,
           children: [
-            for (Client client in listUtiliser)
-              ListTile(
-                title: Text("${client.prenom} ${client.nom} / ${client.email}"),
-                leading: const Icon(Icons.account_circle_sharp),
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute<void>(
-                      builder: (BuildContext context) =>
-                          FullScreenDialogModifierClient(
-                        client: client,
+            if (listClients.isEmpty) ...[
+              const Text(
+                "🤔​ Aucun clients ",
+                style: TextStyle(
+                  fontSize: 18,
+                ),
+              )
+            ] else ...[
+              for (Client client in listUtiliser)
+                ListTile(
+                  title:
+                      Text("${client.prenom} ${client.nom} / ${client.email}"),
+                  leading: const Icon(Icons.account_circle_sharp),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute<void>(
+                        builder: (BuildContext context) =>
+                            FullScreenDialogModifierClient(
+                          client: client,
+                        ),
+                        fullscreenDialog: true,
                       ),
-                      fullscreenDialog: true,
-                    ),
-                  ).then((value) => refreshLists());
-                },
-              ),
+                    ).then((value) => refreshLists());
+                  },
+                ),
+            ],
           ],
         ),
       ),
+    );
+  }
+
+  Widget buildListTypeActe() {
+    if (listTypeActes.isEmpty) {
+      return const Text(
+        "🤔​ Aucune type de seance enregistré",
+        style: TextStyle(
+          fontSize: 18,
+        ),
+      );
+    } else {
+      return SizedBox(
+        height: 150,
+        child: Card(
+          borderOnForeground: true,
+          child: ListView(
+            scrollDirection: Axis.vertical,
+            shrinkWrap: true,
+            addAutomaticKeepAlives: false,
+            children: [
+              for (TypeActe typeActe in listTypeActes)
+                ListTile(
+                  title: Text(typeActe.nom),
+                  leading: const Icon(Icons.work_outline),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute<void>(
+                        builder: (BuildContext context) =>
+                            FullScreenDialogModifierTypeActe(
+                          typeActe: typeActe,
+                        ),
+                        fullscreenDialog: true,
+                      ),
+                    ).then((value) => refreshLists());
+                  },
+                ),
+            ],
+          ),
+        ),
+      );
+    }
+  }
+
+  Widget buildButton(bool buttonPourClient) {
+    return ElevatedButton.icon(
+      onPressed: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute<void>(
+            builder: (BuildContext context) => buttonPourClient
+                ? const FullScreenDialogAjouterClient()
+                : const FullScreenDialogAjouterTypeActe(),
+            fullscreenDialog: true,
+          ),
+        ).then((value) => refreshLists());
+      },
+      icon: const Icon(Icons.add),
+      label: const Text("Ajouter"),
     );
   }
 
@@ -290,7 +279,7 @@ class _MonAccueilState extends State<MonAccueil> {
     if (entree == null) {
       return null;
     }
-    _resetListClient();
+    listClientsTrier.clear();
     List<Client> listFinal = [];
     RegExp regex = RegExp(entree.toLowerCase());
 
@@ -303,13 +292,5 @@ class _MonAccueilState extends State<MonAccueil> {
     }
 
     return listFinal;
-  }
-
-  void _resetListClient() {
-    listClientsTrier.clear();
-  }
-
-  bool _checkSiUserTrie() {
-    return _controllerChampRecherche.text.isNotEmpty;
   }
 }
