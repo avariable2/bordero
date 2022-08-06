@@ -732,20 +732,19 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> {
     await AppPsyDatabase.instance
         .readIfFactureIsAlreadySet(path.basename(fichier.path))
         .then((value) => {
-              if (value)
+              if (value != null)
                 {
-                  afficherDialogConfirmationModification(fichier),
+                  afficherDialogConfirmationModification(fichier, value),
                 }
               else
                 {ajoutFactureFileDansBDD(fichier)}
             });
   }
 
-  //TODO('Corriger l'erreur a cette endroit avec l'impossibilite de mettre a jour')
-  changerFactureDansBDD(File fichier) async {
-    Facture facture = Facture(
+  changerFactureDansBDD(File fichier, Facture facture) async {
+    Facture nouvelleFacture = Facture( id: facture.id,
         nom: path.basename(fichier.path), fichier: fichier.readAsBytesSync());
-    await AppPsyDatabase.instance.updateFacture(facture).then((value) => {
+    await AppPsyDatabase.instance.updateFacture(nouvelleFacture).then((value) => {
       if (value == 1) {
         Navigator.of(context).push(MaterialPageRoute(
             builder: (context) => PreviewPdf(
@@ -757,7 +756,7 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> {
     });
   }
 
-  afficherDialogConfirmationModification(File fichier) {
+  afficherDialogConfirmationModification(File fichier, Facture facture) {
     showDialog(
       context: context,
       builder: (BuildContext context) => AlertDialog(
@@ -772,7 +771,7 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> {
           TextButton(
             onPressed: () {
               Navigator.pop(context, 'OK');
-              changerFactureDansBDD(fichier);
+              changerFactureDansBDD(fichier, facture);
             },
             child: const Text("MODIFIER"),
           ),
@@ -783,8 +782,9 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> {
   }
 
   void afficherErreur() {
-    const SnackBar(
+    var snackbar = const SnackBar(
         content:
             Text("Il viens de se produire une erreur, nous sommes désolé."));
+    ScaffoldMessenger.of(context).showSnackBar(snackbar);
   }
 }

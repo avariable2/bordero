@@ -294,7 +294,7 @@ class AppPsyDatabase {
     }
   }
 
-  Future<bool> readIfFactureIsAlreadySet(String nom) async {
+  Future<Facture?> readIfFactureIsAlreadySet(String nom) async {
     final db = await instance.database;
 
     final maps = await db.query(
@@ -304,7 +304,7 @@ class AppPsyDatabase {
       whereArgs: [nom],
     );
 
-    return maps.isEmpty ? false : true; // Si c'est vide pas de user
+    return maps.isEmpty ? null : Facture.fromJson(maps.first); // Si c'est vide pas de user
   }
 
   Future<List<Facture>> readAllFacture() async {

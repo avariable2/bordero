@@ -75,7 +75,6 @@ class _AuthWrapperState extends State<AuthWrapper> {
   @override
   Widget build(BuildContext context) {
     final firebaseUser = context.watch<User?>();
-
     if (firebaseUser != null) {
       /// TODO https://betterprogramming.pub/flutter-how-to-save-objects-in-sharedpreferences-b7880d0ee2e4
       //If the user is successfully Logged-In.
