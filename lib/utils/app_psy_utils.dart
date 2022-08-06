@@ -1,5 +1,8 @@
 
 import 'package:app_psy/model/utilisateur.dart';
+import 'package:path/path.dart';
+
+import '../model/facture.dart';
 
 class AppPsyUtils {
 
@@ -25,6 +28,10 @@ class AppPsyUtils {
     if (user.payementLiquide == 1) res += "Liquide, ";
     if (user.payementVirementBancaire == 1) res += "Virement bancaire,";
     return res;
+  }
+
+  static String getName(Facture facture) {
+    return basename(facture.nom);
   }
 
 }

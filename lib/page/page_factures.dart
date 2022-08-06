@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:app_psy/dialog/creation_facture.dart';
 import 'package:app_psy/model/facture.dart';
+import 'package:app_psy/utils/app_psy_utils.dart';
 import 'package:app_psy/utils/pdf_api.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -31,8 +32,7 @@ class ViewFactures extends StatefulWidget {
 
 class _ViewFacturesState extends State<ViewFactures> {
   final _controllerChampRecherche = TextEditingController();
-  late List<FileSystemEntity> listFichiers;
-  late List<FileSystemEntity> listFichiersTrier = [];
+  late List<Facture> facturesTrier = [];
   late List<Facture> factures = [];
 
   bool isLoading = false;
@@ -150,7 +150,7 @@ class _ViewFacturesState extends State<ViewFactures> {
               labelText: 'Recherche facture',
               helperText: 'Essayer le nom du client ou son prénom'),
           onChanged: (String? entree) => setState(() {
-            listFichiersTrier = _sortParRecherche(entree) ?? [];
+            facturesTrier = _sortParRecherche(entree) ?? [];
           }),
         ),
       ],
@@ -170,7 +170,7 @@ class _ViewFacturesState extends State<ViewFactures> {
                 _resetListFichierTrier();
               } else {
                 _selectionnerChips = "Mois actuel";
-                listFichiersTrier = _sort(true, false);
+                facturesTrier = _sort(true, false);
               }
             });
           },
@@ -185,7 +185,7 @@ class _ViewFacturesState extends State<ViewFactures> {
                 _resetListFichierTrier();
               } else {
                 _selectionnerChips = "Année actuelle";
-                listFichiersTrier = _sort(false, true);
+                facturesTrier = _sort(false, true);
               }
             });
           },
@@ -197,30 +197,33 @@ class _ViewFacturesState extends State<ViewFactures> {
   Widget buildListFactures() {
     return SizedBox(
         height: MediaQuery.of(this.context).size.height / 2.4,
-        child: ListView.builder(
-          scrollDirection: Axis.vertical,
-          shrinkWrap: true,
-          padding: const EdgeInsets.all(8),
-          itemCount: factures.length,
-          itemBuilder: (context, index) {
-            return Card(
-              child: ListTile(
-                  leading: const Icon(Icons.picture_as_pdf_outlined),
-                  title: Text(basename(factures[index].nom)),
-                  onTap: () async {
-                    var file = await getFileFromDBB(factures[index]);
+        child: buildListView(_checkSiUserTrie() ? facturesTrier : factures)
+    );
+  }
 
-                      Navigator.of(this.context)
-                          .push(MaterialPageRoute(
-                              builder: (context) => PreviewPdf(
-                                    fichier: file,
-                                  )))
-                          .then((value) => _getListFiles());
+  Widget buildListView(List<Facture> listUtiliser) {
+    return ListView.builder(
+        scrollDirection: Axis.vertical,
+        shrinkWrap: true,
+        padding: const EdgeInsets.all(8),
+        itemCount: listUtiliser.length,
+        itemBuilder: (context, index) {
+          return Card(
+            child: ListTile(
+                leading: const Icon(Icons.picture_as_pdf_outlined),
+                title: Text(AppPsyUtils.getName(listUtiliser[index])),
+                onTap: () async {
+                  var file = await getFileFromDBB(listUtiliser[index]);
+                  Navigator.of(this.context)
+                      .push(MaterialPageRoute(
+                      builder: (context) => PreviewPdf(
+                        fichier: file,
+                      )))
+                      .then((value) => _getListFiles());
 
-                  }),
-            );
-          },
-        ));
+                }),
+          );
+    });
   }
 
   Future<void> _getListFiles() async {
@@ -232,14 +235,14 @@ class _ViewFacturesState extends State<ViewFactures> {
   Future<File> getFileFromDBB(Facture facture) async {
     Uint8List imageInUnit8List = facture.fichier;
     final tempDir = await getTemporaryDirectory();
-    File file = await File('${tempDir.path}/file_temporary.pdf').create();
+    File file = await File('${tempDir.path}/facture_temporaire.pdf').create();
     file.writeAsBytesSync(imageInUnit8List);
     return file;
   }
 
-  List<FileSystemEntity> _sort(bool mois, bool annee) {
+  List<Facture> _sort(bool mois, bool annee) {
     _resetListFichierTrier();
-    List<FileSystemEntity> listFinal = [];
+    List<Facture> listFinal = [];
     var now = DateTime.now();
     var formatterMounth = DateFormat('MM');
     var formatterYear = DateFormat('yyyy');
@@ -249,8 +252,8 @@ class _ViewFacturesState extends State<ViewFactures> {
 
       RegExp regex = RegExp("([$month]-[$year])");
 
-      for (FileSystemEntity f in listFichiers) {
-        if (regex.firstMatch(basename(f.path)) != null) {
+      for (Facture f in factures) {
+        if (regex.firstMatch(AppPsyUtils.getName(f)) != null) {
           listFinal.add(f);
         }
       }
@@ -258,8 +261,8 @@ class _ViewFacturesState extends State<ViewFactures> {
       String year = formatterYear.format(now);
       RegExp regex = RegExp("([$year])");
 
-      for (FileSystemEntity f in listFichiers) {
-        if (regex.firstMatch(basename(f.path)) != null) {
+      for (Facture f in factures) {
+        if (regex.firstMatch(AppPsyUtils.getName(f)) != null) {
           listFinal.add(f);
         }
       }
@@ -268,16 +271,16 @@ class _ViewFacturesState extends State<ViewFactures> {
     return listFinal;
   }
 
-  List<FileSystemEntity>? _sortParRecherche(String? entree) {
+  List<Facture>? _sortParRecherche(String? entree) {
     if (entree == null) {
       return null;
     }
     _resetListFichierTrier();
-    List<FileSystemEntity> listFinal = [];
+    List<Facture> listFinal = [];
     RegExp regex = RegExp(entree.toLowerCase());
 
-    for (FileSystemEntity f in listFichiers) {
-      if (regex.firstMatch(basename(f.path).toLowerCase()) != null) {
+    for (Facture f in factures) {
+      if (regex.firstMatch(AppPsyUtils.getName(f).toLowerCase()) != null) {
         listFinal.add(f);
       }
     }
@@ -286,7 +289,7 @@ class _ViewFacturesState extends State<ViewFactures> {
   }
 
   void _resetListFichierTrier() {
-    listFichiersTrier.clear();
+    facturesTrier.clear();
   }
 
   bool _checkSiUserTrie() {
