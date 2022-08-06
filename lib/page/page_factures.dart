@@ -101,9 +101,21 @@ class _ViewFacturesState extends State<ViewFactures> {
         TextField(
           controller: _controllerChampRecherche,
           keyboardType: TextInputType.name,
-          decoration: const InputDecoration(
-              prefixIcon: Icon(Icons.search),
-              border: OutlineInputBorder(),
+          decoration: InputDecoration(
+              suffixIcon: IconButton(
+                onPressed: () {
+                  setState(() {
+                    _controllerChampRecherche.clear();
+                    facturesTrier = [];
+                  });
+                } ,
+                color: _controllerChampRecherche.text.isNotEmpty
+                    ? Colors.grey
+                    : Colors.transparent,
+                icon: const Icon(Icons.clear),
+              ),
+              prefixIcon: const Icon(Icons.search),
+              border: const OutlineInputBorder(),
               labelText: 'Recherche facture',
               helperText: 'Essayer le nom du client ou son prénom'),
           onChanged: (String? entree) => setState(() {

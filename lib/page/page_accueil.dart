@@ -122,11 +122,23 @@ class _MonAccueilState extends State<MonAccueil> {
               child: TextField(
                 controller: _controllerChampRecherche,
                 keyboardType: TextInputType.name,
-                decoration: const InputDecoration(
-                  prefixIcon: Icon(Icons.search),
-                  border: OutlineInputBorder(),
+                decoration: InputDecoration(
+                  prefixIcon: const Icon(Icons.search),
+                  border: const OutlineInputBorder(),
                   labelText: 'Recherche client',
                   helperText: 'Essayer le nom du client ou son prénom',
+                  suffixIcon: IconButton(
+                    onPressed: () {
+                      setState(() {
+                        _controllerChampRecherche.text = "";
+                        listClientsTrier = [];
+                      });
+                    } ,
+                    color: _controllerChampRecherche.text.isNotEmpty
+                        ? Colors.grey
+                        : Colors.transparent,
+                    icon: const Icon(Icons.clear),
+                  ),
                 ),
                 onChanged: (String? entree) => setState(() {
                   if (entree != null && entree.length > 1) {
