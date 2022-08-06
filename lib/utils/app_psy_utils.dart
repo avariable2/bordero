@@ -1,4 +1,7 @@
 
+
+import 'dart:io';
+
 import 'package:app_psy/model/utilisateur.dart';
 import 'package:path/path.dart';
 
@@ -32,6 +35,10 @@ class AppPsyUtils {
 
   static String getName(Facture facture) {
     return basename(facture.nom);
+  }
+
+  static String getNameOfFile(File file) {
+    return basename(file.path);
   }
 
 }

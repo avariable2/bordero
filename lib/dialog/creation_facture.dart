@@ -722,6 +722,7 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> {
             {
               Navigator.of(context).push(MaterialPageRoute(
                   builder: (context) => PreviewPdf(
+                        idFacture: PreviewPdf.idPasEncoreConnu,
                         fichier: fichier,
                       ))),
             }
@@ -742,18 +743,26 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> {
   }
 
   changerFactureDansBDD(File fichier, Facture facture) async {
-    Facture nouvelleFacture = Facture( id: facture.id,
-        nom: path.basename(fichier.path), fichier: fichier.readAsBytesSync());
-    await AppPsyDatabase.instance.updateFacture(nouvelleFacture).then((value) => {
-      if (value == 1) {
-        Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) => PreviewPdf(
-              fichier: fichier,
-            ))),
-      } else {
-        afficherErreur(),
-      }
-    });
+    Facture nouvelleFacture = Facture(
+        id: facture.id,
+        nom: path.basename(fichier.path),
+        fichier: fichier.readAsBytesSync());
+    await AppPsyDatabase.instance
+        .updateFacture(nouvelleFacture)
+        .then((value) => {
+              if (value == 1)
+                {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => PreviewPdf(
+                            idFacture: facture.id!,
+                            fichier: fichier,
+                          ))),
+                }
+              else
+                {
+                  afficherErreur(),
+                }
+            });
   }
 
   afficherDialogConfirmationModification(File fichier, Facture facture) {

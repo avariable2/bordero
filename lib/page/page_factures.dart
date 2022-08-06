@@ -173,6 +173,7 @@ class _ViewFacturesState extends State<ViewFactures> {
                   Navigator.of(this.context)
                       .push(MaterialPageRoute(
                           builder: (context) => PreviewPdf(
+                                idFacture: listUtiliser[index].id!,
                                 fichier: file,
                               )))
                       .then((value) => _getListFiles());
@@ -190,7 +191,7 @@ class _ViewFacturesState extends State<ViewFactures> {
   Future<File> getFileFromDBB(Facture facture) async {
     Uint8List imageInUnit8List = facture.fichier;
     final tempDir = await getTemporaryDirectory();
-    File file = await File('${tempDir.path}/facture_temporaire.pdf').create();
+    File file = await File('${tempDir.path}/${AppPsyUtils.getName(facture)}').create();
     file.writeAsBytesSync(imageInUnit8List);
     return file;
   }
