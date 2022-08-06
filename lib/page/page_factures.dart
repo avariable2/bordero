@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:app_psy/dialog/creation_facture.dart';
 import 'package:app_psy/model/facture.dart';
 import 'package:app_psy/utils/pdf_api.dart';
@@ -6,6 +8,7 @@ import 'package:intl/intl.dart';
 import 'dart:io';
 
 import 'package:path/path.dart';
+import 'package:path_provider/path_provider.dart';
 
 import '../db/app_psy_database.dart';
 import '../dialog/preview_pdf.dart';
@@ -30,7 +33,7 @@ class _ViewFacturesState extends State<ViewFactures> {
   final _controllerChampRecherche = TextEditingController();
   late List<FileSystemEntity> listFichiers;
   late List<FileSystemEntity> listFichiersTrier = [];
-  late List<InfoPageFacture> listInfoPageFacture= [];
+  late List<Facture> factures = [];
 
   bool isLoading = false;
   String _selectionnerChips = "";
@@ -84,57 +87,8 @@ class _ViewFacturesState extends State<ViewFactures> {
               ),
             ),
           ),
-          Flex(
-            direction: Axis.vertical,
-            children: [
-              TextField(
-                controller: _controllerChampRecherche,
-                keyboardType: TextInputType.name,
-                decoration: const InputDecoration(
-                  prefixIcon: Icon(Icons.search),
-                    border: OutlineInputBorder(),
-                    labelText: 'Recherche facture',
-                    helperText: 'Essayer le nom du client ou son prénom'),
-                onChanged: (String? entree) => setState(() {
-                  listFichiersTrier = _sortParRecherche(entree) ?? [];
-                }),
-              ),
-            ],
-          ),
-          Row(
-            children: [
-              FilterChip(
-                label: const Text("Mois actuel"),
-                selected: _selectionnerChips == "Mois actuel",
-                onSelected: (bool value) {
-                  setState(() {
-                    if (_selectionnerChips == "Mois actuel") {
-                      _selectionnerChips = "";
-                      _resetListFichierTrier();
-                    } else {
-                      _selectionnerChips = "Mois actuel";
-                      listFichiersTrier = _sort(true, false);
-                    }
-                  });
-                },
-              ),
-              FilterChip(
-                label: const Text("Année actuelle"),
-                selected: _selectionnerChips == "Année actuelle",
-                onSelected: (bool value) {
-                  setState(() {
-                    if (_selectionnerChips == "Année actuelle") {
-                      _selectionnerChips = "";
-                      _resetListFichierTrier();
-                    } else {
-                      _selectionnerChips = "Année actuelle";
-                      listFichiersTrier = _sort(false, true);
-                    }
-                  });
-                },
-              ),
-            ],
-          ),
+          buildRecherche(),
+          buildChipsRechercheAvancer(),
           const Divider(),
 
           /*SizedBox(
@@ -179,32 +133,108 @@ class _ViewFacturesState extends State<ViewFactures> {
             ),
           ),*/
 
-          SizedBox(
-              height: MediaQuery.of(this.context).size.height / 2.4,
-              child: ListView.builder(
-                  scrollDirection: Axis.vertical,
-                  shrinkWrap: true,
-                  padding: const EdgeInsets.all(8),
-                  itemCount: listInfoPageFacture.length,
-                  itemBuilder: (context, index) {
-                    return Card(
-                        child: ListTile(
-                          leading: const Icon(Icons.picture_as_pdf_outlined),
-                          title: Text(basename(listInfoPageFacture[index].nom)),
-                          onTap: () => null,
-                        ),
-                      );
-                  },)),
+          buildListFactures(),
         ]);
+  }
+
+  Widget buildRecherche() {
+    return Flex(
+      direction: Axis.vertical,
+      children: [
+        TextField(
+          controller: _controllerChampRecherche,
+          keyboardType: TextInputType.name,
+          decoration: const InputDecoration(
+              prefixIcon: Icon(Icons.search),
+              border: OutlineInputBorder(),
+              labelText: 'Recherche facture',
+              helperText: 'Essayer le nom du client ou son prénom'),
+          onChanged: (String? entree) => setState(() {
+            listFichiersTrier = _sortParRecherche(entree) ?? [];
+          }),
+        ),
+      ],
+    );
+  }
+
+  Widget buildChipsRechercheAvancer() {
+    return Row(
+      children: [
+        FilterChip(
+          label: const Text("Mois actuel"),
+          selected: _selectionnerChips == "Mois actuel",
+          onSelected: (bool value) {
+            setState(() {
+              if (_selectionnerChips == "Mois actuel") {
+                _selectionnerChips = "";
+                _resetListFichierTrier();
+              } else {
+                _selectionnerChips = "Mois actuel";
+                listFichiersTrier = _sort(true, false);
+              }
+            });
+          },
+        ),
+        FilterChip(
+          label: const Text("Année actuelle"),
+          selected: _selectionnerChips == "Année actuelle",
+          onSelected: (bool value) {
+            setState(() {
+              if (_selectionnerChips == "Année actuelle") {
+                _selectionnerChips = "";
+                _resetListFichierTrier();
+              } else {
+                _selectionnerChips = "Année actuelle";
+                listFichiersTrier = _sort(false, true);
+              }
+            });
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget buildListFactures() {
+    return SizedBox(
+        height: MediaQuery.of(this.context).size.height / 2.4,
+        child: ListView.builder(
+          scrollDirection: Axis.vertical,
+          shrinkWrap: true,
+          padding: const EdgeInsets.all(8),
+          itemCount: factures.length,
+          itemBuilder: (context, index) {
+            return Card(
+              child: ListTile(
+                  leading: const Icon(Icons.picture_as_pdf_outlined),
+                  title: Text(basename(factures[index].nom)),
+                  onTap: () async {
+                    var file = await getFileFromDBB(factures[index]);
+
+                      Navigator.of(this.context)
+                          .push(MaterialPageRoute(
+                              builder: (context) => PreviewPdf(
+                                    fichier: file,
+                                  )))
+                          .then((value) => _getListFiles());
+
+                  }),
+            );
+          },
+        ));
   }
 
   Future<void> _getListFiles() async {
     setState(() => isLoading = true);
-
-    //listFichiers = await PdfApi.getAllFilesInCache();
-    listInfoPageFacture = await AppPsyDatabase.instance.getAllFileName();
-
+    factures = await AppPsyDatabase.instance.getAllFileName();
     setState(() => isLoading = false);
+  }
+
+  Future<File> getFileFromDBB(Facture facture) async {
+    Uint8List imageInUnit8List = facture.fichier;
+    final tempDir = await getTemporaryDirectory();
+    File file = await File('${tempDir.path}/file_temporary.pdf').create();
+    file.writeAsBytesSync(imageInUnit8List);
+    return file;
   }
 
   List<FileSystemEntity> _sort(bool mois, bool annee) {
@@ -262,5 +292,10 @@ class _ViewFacturesState extends State<ViewFactures> {
   bool _checkSiUserTrie() {
     return _selectionnerChips.isNotEmpty ||
         _controllerChampRecherche.text.isNotEmpty;
+  }
+
+  showErrorMessage() {
+    ScaffoldMessenger.of(this.context).showSnackBar(const SnackBar(
+        content: Text("Une erreur est survenue. Nous en sommes désolé")));
   }
 }

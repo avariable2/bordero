@@ -266,15 +266,16 @@ class AppPsyDatabase {
     return result > 0 ? true : false;
   }
 
-  Future<List<InfoPageFacture>> getAllFileName() async {
+  Future<List<Facture>> getAllFileName() async {
     final db = await instance.database;
 
     final result = await db.query(
       tableFacture,
-      columns: [FactureChamps.values[0], FactureChamps.values[1]],
+      columns: FactureChamps.values,
+      orderBy: "${FactureChamps.id} DESC"
     );
 
-    return result.map((json) => InfoPageFacture.fromJson(json)).toList();
+    return result.map((json) => Facture.fromJson(json)).toList();
   }
 
   Future<Facture?> readFacture(int id) async {

@@ -76,7 +76,7 @@ class PreviewPdf extends StatelessWidget {
                 onPressed: () {
                   _supprimerFacture(context);
                 },
-                child: const Text("SUPPRIMER", style: TextStyle(color: Colors.white70)),),
+                child: const Text("SUPPRIMER"),),
             ],
             elevation: 24.0,
           ),
@@ -140,7 +140,7 @@ class _AffichageInfoPdfState extends State<AffichageInfoPdf> {
                 Expanded(flex: 1, child: CircleAvatar(child: Icon(Icons.info_outline))),
                 Expanded(flex: 4,
                   child:
-                  Text('''Cette facture n'est pas enregistrer sur une base de donnée. Penser à la sauvegarder (Drive, vous l'envoyez par mail, ...) !'''), ),
+                  Text('''Cette facture n'est pas enregistrer sur une base de donnée externe. Penser à la sauvegarder (Drive, vous l'envoyez par mail, ...) !'''), ),
               ],
             ),
         ),
