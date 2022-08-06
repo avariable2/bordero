@@ -1,4 +1,3 @@
-import 'package:animations/animations.dart';
 import 'package:app_psy/db/app_psy_database.dart';
 import 'package:app_psy/dialog/ajouter_type_acte.dart';
 import 'package:app_psy/dialog/modifier_client.dart';

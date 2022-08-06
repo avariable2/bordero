@@ -12,10 +12,10 @@ import 'package:app_psy/utils/shared_pref.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -58,11 +58,17 @@ class MyApp extends StatelessWidget {
             primaryColor: Theme.of(context).primaryColor,
             colorScheme: lightColorScheme,
             pageTransitionsTheme: pageTransitionsTheme,
+              textTheme: GoogleFonts.robotoSerifTextTheme(
+                  Theme.of(context).textTheme
+              )
           ),
           themeMode: ThemeMode.dark,
           darkTheme: ThemeData(
             colorScheme: darkColorScheme,
             pageTransitionsTheme: pageTransitionsTheme,
+            textTheme: GoogleFonts.robotoSerifTextTheme(
+              Theme.of(context).textTheme.apply(bodyColor: Colors.white)
+            )
           ),
           home: const AuthWrapper()),
     );
