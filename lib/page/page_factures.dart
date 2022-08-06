@@ -90,49 +90,6 @@ class _ViewFacturesState extends State<ViewFactures> {
           buildRecherche(),
           buildChipsRechercheAvancer(),
           const Divider(),
-
-          /*SizedBox(
-            height: MediaQuery.of(this.context).size.height / 2.4,
-            child: ListView(
-              scrollDirection: Axis.vertical,
-              shrinkWrap: true,
-              padding: const EdgeInsets.all(8),
-              children: [
-                if (_checkSiUserTrie())
-                  for (FileSystemEntity fichier in listFichiersTrier)
-                    Card(
-                      child: ListTile(
-                        leading: const Icon(Icons.picture_as_pdf_outlined),
-                        title: Text(basename(fichier.path)),
-                        onTap: () => Navigator.of(this.context)
-                            .push(MaterialPageRoute(
-                                builder: (context) => PreviewPdf(
-                                      fichier: File(fichier.path),
-                                    )))
-                            .then((value) => _getListFiles()),
-                      ),
-                    )
-                else
-                  // On n'affiche que les 20 premiers sinon liste trop lourde
-                  for (int index = 0;
-                      index < listFichiers.length && index < 20;
-                      index++)
-                    Card(
-                      child: ListTile(
-                        leading: const Icon(Icons.picture_as_pdf_outlined),
-                        title: Text(basename(listFichiers[index].path)),
-                        onTap: () => Navigator.of(this.context)
-                            .push(MaterialPageRoute(
-                                builder: (context) => PreviewPdf(
-                                      fichier: File(listFichiers[index].path),
-                                    )))
-                            .then((value) => _getListFiles()),
-                      ),
-                    ),
-              ],
-            ),
-          ),*/
-
           buildListFactures(),
         ]);
   }
@@ -197,8 +154,7 @@ class _ViewFacturesState extends State<ViewFactures> {
   Widget buildListFactures() {
     return SizedBox(
         height: MediaQuery.of(this.context).size.height / 2.4,
-        child: buildListView(_checkSiUserTrie() ? facturesTrier : factures)
-    );
+        child: buildListView(_checkSiUserTrie() ? facturesTrier : factures));
   }
 
   Widget buildListView(List<Facture> listUtiliser) {
@@ -216,14 +172,13 @@ class _ViewFacturesState extends State<ViewFactures> {
                   var file = await getFileFromDBB(listUtiliser[index]);
                   Navigator.of(this.context)
                       .push(MaterialPageRoute(
-                      builder: (context) => PreviewPdf(
-                        fichier: file,
-                      )))
+                          builder: (context) => PreviewPdf(
+                                fichier: file,
+                              )))
                       .then((value) => _getListFiles());
-
                 }),
           );
-    });
+        });
   }
 
   Future<void> _getListFiles() async {
