@@ -15,8 +15,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
-import 'db/app_psy_database.dart';
-import 'model/utilisateur.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -56,6 +55,12 @@ class MyApp extends StatelessWidget {
             Locale('fr'), // French, no country code
           ],
           theme: ThemeData(
+            primaryColor: Theme.of(context).primaryColor,
+            colorScheme: lightColorScheme,
+            pageTransitionsTheme: pageTransitionsTheme,
+          ),
+          themeMode: ThemeMode.dark,
+          darkTheme: ThemeData(
             colorScheme: darkColorScheme,
             pageTransitionsTheme: pageTransitionsTheme,
           ),

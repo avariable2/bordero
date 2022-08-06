@@ -4,7 +4,6 @@ import 'package:app_psy/dialog/ajouter_type_acte.dart';
 import 'package:app_psy/dialog/modifier_client.dart';
 import 'package:app_psy/dialog/modifier_type_acte.dart';
 import 'package:app_psy/model/type_acte.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../dialog/ajouter_client.dart';
@@ -28,7 +27,6 @@ class MonAccueil extends StatefulWidget {
 
 class _MonAccueilState extends State<MonAccueil> {
   final _controllerChampRecherche = TextEditingController();
-  final ContainerTransitionType _transitionType = ContainerTransitionType.fade;
   late List<Client> listClients;
   late List<TypeActe> listTypeActes;
   List<Client> listClientsTrier = [];
@@ -76,6 +74,7 @@ class _MonAccueilState extends State<MonAccueil> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: isLoading
             ? const Center(child: CircularProgressIndicator())
