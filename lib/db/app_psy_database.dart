@@ -1,6 +1,5 @@
 import 'package:app_psy/model/client.dart';
 import 'package:app_psy/model/facture.dart';
-import 'package:app_psy/model/utilisateur.dart';
 import 'package:app_psy/model/type_acte.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:sqflite/sqflite.dart';
@@ -338,6 +337,11 @@ class AppPsyDatabase {
   }
 
   /// BDDD
+
+  deleteAllData() async {
+    final db = await instance.database;
+    db.execute("DROP TABLE IF EXISTS $tableClient; DROP TABLE IF EXISTS $tableTypeActe; DROP TABLE IF EXISTS $tableFacture;");
+  }
 
   Future close() async {
     final db = await instance.database;

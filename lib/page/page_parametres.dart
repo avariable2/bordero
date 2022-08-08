@@ -1,8 +1,10 @@
 import 'package:app_psy/db/app_psy_database.dart';
+import 'package:app_psy/model/utilisateur.dart';
 import 'package:app_psy/page/page_information_praticien.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import '../utils/shared_pref.dart';
 
 class PageParametres extends StatelessWidget {
   const PageParametres({Key? key}) : super(key: key);
@@ -30,10 +32,7 @@ class _ParametresGlobauxState extends State<ParametresGlobaux> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Padding(
-            padding: EdgeInsets.only(
-              top: 70,
-              left: 20
-            ),
+            padding: EdgeInsets.only(top: 70, left: 20),
             child: Text(
               "Mes paramètres",
               style: TextStyle(
@@ -54,7 +53,9 @@ class _ParametresGlobauxState extends State<ParametresGlobaux> {
                       context,
                       MaterialPageRoute<void>(
                         builder: (BuildContext context) =>
-                            const FullScreenDialogInformationPraticien(firstTime: false,),
+                            const FullScreenDialogInformationPraticien(
+                          firstTime: false,
+                        ),
                         fullscreenDialog: true,
                       ));
                 },
@@ -83,15 +84,70 @@ class _ParametresGlobauxState extends State<ParametresGlobaux> {
               const Divider(),
               ListTile(
                 title: const Text("Déconnexion"),
-                onTap: () async {
-                  await AppPsyDatabase.instance.close();
-                  await FirebaseAuth.instance.signOut();
-                },
+                onTap: () => afficherDialogConfirmationDeconnexion(),
               ),
             ],
           )),
         ],
       ),
     );
+  }
+
+  afficherDialogConfirmationDeconnexion() {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text("Souhaitez-vous vous déconnecter ?"),
+            content: const Text(
+                "Toutes vos factures et données seront supprimer. Si vous ne les avez pas enregistrer, nous ne pourrons rien pour vous. Agisser en ames et conscience."),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, 'Cancel'),
+                child: const Text("ANNULER"),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context, 'ANNULER');
+                  afficherDialogConfirmationDeconnexion2emeValidation();
+                },
+                child: const Text("DECONNEXION"),
+              ),
+            ],
+            elevation: 24.0,
+          );
+        });
+  }
+
+  afficherDialogConfirmationDeconnexion2emeValidation() {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text("Etes-vous certain ?"),
+            content: const Text(
+                "Cette action est irréversible pour le moment. Si vous vous déconnecter vos données disparaitrons."),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, 'Cancel'),
+                child: const Text("NON"),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context, 'deco');
+                  deconnexion();
+                },
+                child: const Text("OUI"),
+              ),
+            ],
+            elevation: 24.0,
+          );
+        });
+  }
+
+  deconnexion() async {
+    await SharedPref().remove(tableUtilisateur);
+    await AppPsyDatabase.instance.deleteAllData();
+    await FirebaseAuth.instance.signOut();
   }
 }
