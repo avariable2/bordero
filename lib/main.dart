@@ -1,3 +1,4 @@
+import 'package:app_psy/model/theme_settings.dart';
 import 'package:app_psy/page/page_accueil.dart';
 import 'package:app_psy/color_schemes.g.dart';
 import 'package:app_psy/page/page_factures.dart';
@@ -16,6 +17,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -39,74 +41,86 @@ class MyApp extends StatelessWidget {
         Provider<FireAuth>(
           create: (_) => FireAuth(FirebaseAuth.instance),
         ),
+        ChangeNotifierProvider(create: (context) => ThemeSettings(),),
         StreamProvider(
           create: (context) => context.read<FireAuth>().authStateChanges,
           initialData: null,
         ),
       ],
-      child: MaterialApp(
-          title: "Bordero",
-          localizationsDelegates: const [
-            GlobalMaterialLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate,
-            GlobalCupertinoLocalizations.delegate,
-          ],
-          supportedLocales: const [
-            Locale('fr'), // French, no country code
-          ],
-          theme: ThemeData(
-            primaryColor: Theme.of(context).primaryColor,
-            colorScheme: lightColorScheme,
-            pageTransitionsTheme: pageTransitionsTheme,
-              textTheme: GoogleFonts.robotoSerifTextTheme(
-                  Theme.of(context).textTheme
-              )
-          ),
-          themeMode: ThemeMode.dark,
-          darkTheme: ThemeData(
-            colorScheme: darkColorScheme,
-            pageTransitionsTheme: pageTransitionsTheme,
-            textTheme: GoogleFonts.robotoSerifTextTheme(
-              Theme.of(context).textTheme.apply(bodyColor: Colors.white)
-            )
-          ),
-          home: const AuthWrapper()),
+      child: Consumer<ThemeSettings>(
+        builder: (context, value, child) {
+          return MaterialApp(
+              title: "Bordero",
+              localizationsDelegates: const [
+                GlobalMaterialLocalizations.delegate,
+                GlobalWidgetsLocalizations.delegate,
+                GlobalCupertinoLocalizations.delegate,
+              ],
+              supportedLocales: const [
+                Locale('fr'), // French, no country code
+              ],
+              theme: value.darkTheme ? darkTheme : lightTheme,
+              home: const AuthWrapper());
+        },
+      ),
+
     );
   }
 }
 
-class AuthWrapper extends StatefulWidget {
+class AuthWrapper extends StatelessWidget {
   const AuthWrapper({Key? key}) : super(key: key);
 
-  @override
-  State<AuthWrapper> createState() => _AuthWrapperState();
-}
-
-class _AuthWrapperState extends State<AuthWrapper> {
+  /// TODO https://betterprogramming.pub/flutter-how-to-save-objects-in-sharedpreferences-b7880d0ee2e4
   @override
   Widget build(BuildContext context) {
     final firebaseUser = context.watch<User?>();
     if (firebaseUser != null) {
-      /// TODO https://betterprogramming.pub/flutter-how-to-save-objects-in-sharedpreferences-b7880d0ee2e4
-      //If the user is successfully Logged-In.
-
-      return FutureBuilder(
-          future: SharedPref().readIsSet(),
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              return snapshot.data == true
-                  ? const AppPsy()
-                  : const FullScreenDialogInformationPraticien(firstTime: true);
-            } else {
-              return const CircularProgressIndicator();
-            }
-          }
-          );
+      return const UtilisateurWrapper();
     } else {
       //If the user is not Logged-In.
       return const PresentationPage();
     }
   }
+}
+
+class UtilisateurWrapper extends StatefulWidget {
+  const UtilisateurWrapper({Key? key}) : super(key: key);
+
+  @override
+  State<UtilisateurWrapper> createState() => _UtilisateurWrapperState();
+}
+
+class _UtilisateurWrapperState extends State<UtilisateurWrapper> {
+  late Future<bool?> _future;
+
+  @override
+  void initState() {
+    doAsyncStuff();
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder(
+        future: _future,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            if (snapshot.hasData && snapshot.data.toString() == "true") {
+              return const AppPsy();
+            } else {
+              return const FullScreenDialogInformationPraticien(
+                  firstTime: true);
+            }
+          }
+          return const CircularProgressIndicator();
+        });
+  }
+
+  doAsyncStuff() async{
+    _future = SharedPref().readIsSet();
+  }
+
 }
 
 class AppPsy extends StatefulWidget {

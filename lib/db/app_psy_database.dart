@@ -340,7 +340,9 @@ class AppPsyDatabase {
 
   deleteAllData() async {
     final db = await instance.database;
-    db.execute("DROP TABLE IF EXISTS $tableClient; DROP TABLE IF EXISTS $tableTypeActe; DROP TABLE IF EXISTS $tableFacture;");
+    await db.execute("DROP TABLE IF EXISTS $tableClient");
+    await db.execute("DROP TABLE IF EXISTS $tableTypeActe");
+    await db.execute("DROP TABLE IF EXISTS $tableFacture");
   }
 
   Future close() async {

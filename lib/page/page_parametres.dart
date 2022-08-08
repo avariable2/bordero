@@ -1,8 +1,10 @@
 import 'package:app_psy/db/app_psy_database.dart';
+import 'package:app_psy/model/theme_settings.dart';
 import 'package:app_psy/model/utilisateur.dart';
 import 'package:app_psy/page/page_information_praticien.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../utils/shared_pref.dart';
 
@@ -60,10 +62,16 @@ class _ParametresGlobauxState extends State<ParametresGlobaux> {
                       ));
                 },
               ),
-              ListTile(
-                title: const Text("Theme"),
-                onTap: () {},
-              ),
+              Consumer<ThemeSettings>(
+                builder: (context, value, child) {
+                  return SwitchListTile(
+                    activeColor: Theme.of(context).selectedRowColor,
+                    title: const Text("Theme sombre"),
+                    value: value.darkTheme,
+                    onChanged: (newValue) => value.toggleTheme(),
+                  );
+                },),
+
               ListTile(
                 title: const Text("Support"),
                 onTap: () {},
@@ -147,6 +155,7 @@ class _ParametresGlobauxState extends State<ParametresGlobaux> {
 
   deconnexion() async {
     await SharedPref().remove(tableUtilisateur);
+    await SharedPref().saveIsSetOrNot(false);
     await AppPsyDatabase.instance.deleteAllData();
     await FirebaseAuth.instance.signOut();
   }
