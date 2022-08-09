@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../utils/infos_utilisateur_parametres.dart';
 import '../utils/shared_pref.dart';
 
 class PageParametres extends StatelessWidget {
@@ -154,9 +155,13 @@ class _ParametresGlobauxState extends State<ParametresGlobaux> {
   }
 
   deconnexion() async {
+    _enleverUtilisateurSet();
     await SharedPref().remove(tableUtilisateur);
-    await SharedPref().saveIsSetOrNot(false);
     await AppPsyDatabase.instance.deleteAllData();
     await FirebaseAuth.instance.signOut();
+  }
+
+  _enleverUtilisateurSet() {
+    context.read<InfosUtilisateurParametres>().toggleIsSet();
   }
 }

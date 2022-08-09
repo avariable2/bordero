@@ -1,7 +1,5 @@
 
 import 'dart:convert';
-
-import 'package:app_psy/model/utilisateur.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SharedPref {
@@ -10,16 +8,6 @@ class SharedPref {
 
   factory SharedPref() {
     return _sharedPref;
-  }
-
-  readIsSet() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getBool(aSetCesInfos) ?? false;
-  }
-
-  saveIsSetOrNot(bool isSet) async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.setBool(aSetCesInfos, isSet);
   }
 
   read(String key) async {

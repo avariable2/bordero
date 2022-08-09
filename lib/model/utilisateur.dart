@@ -1,5 +1,4 @@
 const String tableUtilisateur = 'utilisateur';
-const String aSetCesInfos = "aSetCesInfos";
 
 class UtilisateurChamps {
   static final List<String> values = [

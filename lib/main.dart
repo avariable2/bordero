@@ -8,6 +8,7 @@ import 'package:app_psy/page/presentation.dart';
 import 'package:app_psy/utils/environment.dart';
 import 'package:app_psy/utils/fire_auth.dart';
 import 'package:app_psy/utils/firebase_options.dart';
+import 'package:app_psy/utils/infos_utilisateur_parametres.dart';
 import 'package:app_psy/utils/pdf_api.dart';
 import 'package:app_psy/utils/shared_pref.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -41,7 +42,9 @@ class MyApp extends StatelessWidget {
         Provider<FireAuth>(
           create: (_) => FireAuth(FirebaseAuth.instance),
         ),
-        ChangeNotifierProvider(create: (context) => ThemeSettings(),),
+        ChangeNotifierProvider(
+          create: (context) => ThemeSettings(),
+        ),
         StreamProvider(
           create: (context) => context.read<FireAuth>().authStateChanges,
           initialData: null,
@@ -63,7 +66,6 @@ class MyApp extends StatelessWidget {
               home: const AuthWrapper());
         },
       ),
-
     );
   }
 }
@@ -71,7 +73,6 @@ class MyApp extends StatelessWidget {
 class AuthWrapper extends StatelessWidget {
   const AuthWrapper({Key? key}) : super(key: key);
 
-  /// TODO https://betterprogramming.pub/flutter-how-to-save-objects-in-sharedpreferences-b7880d0ee2e4
   @override
   Widget build(BuildContext context) {
     final firebaseUser = context.watch<User?>();
@@ -84,43 +85,25 @@ class AuthWrapper extends StatelessWidget {
   }
 }
 
-class UtilisateurWrapper extends StatefulWidget {
+class UtilisateurWrapper extends StatelessWidget {
   const UtilisateurWrapper({Key? key}) : super(key: key);
 
   @override
-  State<UtilisateurWrapper> createState() => _UtilisateurWrapperState();
-}
-
-class _UtilisateurWrapperState extends State<UtilisateurWrapper> {
-  late Future<bool?> _future;
-
-  @override
-  void initState() {
-    doAsyncStuff();
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-        future: _future,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done) {
-            if (snapshot.hasData && snapshot.data.toString() == "true") {
-              return const AppPsy();
-            } else {
-              return const FullScreenDialogInformationPraticien(
-                  firstTime: true);
-            }
-          }
-          return const CircularProgressIndicator();
-        });
+    return MultiProvider(
+        providers: [
+          ChangeNotifierProvider(
+            create: (context) => InfosUtilisateurParametres(),
+          ),
+        ],
+        child: Consumer<InfosUtilisateurParametres>(
+          builder: (context, value, child) {
+            return value.aSetParametres
+                ? const AppPsy()
+                : const FullScreenDialogInformationPraticien(firstTime: true);
+          },
+        ));
   }
-
-  doAsyncStuff() async{
-    _future = SharedPref().readIsSet();
-  }
-
 }
 
 class AppPsy extends StatefulWidget {

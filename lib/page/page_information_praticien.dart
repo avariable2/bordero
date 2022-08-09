@@ -4,7 +4,10 @@ import 'package:app_psy/model/utilisateur.dart';
 import 'package:app_psy/utils/shared_pref.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
+
+import '../utils/infos_utilisateur_parametres.dart';
 
 class FullScreenDialogInformationPraticien extends StatelessWidget {
   final bool firstTime;
@@ -497,13 +500,15 @@ class DialogInfoPraticienState extends State<DialogInfoPraticien> {
 
   Future<void> sauvegardeDesDonneesEtAffichageMain() async {
     Utilisateur infosPraticien = _creerInfosPraticien();
-    SharedPref().save(tableUtilisateur, infosPraticien);
-    SharedPref().saveIsSetOrNot(true);
+    await SharedPref().save(tableUtilisateur, infosPraticien);
     _afficherInfosEnregistrer();
     if (widget.firstTime) {
-      Navigator.of(context).pop();
-      Navigator.of(context).push(MaterialPageRoute(builder: (context) => const AppPsy()));
+      _sauvegarderInfosModifier();
     }
+  }
+
+  _sauvegarderInfosModifier() {
+    context.read<InfosUtilisateurParametres>().toggleIsSet();
   }
 
   _afficherErreur() {

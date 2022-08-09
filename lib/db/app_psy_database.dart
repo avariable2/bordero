@@ -6,7 +6,7 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart' as p;
 
 class AppPsyDatabase {
-  final int VERSION_DBB = 14;
+  final int VERSION_DBB = 15;
 
   static final AppPsyDatabase instance = AppPsyDatabase._init();
 
@@ -46,7 +46,7 @@ class AppPsyDatabase {
     ${ClientChamps.ville} $stringType,
     ${ClientChamps.numeroTelephone} $stringType,
     ${ClientChamps.email} $stringType
-    )
+    );
     ''');
 
     await db.execute('''
@@ -54,7 +54,7 @@ class AppPsyDatabase {
     ${TypeActeChamps.id} $idType,
     ${TypeActeChamps.nom} $stringType,
     ${TypeActeChamps.prix} $doubleType
-    )
+    );
     ''');
 
     await db.execute('''
@@ -62,7 +62,7 @@ class AppPsyDatabase {
     ${FactureChamps.id} $idType,
     ${FactureChamps.nom} $stringType,
     ${FactureChamps.fichier} $blobType
-    )
+    );
     ''');
   }
 
@@ -340,9 +340,9 @@ class AppPsyDatabase {
 
   deleteAllData() async {
     final db = await instance.database;
-    await db.execute("DROP TABLE IF EXISTS $tableClient");
-    await db.execute("DROP TABLE IF EXISTS $tableTypeActe");
-    await db.execute("DROP TABLE IF EXISTS $tableFacture");
+    await db.execute("DELETE FROM $tableClient");
+    await db.execute("DELETE FROM $tableTypeActe");
+    await db.execute("DELETE FROM $tableFacture");
   }
 
   Future close() async {
