@@ -130,10 +130,7 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> {
                   ),
                   TextButton(
                     onPressed: details.onStepCancel,
-                    child: const Text(
-                      'RETOUR',
-                      style: TextStyle(color: Colors.white70),
-                    ),
+                    child: const Text('RETOUR'),
                   ),
                 ],
               );

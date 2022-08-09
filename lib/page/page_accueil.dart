@@ -133,7 +133,7 @@ class _MonAccueilState extends State<MonAccueil> {
                         _controllerChampRecherche.text = "";
                         listClientsTrier = [];
                       });
-                    } ,
+                    },
                     color: _controllerChampRecherche.text.isNotEmpty
                         ? Colors.grey
                         : Colors.transparent,
@@ -185,23 +185,23 @@ class _MonAccueilState extends State<MonAccueil> {
   }
 
   Widget buildListClient(List<Client> listUtiliser) {
-    return SizedBox(
-      height: 150,
-      child: Card(
-        borderOnForeground: true,
-        child: ListView(
-          scrollDirection: Axis.vertical,
-          shrinkWrap: true,
-          addAutomaticKeepAlives: false,
-          children: [
-            if (listClients.isEmpty) ...[
-              const Text(
-                "🤔​ Aucun clients ",
-                style: TextStyle(
-                  fontSize: 18,
-                ),
-              )
-            ] else ...[
+    if (listClients.isEmpty) {
+      return const Text(
+        "🤔​ Aucun clients ",
+        style: TextStyle(
+          fontSize: 18,
+        ),
+      );
+    } else {
+      return SizedBox(
+        height: 150,
+        child: Card(
+          borderOnForeground: true,
+          child: ListView(
+            scrollDirection: Axis.vertical,
+            shrinkWrap: true,
+            addAutomaticKeepAlives: false,
+            children: [
               for (Client client in listUtiliser)
                 ListTile(
                   title:
@@ -221,10 +221,10 @@ class _MonAccueilState extends State<MonAccueil> {
                   },
                 ),
             ],
-          ],
+          ),
         ),
-      ),
-    );
+      );
+    }
   }
 
   Widget buildListTypeActe() {
