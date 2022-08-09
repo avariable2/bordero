@@ -230,7 +230,7 @@ class _MonAccueilState extends State<MonAccueil> {
   Widget buildListTypeActe() {
     if (listTypeActes.isEmpty) {
       return const Text(
-        "🤔​ Aucune type de seance enregistré",
+        "🤔​ Aucun type de seance enregistré",
         style: TextStyle(
           fontSize: 18,
         ),

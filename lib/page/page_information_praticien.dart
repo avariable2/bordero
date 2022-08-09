@@ -11,7 +11,11 @@ import '../utils/infos_utilisateur_parametres.dart';
 
 class FullScreenDialogInformationPraticien extends StatelessWidget {
   final bool firstTime;
-  const FullScreenDialogInformationPraticien({Key? key,required this.firstTime,}) : super(key: key);
+
+  const FullScreenDialogInformationPraticien({
+    Key? key,
+    required this.firstTime,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +32,10 @@ class FullScreenDialogInformationPraticien extends StatelessWidget {
 class DialogInfoPraticien extends StatefulWidget {
   final bool firstTime;
 
-  const DialogInfoPraticien({super.key, required this.firstTime,});
+  const DialogInfoPraticien({
+    super.key,
+    required this.firstTime,
+  });
 
   @override
   DialogInfoPraticienState createState() {
@@ -489,18 +496,17 @@ class DialogInfoPraticienState extends State<DialogInfoPraticien> {
     controllerChampNumeroADELI.text = infosPraticien.numeroADELI.toString();
     listTypePayements[0].selectionner =
         infosPraticien.payementVirementBancaire == 0 ? false : true;
-    listTypePayements[3].selectionner =
+    listTypePayements[1].selectionner =
         infosPraticien.payementLiquide == 0 ? false : true;
     listTypePayements[2].selectionner =
         infosPraticien.payementCarteBleu == 0 ? false : true;
-    listTypePayements[1].selectionner =
+    listTypePayements[3].selectionner =
         infosPraticien.payementCheque == 0 ? false : true;
     estExonererDeTVA = infosPraticien.exonererTVA == 0 ? false : true;
   }
 
   Future<void> sauvegardeDesDonneesEtAffichageMain() async {
-    Utilisateur infosPraticien = _creerInfosPraticien();
-    await SharedPref().save(tableUtilisateur, infosPraticien);
+    await SharedPref().save(tableUtilisateur, _creerInfosPraticien());
     _afficherInfosEnregistrer();
     if (widget.firstTime) {
       _sauvegarderInfosModifier();
