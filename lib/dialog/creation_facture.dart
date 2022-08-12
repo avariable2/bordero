@@ -514,7 +514,9 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> {
   }
 
   void _supprimerSeances(Seance seance) {
-    _listSeances.remove(seance);
+    setState(() {
+      _listSeances.remove(seance);
+    });
     Navigator.pop(context, 'SUPPRIMER');
   }
 
