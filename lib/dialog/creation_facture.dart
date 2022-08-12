@@ -7,6 +7,7 @@ import 'package:app_psy/model/type_acte.dart';
 import 'package:app_psy/utils/app_psy_utils.dart';
 import 'package:app_psy/utils/pdf_facture_api.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:path/path.dart' as path;
 import 'package:signature/signature.dart';
 
@@ -325,6 +326,7 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> {
                     child: TextFormField(
                       controller: _controllerChampNombreUH,
                       keyboardType: TextInputType.number,
+                      inputFormatters: [ FilteringTextInputFormatter.digitsOnly],
                       decoration: const InputDecoration(
                           border: OutlineInputBorder(),
                           labelText: 'Quantité',
@@ -393,6 +395,7 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> {
                   child: TextFormField(
                     controller: _controllerNumeroFacture,
                     keyboardType: TextInputType.number,
+                    inputFormatters: [ FilteringTextInputFormatter.digitsOnly],
                     decoration: const InputDecoration(
                         border: OutlineInputBorder(),
                         labelText: 'Numero de facture',
