@@ -38,7 +38,7 @@ class PreviewPdf extends StatelessWidget {
                 PopupMenuItem(
                   child: ListTile(
                     leading: const Icon(Icons.share),
-                    title: const Text('Partager'),
+                    title: const Text('Envoyer'),
                     onTap: () => _onShare(context),
                   ),
                 ),
@@ -177,7 +177,7 @@ class _AffichageInfoPdfState extends State<AffichageInfoPdf> {
           child: ElevatedButton.icon(
               onPressed: () => _onShare(context),
               icon: const Icon(Icons.share_outlined),
-              label: const Text("PARTAGER")),
+              label: const Text("ENVOYER")),
         ),
       ]),
     );

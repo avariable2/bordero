@@ -4,6 +4,7 @@ import 'package:app_psy/model/utilisateur.dart';
 import 'package:app_psy/utils/shared_pref.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 
@@ -130,7 +131,6 @@ class DialogInfoPraticienState extends State<DialogInfoPraticien> {
               onPressed: details.onStepCancel,
               child: const Text(
                 'RETOUR',
-                style: TextStyle(color: Colors.white70),
               ),
             ),
           ],
@@ -341,6 +341,7 @@ class DialogInfoPraticienState extends State<DialogInfoPraticien> {
                     child: TextFormField(
                       controller: controllerChampNumeroSIRET,
                       keyboardType: TextInputType.number,
+                      inputFormatters: [ FilteringTextInputFormatter.digitsOnly],
                       decoration: const InputDecoration(
                           border: OutlineInputBorder(),
                           labelText: 'Numéro SIRET *',
@@ -365,6 +366,7 @@ class DialogInfoPraticienState extends State<DialogInfoPraticien> {
                     child: TextFormField(
                       controller: controllerChampNumeroADELI,
                       keyboardType: TextInputType.number,
+                      inputFormatters: [ FilteringTextInputFormatter.digitsOnly],
                       decoration: const InputDecoration(
                         border: OutlineInputBorder(),
                         labelText: 'Code ADELI *',
