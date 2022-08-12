@@ -55,7 +55,7 @@ class DialogAjouterClientState extends State<DialogAjouterClient> {
         context: context,
         builder: (BuildContext context) =>
             AlertDialog(
-              title: const Text("Ce client existe déjà !"),
+              title: Text("Ce client existe déjà !", style: TextStyle(color: Theme.of(context).colorScheme.primary,)),
               content: const Text("Voulez-vous vraiment l'ajouter (il se peut que 2 clients possède le meme nom et prenom)."),
               actions: [
                 TextButton(

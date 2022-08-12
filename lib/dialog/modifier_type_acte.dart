@@ -29,29 +29,13 @@ class FullScreenDialogModifierTypeActe extends StatelessWidget {
   }
 
   void _afficherAvertissementSuppression(BuildContext context, TypeActe typeActe) {
-    var richText = RichText(
-      text: const TextSpan(
-          style: TextStyle(
-            fontSize: 22.0,
-          ),
-          children: <TextSpan> [
-            TextSpan(text: "Attention",
-                style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.red
-                )
-            ),
-            TextSpan(text: " : êtes-vous sur de vouloir supprimer se type de séance ?"),
-          ]
-      ),
-    );
-
-
     showDialog(
       context: context,
       builder: (BuildContext context) =>
           AlertDialog(
-            title: richText,
+            title: Text("Attention : êtes-vous sur de vouloir supprimer se type de séance ?",
+                style:
+                TextStyle(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.primary,fontSize: 22.0,)),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context, 'Cancel'),

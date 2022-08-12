@@ -484,24 +484,15 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> {
   /// Args:
   ///   seance (Seance): l'objet qui sera supprimé
   void _afficherAvertissementAvantSuppression(Seance seance) {
-    var richText = RichText(
-      text: const TextSpan(
-          style: TextStyle(
-            fontSize: 22.0,
-          ),
-          children: <TextSpan>[
-            TextSpan(
-                text: "Supprimer cette séance ?",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                )),
-          ]),
-    );
-
     showDialog(
       context: context,
       builder: (BuildContext context) => AlertDialog(
-        title: richText,
+        title: Text("Supprimer cette séance ?",
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 22.0,
+              color: Theme.of(context).colorScheme.primary,
+            )),
         content: const Text("Vous pourrez la recréer par la suite."),
         actions: [
           TextButton(
@@ -640,24 +631,11 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> {
           "Assurez-vous de remplir bien le bon numero de facture et une signature.";
     }
 
-    var richText = RichText(
-      text: TextSpan(
-          style: const TextStyle(
-            fontSize: 20.0,
-          ),
-          children: <TextSpan>[
-            TextSpan(
-                text: title,
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                )),
-          ]),
-    );
-
     showDialog(
       context: context,
       builder: (BuildContext context) => AlertDialog(
-        title: richText,
+        title: Text(title, style: TextStyle(fontSize: 22.0,
+          color: Theme.of(context).colorScheme.primary,fontWeight: FontWeight.bold,)),
         content: Text(body),
         actions: [
           TextButton(
@@ -763,7 +741,7 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> {
     showDialog(
       context: context,
       builder: (BuildContext context) => AlertDialog(
-        title: const Text("Cette facture existe déjà !"),
+        title: Text("Cette facture existe déjà !", style: TextStyle(color: Theme.of(context).colorScheme.primary,)),
         content: const Text(
             "Voulez-vous vraiment modifier cette facture ? Il est impossible de modifier une facture sur Bordero sauf si c'est le jour même. Nous déclinons de toutes responsabilités en cas de fraude."),
         actions: [

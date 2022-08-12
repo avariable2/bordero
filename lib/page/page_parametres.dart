@@ -107,7 +107,9 @@ class _ParametresGlobauxState extends State<ParametresGlobaux> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: const Text("Souhaitez-vous vous déconnecter ?"),
+            title: Text("Souhaitez-vous vous déconnecter ?", style: TextStyle(fontWeight: FontWeight.bold,
+              fontSize: 22.0,
+              color: Theme.of(context).colorScheme.primary,),),
             content: const Text(
                 "Toutes vos factures et données seront supprimer. Si vous ne les avez pas enregistrer, nous ne pourrons rien pour vous. Agisser en ames et conscience."),
             actions: [
@@ -133,7 +135,7 @@ class _ParametresGlobauxState extends State<ParametresGlobaux> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: const Text("Etes-vous certain ?"),
+            title: Text("Etes-vous certain ?", style: TextStyle(color: Theme.of(context).colorScheme.primary,)),
             content: const Text(
                 "Cette action est irréversible pour le moment. Si vous vous déconnecter vos données disparaitrons."),
             actions: [

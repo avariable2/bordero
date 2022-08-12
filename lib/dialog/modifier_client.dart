@@ -29,28 +29,19 @@ class FullScreenDialogModifierClient extends StatelessWidget {
   }
 
   void _afficherAvertissementSuppression(BuildContext context, Client client) {
-    var richText = RichText(
-      text: const TextSpan(
-          style: TextStyle(
-            fontSize: 22.0,
-          ),
-          children: <TextSpan> [
-            TextSpan(text: "Attention",
-                style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.red
-                )
-            ),
-            TextSpan(text: " : êtes-vous sur de vouloir supprimer se client ?"),
-          ]
-      ),
-    );
+
 
     showDialog(
       context: context,
       builder: (BuildContext context) =>
           AlertDialog(
-            title: richText,
+            title: Text("Attention : êtes-vous sur de vouloir supprimer se client ?",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 22.0,
+                  color: Theme.of(context).colorScheme.primary,
+                )
+            ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context, 'Cancel'),
@@ -127,7 +118,9 @@ class DialogModifierClientState extends State<DialogModifierClient> {
       context: context,
       builder: (BuildContext context) =>
           AlertDialog(
-            title: const Text("Ce client existe déjà !"),
+            title: Text("Ce client existe déjà !",style: TextStyle(fontWeight: FontWeight.bold,
+              fontSize: 22.0,
+              color: Theme.of(context).colorScheme.primary,),),
             content: const Text("Voulez-vous vraiment l'ajouter (il se peut que 2 clients possède le meme nom et prenom)."),
             actions: [
               TextButton(

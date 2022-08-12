@@ -56,7 +56,7 @@ class DialogAjouterTypeActeState extends State<DialogAjouterTypeActe> {
       context: context,
       builder: (BuildContext context) =>
           AlertDialog(
-            title: const Text("Ce type d'acte existe déjà !", style: TextStyle(fontSize: 20),),
+            title: Text("Ce type d'acte existe déjà !", style: TextStyle(fontSize: 22, color: Theme.of(context).colorScheme.primary,),),
             content: const Text("Il est préférable de modifier le type de séance déjà crée."),
             actions: [
               TextButton(

@@ -52,25 +52,12 @@ class PreviewPdf extends StatelessWidget {
   }
 
   void _afficherAvertissementSuppression(BuildContext context) {
-    var richText = RichText(
-      text: const TextSpan(
-          style: TextStyle(
-            fontSize: 22.0,
-          ),
-          children: <TextSpan>[
-            TextSpan(
-                text: "Attention",
-                style:
-                    TextStyle(fontWeight: FontWeight.bold, color: Colors.red)),
-            TextSpan(
-                text: " : êtes-vous sur de vouloir supprimer cette facture ?"),
-          ]),
-    );
-
     showDialog(
       context: context,
       builder: (BuildContext context) => AlertDialog(
-        title: richText,
+        title: Text("Attention : êtes-vous sur de vouloir supprimer cette facture ?",
+            style:
+            TextStyle(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.primary,fontSize: 22.0,)),
         content: const Text(
             "Vous avez une obligation légales de garder pendant 5 ans vos factures. Nous esquivons toutes responsabilités en cas de litige."),
         actions: [
@@ -213,10 +200,11 @@ class _AffichageInfoPdfState extends State<AffichageInfoPdf> {
     showDialog(
       context: this.context,
       builder: (BuildContext context) => AlertDialog(
-        title: const Text(
+        title: Text(
             "Les données personnels de vos clients sont une priorité",
             style: TextStyle(
               fontWeight: FontWeight.bold,
+              color: Theme.of(context).colorScheme.primary,
             )),
         content: const Text(
             "Cette application ne possède pas de serveur pour sauvegarder vos factures tout en protegeant celle-ci."
