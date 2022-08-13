@@ -238,6 +238,7 @@ class DialogInfoPraticienState extends State<DialogInfoPraticien> {
                         const EdgeInsets.only(top: 10, bottom: 10, right: 3),
                     child: TextFormField(
                       controller: controllerChampCodePostal,
+                      inputFormatters: [ FilteringTextInputFormatter.digitsOnly],
                       keyboardType: TextInputType.number,
                       decoration: const InputDecoration(
                           border: OutlineInputBorder(),
