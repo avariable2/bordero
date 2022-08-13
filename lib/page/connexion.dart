@@ -1,5 +1,5 @@
-import 'package:app_psy/page/page_mot_de_passe_oublier.dart';
-import 'package:app_psy/utils/animation_delais.dart';
+import 'package:bordero/page/page_mot_de_passe_oublier.dart';
+import 'package:bordero/utils/animation_delais.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';

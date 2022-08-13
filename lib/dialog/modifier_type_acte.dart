@@ -1,5 +1,5 @@
-import 'package:app_psy/utils/app_psy_utils.dart';
-import 'package:app_psy/db/app_psy_database.dart';
+import 'package:bordero/utils/app_psy_utils.dart';
+import 'package:bordero/db/app_psy_database.dart';
 import 'package:flutter/material.dart';
 
 import '../model/type_acte.dart';

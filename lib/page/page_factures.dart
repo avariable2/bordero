@@ -1,14 +1,12 @@
 import 'dart:typed_data';
 
-import 'package:app_psy/dialog/creation_facture.dart';
-import 'package:app_psy/model/facture.dart';
-import 'package:app_psy/utils/app_psy_utils.dart';
-import 'package:app_psy/utils/pdf_api.dart';
+import 'package:bordero/dialog/creation_facture.dart';
+import 'package:bordero/model/facture.dart';
+import 'package:bordero/utils/app_psy_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'dart:io';
 
-import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 
 import '../db/app_psy_database.dart';

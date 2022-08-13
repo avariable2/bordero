@@ -1,11 +1,11 @@
 import 'dart:io';
 
-import 'package:app_psy/dialog/preview_pdf.dart';
-import 'package:app_psy/model/facture.dart';
-import 'package:app_psy/model/seance.dart';
-import 'package:app_psy/model/type_acte.dart';
-import 'package:app_psy/utils/app_psy_utils.dart';
-import 'package:app_psy/utils/pdf_facture_api.dart';
+import 'package:bordero/dialog/preview_pdf.dart';
+import 'package:bordero/model/facture.dart';
+import 'package:bordero/model/seance.dart';
+import 'package:bordero/model/type_acte.dart';
+import 'package:bordero/utils/app_psy_utils.dart';
+import 'package:bordero/utils/pdf_facture_api.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:path/path.dart' as path;

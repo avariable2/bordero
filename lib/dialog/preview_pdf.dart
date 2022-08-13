@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:app_psy/utils/app_psy_utils.dart';
+import 'package:bordero/utils/app_psy_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';

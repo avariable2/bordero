@@ -1,24 +1,20 @@
-import 'package:app_psy/model/theme_settings.dart';
-import 'package:app_psy/page/page_accueil.dart';
-import 'package:app_psy/color_schemes.g.dart';
-import 'package:app_psy/page/page_factures.dart';
-import 'package:app_psy/page/page_information_praticien.dart';
-import 'package:app_psy/page/page_parametres.dart';
-import 'package:app_psy/page/presentation.dart';
-import 'package:app_psy/utils/environment.dart';
-import 'package:app_psy/utils/fire_auth.dart';
-import 'package:app_psy/utils/firebase_options.dart';
-import 'package:app_psy/utils/infos_utilisateur_parametres.dart';
-import 'package:app_psy/utils/pdf_api.dart';
-import 'package:app_psy/utils/shared_pref.dart';
+import 'package:bordero/model/theme_settings.dart';
+import 'package:bordero/page/page_accueil.dart';
+import 'package:bordero/page/page_factures.dart';
+import 'package:bordero/page/page_information_praticien.dart';
+import 'package:bordero/page/page_parametres.dart';
+import 'package:bordero/page/presentation.dart';
+import 'package:bordero/utils/environment.dart';
+import 'package:bordero/utils/fire_auth.dart';
+import 'package:bordero/utils/firebase_options.dart';
+import 'package:bordero/utils/infos_utilisateur_parametres.dart';
+import 'package:bordero/utils/pdf_api.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -119,7 +115,7 @@ class _AppPsyState extends State<AppPsy> {
     const PageAccueil(),
     const PageFactures(),
     Container(
-      color: Colors.blue,
+      color: Colors.green,
       alignment: Alignment.center,
       child: const Text('Page 3'),
     ),

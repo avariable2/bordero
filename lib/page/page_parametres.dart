@@ -1,7 +1,7 @@
-import 'package:app_psy/db/app_psy_database.dart';
-import 'package:app_psy/model/theme_settings.dart';
-import 'package:app_psy/model/utilisateur.dart';
-import 'package:app_psy/page/page_information_praticien.dart';
+import 'package:bordero/db/app_psy_database.dart';
+import 'package:bordero/model/theme_settings.dart';
+import 'package:bordero/model/utilisateur.dart';
+import 'package:bordero/page/page_information_praticien.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

@@ -1,5 +1,5 @@
 import 'dart:typed_data';
-import 'package:app_psy/model/seance.dart';
+import 'package:bordero/model/seance.dart';
 import 'client.dart';
 
 const String tableFacture = 'facture';

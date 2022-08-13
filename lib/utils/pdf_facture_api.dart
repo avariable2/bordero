@@ -1,10 +1,10 @@
 import 'dart:io';
 
-import 'package:app_psy/model/facture.dart';
-import 'package:app_psy/model/utilisateur.dart';
-import 'package:app_psy/utils/app_psy_utils.dart';
-import 'package:app_psy/utils/pdf_api.dart';
-import 'package:app_psy/utils/shared_pref.dart';
+import 'package:bordero/model/facture.dart';
+import 'package:bordero/model/utilisateur.dart';
+import 'package:bordero/utils/app_psy_utils.dart';
+import 'package:bordero/utils/pdf_api.dart';
+import 'package:bordero/utils/shared_pref.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';

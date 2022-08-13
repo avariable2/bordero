@@ -1,7 +1,5 @@
-import 'package:app_psy/db/app_psy_database.dart';
-import 'package:app_psy/main.dart';
-import 'package:app_psy/model/utilisateur.dart';
-import 'package:app_psy/utils/shared_pref.dart';
+import 'package:bordero/model/utilisateur.dart';
+import 'package:bordero/utils/shared_pref.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

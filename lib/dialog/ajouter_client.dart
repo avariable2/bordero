@@ -1,11 +1,8 @@
-import 'package:app_psy/db/app_psy_database.dart';
+import 'package:bordero/db/app_psy_database.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
-import 'package:animations/animations.dart';
-import 'package:provider/provider.dart';
 
 import '../model/client.dart';
-import '../page/page_accueil.dart';
 
 class FullScreenDialogAjouterClient extends StatelessWidget {
   const FullScreenDialogAjouterClient({Key? key}) : super(key: key);

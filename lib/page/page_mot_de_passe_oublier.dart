@@ -1,4 +1,4 @@
-import 'package:app_psy/utils/fire_auth.dart';
+import 'package:bordero/utils/fire_auth.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

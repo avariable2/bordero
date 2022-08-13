@@ -1,8 +1,8 @@
-import 'package:app_psy/db/app_psy_database.dart';
-import 'package:app_psy/dialog/ajouter_type_acte.dart';
-import 'package:app_psy/dialog/modifier_client.dart';
-import 'package:app_psy/dialog/modifier_type_acte.dart';
-import 'package:app_psy/model/type_acte.dart';
+import 'package:bordero/db/app_psy_database.dart';
+import 'package:bordero/dialog/ajouter_type_acte.dart';
+import 'package:bordero/dialog/modifier_client.dart';
+import 'package:bordero/dialog/modifier_type_acte.dart';
+import 'package:bordero/model/type_acte.dart';
 import 'package:flutter/material.dart';
 
 import '../dialog/ajouter_client.dart';

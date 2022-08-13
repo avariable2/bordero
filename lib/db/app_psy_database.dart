@@ -1,6 +1,6 @@
-import 'package:app_psy/model/client.dart';
-import 'package:app_psy/model/facture.dart';
-import 'package:app_psy/model/type_acte.dart';
+import 'package:bordero/model/client.dart';
+import 'package:bordero/model/facture.dart';
+import 'package:bordero/model/type_acte.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart' as p;

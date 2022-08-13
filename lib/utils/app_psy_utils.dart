@@ -2,7 +2,7 @@
 
 import 'dart:io';
 
-import 'package:app_psy/model/utilisateur.dart';
+import 'package:bordero/model/utilisateur.dart';
 import 'package:path/path.dart';
 
 import '../model/facture.dart';

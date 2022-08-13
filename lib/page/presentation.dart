@@ -1,4 +1,4 @@
-import 'package:app_psy/page/connexion.dart';
+import 'package:bordero/page/connexion.dart';
 import 'package:flutter/material.dart';
 import 'package:onboarding/onboarding.dart';
 
