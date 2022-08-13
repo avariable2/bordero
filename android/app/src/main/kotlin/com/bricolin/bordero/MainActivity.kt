@@ -1,4 +1,4 @@
-package com.example.app_psy
+package com.bricolin.bordero
 
 import io.flutter.embedding.android.FlutterActivity
 
