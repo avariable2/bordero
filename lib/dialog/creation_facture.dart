@@ -164,16 +164,17 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> {
         ListRechercheEtAction(
           titre: 'Sélectionner client(s)',
           icon: Icons.account_circle_sharp,
-          labelTitrerecherche: 'Recherche client',
+          labelTitreRecherche: 'Recherche client',
           labelHintRecherche: 'Essayer le nom ou prénom du client',
           labelListVide: '🤔​ Aucun client enregistré',
           list: _listClients,
-          callback: () => null,
           onSelectedItem: (dynamic item) {
             setStateIfMounted(() => {
               _clientSelectionner.contains(item) ? _clientSelectionner.remove(item) : _clientSelectionner.add(item),
             });
           },
+          needSelectedItem: true,
+          needRecherche: true,
         ),
         const Divider(
           height: 30,
