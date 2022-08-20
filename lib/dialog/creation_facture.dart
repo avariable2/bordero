@@ -11,6 +11,7 @@ import 'package:flutter/services.dart';
 import 'package:path/path.dart' as path;
 import 'package:signature/signature.dart';
 
+import '../component/list_recherche_action.dart';
 import '../db/app_psy_database.dart';
 import '../model/client.dart';
 
@@ -49,12 +50,14 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> {
   final _controllerChampNombreUH = TextEditingController();
   final _controllerNumeroFacture = TextEditingController();
   final _controllerChampDateLimitePayement = TextEditingController();
+  final _controllerRechercheClient = TextEditingController();
   final _controllerSignature = SignatureController(
       penStrokeWidth: 5,
       penColor: Colors.black,
       exportBackgroundColor: Colors.white70);
 
   late List<Client> _listClients;
+  List<Client> _listClientsTrier = [];
   late List<TypeActe> _listTypeActes;
   final List<Client> _clientSelectionner = [];
   late List<bool> _selected;
@@ -157,64 +160,21 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> {
     return ListView(
       shrinkWrap: true,
       physics: const BouncingScrollPhysics(),
-      padding: const EdgeInsets.only(
-        left: 0,
-        top: 20,
-        right: 0,
-      ),
-      children: [
-        const Text(
-          "Sélectionner client(s)",
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            inherit: true,
-            letterSpacing: 0.4,
-          ),
+      children:[
+        ListRechercheEtAction(
+          titre: 'Sélectionner client(s)',
+          icon: Icons.account_circle_sharp,
+          labelTitrerecherche: 'Recherche client',
+          labelHintRecherche: 'Essayer le nom ou prénom du client',
+          labelListVide: '🤔​ Aucun client enregistré',
+          list: _listClients,
+          callback: () => null,
+          onSelectedItem: (dynamic item) {
+            setStateIfMounted(() => {
+              _clientSelectionner.contains(item) ? _clientSelectionner.remove(item) : _clientSelectionner.add(item),
+            });
+          },
         ),
-        const SizedBox(
-          height: 15,
-        ),
-        if (_listClients.isEmpty)
-          const Text(
-            "🤔​ Aucun clients ",
-            style: TextStyle(
-              fontSize: 18,
-            ),
-          )
-        else
-          SizedBox(
-            height: 150,
-            child: Card(
-              borderOnForeground: true,
-              child: ListView(
-                scrollDirection: Axis.vertical,
-                shrinkWrap: true,
-                addAutomaticKeepAlives: false,
-                children: [
-                  for (var i = 0; i < _listClients.length; i++)
-                    ListTile(
-                        title: Text(
-                            "${_listClients[i].prenom} ${_listClients[i].nom} / ${_listClients[i].email}"),
-                        leading: const Icon(Icons.account_circle_sharp),
-                        selected: _selected[i],
-                        onTap: () => setStateIfMounted(() => {
-                              if (!_clientSelectionner
-                                  .contains(_listClients[i]))
-                                {
-                                  _clientSelectionner.add(_listClients[i]),
-                                  _selected[i] = true,
-                                }
-                              else
-                                {
-                                  _clientSelectionner.remove(_listClients[i]),
-                                  _selected[i] = false,
-                                }
-                            })),
-                ],
-              ),
-            ),
-          ),
         const Divider(
           height: 30,
         ),
@@ -772,5 +732,24 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> {
         content:
             Text("Il viens de se produire une erreur, nous sommes désolé."));
     ScaffoldMessenger.of(context).showSnackBar(snackbar);
+  }
+
+  List<Client>? _sortParRecherche(String? entree) {
+    if (entree == null) {
+      return null;
+    }
+    _listClientsTrier.clear();
+    List<Client> listFinal = [];
+    RegExp regex = RegExp(entree.toLowerCase());
+
+    for (Client client in _listClients) {
+      if (regex.firstMatch(client.nom.toLowerCase()) != null ||
+          regex.firstMatch(client.prenom.toLowerCase()) != null ||
+          regex.firstMatch(client.email.toLowerCase()) != null) {
+        listFinal.add(client);
+      }
+    }
+
+    return listFinal;
   }
 }
