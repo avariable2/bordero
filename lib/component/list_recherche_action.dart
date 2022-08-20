@@ -50,7 +50,7 @@ class ListRechercheEtActionState extends State<ListRechercheEtAction> {
         physics: const BouncingScrollPhysics(),
         padding: const EdgeInsets.only(
           left: 0,
-          top: 20,
+          top: 10,
           right: 0,
         ),
         children: [
@@ -79,9 +79,10 @@ class ListRechercheEtActionState extends State<ListRechercheEtAction> {
                     helperText: widget.labelHintRecherche,
                     suffixIcon: IconButton(
                       onPressed: () {
+                        _controllerChampRecherche.clear();
+                        _listTrier = [];
                         setState(() {
-                          _controllerChampRecherche.clear();
-                          _listTrier = [];
+                          FocusScope.of(context).requestFocus(FocusNode());
                         });
                       },
                       color: _controllerChampRecherche.text.isNotEmpty
@@ -102,40 +103,47 @@ class ListRechercheEtActionState extends State<ListRechercheEtAction> {
           const SizedBox(
             height: 15,
           ),
-          if (widget.list.isEmpty)
-            Text(
-              widget.labelListVide,
-              style: const TextStyle(
-                fontSize: 18,
-              ),
-            )
-          else
-            SizedBox(
-              height: 150,
-              child: Card(
-                borderOnForeground: true,
-                child: ListView(
-                  scrollDirection: Axis.vertical,
-                  shrinkWrap: true,
-                  addAutomaticKeepAlives: false,
-                  children: [
-                    for (var i = 0; i < widget.list.length; i++)
-                      ListTile(
-                          title: Text(
-                              "${widget.list[i].nom} ${widget.list[i].prenom} / ${widget.list[i].email}"),
-                          leading: Icon(widget.icon),
-                          selected: _listItemsSelectionners[i],
-                          onTap: () => {
-                                widget.onSelectedItem(widget.list[i]),
-                            // TODO: essayer de faire le traitement suivant que sur factures et devis
-                                _listItemsSelectionners[i] =
-                                    !_listItemsSelectionners[i]
-                              }),
-                  ],
-                ),
-              ),
-            )
+          buildListTraitement(_controllerChampRecherche.text.isNotEmpty
+              ? _listTrier
+              : widget.list)
         ]);
+  }
+
+  Widget buildListTraitement(List<dynamic> list) {
+    if (widget.list.isEmpty) {
+      return Text(
+        widget.labelListVide,
+        style: const TextStyle(
+          fontSize: 18,
+        ),
+      );
+    } else {
+      return SizedBox(
+        height: 150,
+        child: Card(
+          borderOnForeground: true,
+          child: ListView(
+            scrollDirection: Axis.vertical,
+            shrinkWrap: true,
+            addAutomaticKeepAlives: false,
+            children: [
+              for (var i = 0; i < list.length; i++)
+                ListTile(
+                    title: Text(
+                        "${list[i].nom} ${list[i].prenom} / ${list[i].email}"),
+                    leading: Icon(widget.icon),
+                    selected: _listItemsSelectionners[i],
+                    onTap: () => {
+                          widget.onSelectedItem(widget.list[i]),
+                          // TODO: essayer de faire le traitement suivant que sur factures et devis
+                          _listItemsSelectionners[i] =
+                              !_listItemsSelectionners[i]
+                        }),
+            ],
+          ),
+        ),
+      );
+    }
   }
 
   List<dynamic>? _sortParRecherche(String? entree) {
@@ -150,8 +158,7 @@ class ListRechercheEtActionState extends State<ListRechercheEtAction> {
       if (regex.firstMatch(item.nom.toLowerCase()) != null ||
           regex.firstMatch(item.email.toLowerCase()) != null) {
         listFinal.add(item);
-      }
-      if (item is Client &&
+      } else if (item is Client &&
           regex.firstMatch(item.prenom.toLowerCase()) != null) {
         listFinal.add(item);
       }
