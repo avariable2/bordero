@@ -175,6 +175,7 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> {
           },
           needSelectedItem: true,
           needRecherche: true,
+          filterChipsNames: const [],
         ),
         const Divider(
           height: 30,

@@ -118,7 +118,9 @@ class _MonAccueilState extends State<MonAccueil> {
                 fullscreenDialog: true,
               ),
             ).then((value) => refreshLists());
-          }, needRecherche: true,
+          },
+          needRecherche: true,
+          filterChipsNames: const [],
         ),
         buildButton(true),
         const SizedBox(
@@ -135,12 +137,14 @@ class _MonAccueilState extends State<MonAccueil> {
               MaterialPageRoute<void>(
                 builder: (BuildContext context) =>
                     FullScreenDialogModifierTypeActe(
-                      typeActe: item,
-                    ),
+                  typeActe: item,
+                ),
                 fullscreenDialog: true,
               ),
             ).then((value) => refreshLists());
-          }, needRecherche: false,
+          },
+          needRecherche: false,
+          filterChipsNames: const [],
         ),
         buildButton(false),
         const SizedBox(

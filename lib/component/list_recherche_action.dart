@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 
 import '../model/client.dart';
+import '../model/facture.dart';
 import '../model/type_acte.dart';
+import '../utils/app_psy_utils.dart';
+import '../model/filter_chips_callback.dart';
 
 class ListRechercheEtAction extends StatefulWidget {
   final String titre;
@@ -13,6 +16,9 @@ class ListRechercheEtAction extends StatefulWidget {
   final Function(dynamic) onSelectedItem;
   final bool needSelectedItem;
   final bool needRecherche;
+  final bool needTousEcran;
+  final bool needChips;
+  final List<FilterChipCallback> filterChipsNames;
 
   const ListRechercheEtAction(
       {Key? key,
@@ -24,7 +30,10 @@ class ListRechercheEtAction extends StatefulWidget {
       required this.needRecherche,
       this.needSelectedItem = false,
       this.labelTitreRecherche = "",
-      this.labelHintRecherche = ""})
+      this.labelHintRecherche = "",
+      this.needTousEcran = false,
+      this.needChips = false,
+      required this.filterChipsNames})
       : super(key: key);
 
   static ListRechercheEtActionState? of(BuildContext context) =>
@@ -38,6 +47,9 @@ class ListRechercheEtActionState extends State<ListRechercheEtAction> {
   final _controllerChampRecherche = TextEditingController();
   List<dynamic> _listTrier = [];
   late List<dynamic> _listItemsSelectionners;
+  FilterChipCallback? chipsActive;
+  double paddingBasRechercheAvecChips = 10;
+  double paddingBasRechercheSansChips = 15;
 
   @override
   void initState() {
@@ -49,22 +61,23 @@ class ListRechercheEtActionState extends State<ListRechercheEtAction> {
   @override
   Widget build(BuildContext context) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Padding(
-        padding: const EdgeInsets.only(
-          left: 0,
-          top: 10,
-          right: 0,
-        ),
-        child: Text(
-          widget.titre,
-          style: const TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            inherit: true,
-            letterSpacing: 0.4,
+      if (widget.titre.isNotEmpty)
+        Padding(
+          padding: const EdgeInsets.only(
+            left: 0,
+            top: 10,
+            right: 0,
+          ),
+          child: Text(
+            widget.titre,
+            style: const TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              inherit: true,
+              letterSpacing: 0.4,
+            ),
           ),
         ),
-      ),
       const SizedBox(
         height: 15,
       ),
@@ -73,7 +86,10 @@ class ListRechercheEtActionState extends State<ListRechercheEtAction> {
           children: [
             Expanded(
                 child: Padding(
-              padding: const EdgeInsets.only(bottom: 15),
+              padding: EdgeInsets.only(
+                  bottom: widget.needChips
+                      ? paddingBasRechercheAvecChips
+                      : paddingBasRechercheSansChips),
               child: TextField(
                 controller: _controllerChampRecherche,
                 keyboardType: TextInputType.name,
@@ -105,6 +121,7 @@ class ListRechercheEtActionState extends State<ListRechercheEtAction> {
             )),
           ],
         ),
+      if (widget.needChips) buildChipsRechercheAvancer(),
       buildListTraitement(
           _controllerChampRecherche.text.isNotEmpty ? _listTrier : widget.list)
     ]);
@@ -119,35 +136,69 @@ class ListRechercheEtActionState extends State<ListRechercheEtAction> {
         ),
       );
     } else {
-      return SizedBox(
-        height: 150,
-        child: Card(
-          borderOnForeground: true,
-          child: ListView(
-            scrollDirection: Axis.vertical,
-            shrinkWrap: true,
-            addAutomaticKeepAlives: false,
-            children: [
-              for (var i = 0; i < list.length; i++)
-                ListTile(
-                    title: Text(
-                      buildText(list[i]),
-                    ),
-                    leading: Icon(widget.icon),
-                    selected: _listItemsSelectionners[i],
-                    onTap: () => {
-                          widget.onSelectedItem(widget.list[i]),
-                          if (widget.needSelectedItem)
-                            {
-                              _listItemsSelectionners[i] =
-                                  !_listItemsSelectionners[i]
-                            }
-                        }),
-            ],
-          ),
-        ),
-      );
+      return buildListView(list);
     }
+  }
+
+  Widget buildListView(List<dynamic> list) {
+    var listview = ListView.builder(
+        scrollDirection: Axis.vertical,
+        shrinkWrap: true,
+        padding: const EdgeInsets.all(5),
+        itemCount: list.length,
+        itemBuilder: (context, index) {
+          return Card(
+            child: buildListTile(list, index),
+          );
+        });
+    return SizedBox(
+      height:
+          widget.needTousEcran ? MediaQuery.of(context).size.height / 2.4 : 150,
+      child: listview,
+    );
+  }
+
+  Widget buildListTile(List<dynamic> list, int index) {
+    return ListTile(
+        title: Text(
+          buildText(list[index]),
+        ),
+        leading: Icon(widget.icon),
+        selected: _listItemsSelectionners[index],
+        onTap: () => {
+              widget.onSelectedItem(widget.list[index]),
+              if (widget.needSelectedItem)
+                {
+                  _listItemsSelectionners[index] =
+                      !_listItemsSelectionners[index]
+                }
+            });
+  }
+
+  Widget buildChipsRechercheAvancer() {
+    return Row(
+      children: [
+        for (FilterChipCallback obj in widget.filterChipsNames) ...[
+          FilterChip(
+            label: Text(obj.name),
+            selected: chipsActive == obj,
+            onSelected: (bool value) {
+              setState(() {
+                if (chipsActive == obj) {
+                  chipsActive = null;
+                } else {
+                  chipsActive = obj;
+                  _sortParRecherche(_controllerChampRecherche.text);
+                }
+              });
+            },
+          ),
+          const SizedBox(
+            width: 5,
+          ),
+        ]
+      ],
+    );
   }
 
   String buildText(dynamic item) {
@@ -156,6 +207,10 @@ class ListRechercheEtActionState extends State<ListRechercheEtAction> {
       titre = item.nom;
     } else if (item is Client) {
       titre = "${item.nom} ${item.prenom} / ${item.email}";
+    } else if (item is Facture) {
+      titre = AppPsyUtils.getName(item);
+    } else {
+      throw "Exception: (buildText)) type not supported in param";
     }
     return titre;
   }
@@ -169,11 +224,18 @@ class ListRechercheEtActionState extends State<ListRechercheEtAction> {
     RegExp regex = RegExp(entree.toLowerCase());
 
     for (dynamic item in widget.list) {
-      if (regex.firstMatch(item.nom.toLowerCase()) != null ||
-          regex.firstMatch(item.email.toLowerCase()) != null) {
-        listFinal.add(item);
+      if (item is Facture) {
+        var nomFacture = AppPsyUtils.getName(item).toLowerCase();
+        if (regex.firstMatch(nomFacture) != null) {
+          if (chipsActive != null &&
+              chipsActive!.filter.firstMatch(nomFacture) != null) {
+            listFinal.add(item);
+          }
+        }
       } else if (item is Client &&
           regex.firstMatch(item.prenom.toLowerCase()) != null) {
+        listFinal.add(item);
+      } else if (regex.firstMatch(item.nom.toLowerCase()) != null) {
         listFinal.add(item);
       }
     }
