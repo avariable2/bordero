@@ -61,7 +61,7 @@ class ListRechercheEtActionState extends State<ListRechercheEtAction> {
   @override
   Widget build(BuildContext context) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      if (widget.titre.isNotEmpty)
+      if (widget.titre.isNotEmpty) ...[
         Padding(
           padding: const EdgeInsets.only(
             left: 0,
@@ -78,10 +78,11 @@ class ListRechercheEtActionState extends State<ListRechercheEtAction> {
             ),
           ),
         ),
-      const SizedBox(
-        height: 15,
-      ),
-      if (widget.needRecherche)
+        const SizedBox(
+          height: 15,
+        ),
+      ],
+      if (widget.needRecherche) ...[
         Row(
           children: [
             Expanded(
@@ -121,9 +122,13 @@ class ListRechercheEtActionState extends State<ListRechercheEtAction> {
             )),
           ],
         ),
+      ],
       if (widget.needChips) buildChipsRechercheAvancer(),
-      buildListTraitement(
-          _controllerChampRecherche.text.isNotEmpty ? _listTrier : widget.list)
+      buildListTraitement(_controllerChampRecherche.text.isNotEmpty
+          ? _listTrier
+          : chipsActive != null
+              ? _listTrier
+              : widget.list)
     ]);
   }
 
@@ -188,7 +193,8 @@ class ListRechercheEtActionState extends State<ListRechercheEtAction> {
                   chipsActive = null;
                 } else {
                   chipsActive = obj;
-                  _sortParRecherche(_controllerChampRecherche.text);
+                  setState(() => _listTrier =
+                      _sortParRecherche(_controllerChampRecherche.text) ?? []);
                 }
               });
             },
