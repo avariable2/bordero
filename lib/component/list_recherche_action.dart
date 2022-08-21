@@ -188,15 +188,13 @@ class ListRechercheEtActionState extends State<ListRechercheEtAction> {
             label: Text(obj.name),
             selected: chipsActive == obj,
             onSelected: (bool value) {
-              setState(() {
-                if (chipsActive == obj) {
-                  chipsActive = null;
-                } else {
-                  chipsActive = obj;
-                  setState(() => _listTrier =
-                      _sortParRecherche(_controllerChampRecherche.text) ?? []);
-                }
-              });
+              if (chipsActive == obj) {
+                chipsActive = null;
+              } else {
+                chipsActive = obj;
+              }
+              setState(() => _listTrier =
+                  _sortParRecherche(_controllerChampRecherche.text) ?? []);
             },
           ),
           const SizedBox(
@@ -233,9 +231,10 @@ class ListRechercheEtActionState extends State<ListRechercheEtAction> {
       if (item is Facture) {
         var nomFacture = AppPsyUtils.getName(item).toLowerCase();
         if (regex.firstMatch(nomFacture) != null) {
+          listFinal.add(item);
           if (chipsActive != null &&
-              chipsActive!.filter.firstMatch(nomFacture) != null) {
-            listFinal.add(item);
+              chipsActive!.filter.firstMatch(nomFacture) == null) {
+            listFinal.remove(item);
           }
         }
       } else if (item is Client &&
