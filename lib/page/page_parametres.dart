@@ -2,6 +2,7 @@ import 'package:bordero/db/app_psy_database.dart';
 import 'package:bordero/model/theme_settings.dart';
 import 'package:bordero/model/utilisateur.dart';
 import 'package:bordero/page/page_information_praticien.dart';
+import 'package:bordero/utils/fire_auth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -28,6 +29,22 @@ class ParametresGlobaux extends StatefulWidget {
 }
 
 class _ParametresGlobauxState extends State<ParametresGlobaux> {
+  final controllerMotDePasse = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    controllerMotDePasse.addListener(() { });
+  }
+
+  @override
+  void dispose() {
+    // Clean up the controller when the widget is removed from the widget tree.
+    // This also removes the _printLatestValue listener.
+    controllerMotDePasse.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -71,8 +88,8 @@ class _ParametresGlobauxState extends State<ParametresGlobaux> {
                     value: value.darkTheme,
                     onChanged: (newValue) => value.toggleTheme(),
                   );
-                },),
-
+                },
+              ),
               ListTile(
                 title: const Text("Support"),
                 onTap: () {},
@@ -93,8 +110,64 @@ class _ParametresGlobauxState extends State<ParametresGlobaux> {
               const Divider(),
               ListTile(
                 title: const Text("Déconnexion"),
-                onTap: () => afficherDialogConfirmationDeconnexion(),
+                onTap: () => afficherDialog(
+                    titre: "Souhaitez-vous vous déconnecter ?",
+                    corps:
+                        "Toutes vos factures et données seront supprimer. Si vous ne les avez pas enregistrer, nous ne pourrons rien pour vous. Agisser en ames et conscience.",
+                    buttonCancelTexte: "ANNULER",
+                    buttonValiderTexte: "DECONNEXION",
+                    buttonCancelCallback: () =>
+                        Navigator.pop(context, 'Cancel'),
+                    buttonValiderCallback: () {
+                      Navigator.pop(context, 'Cancel');
+                      afficherDialog(
+                          titre: "Etes-vous certain ?",
+                          corps:
+                              "Cette action est irréversible pour le moment. Si vous vous déconnecter vos données disparaitrons.",
+                          buttonCancelTexte: "NON",
+                          buttonValiderTexte: "OUI",
+                          buttonCancelCallback: () =>
+                              Navigator.pop(context, 'Cancel'),
+                          buttonValiderCallback: () {
+                            Navigator.pop(context, 'deco');
+                            deconnexion();
+                          });
+                    }),
               ),
+              ListTile(
+                  title: const Text("Supprimer son compte"),
+                  onTap: () => afficherDialog(
+                      titre: "Etes vous sur de vouloir supprimer votre compte ?",
+                      corps:
+                          "Vous ne pourrez plus vous reconnecter à nos services.",
+                      buttonCancelTexte: "ANNULER",
+                      buttonValiderTexte: "SUPPRIMER",
+                      buttonCancelCallback: () =>
+                          Navigator.pop(context, 'Cancel'),
+                      buttonValiderCallback: () {
+                        if (controllerMotDePasse.value.text.isEmpty || controllerMotDePasse.value.text.length < 6) {
+                          return null;
+                        } else {
+                          suppression();
+                          Navigator.pop(context, 'Cancel');
+                        }
+                      },
+                  elementAtEnd: TextFormField(
+                    obscureText: true,
+                    autofocus: true,
+                    controller: controllerMotDePasse,
+                    decoration: const InputDecoration(
+                      labelText: 'Saisissez votre mot de passe (6 lettres ou plus)',
+                      helperText: "Etape bligatoire pour supprimer votre compte"
+                    ),
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
+                    validator: (value) {
+                      if (value == null || value.isEmpty && value.length < 6) {
+                        return "Saisir un mot de passe de minimum 6 lettres";
+                      }
+                      return null;
+                    },
+                  ),)),
             ],
           )),
         ],
@@ -102,53 +175,31 @@ class _ParametresGlobauxState extends State<ParametresGlobaux> {
     );
   }
 
-  afficherDialogConfirmationDeconnexion() {
+  afficherDialog(
+      {required String titre,
+      required String corps,
+      required String buttonCancelTexte,
+      required String buttonValiderTexte,
+      Function()? buttonCancelCallback,
+      Function()? buttonValiderCallback,
+      Widget? elementAtEnd}) {
     showDialog(
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text("Souhaitez-vous vous déconnecter ?", style: TextStyle(fontWeight: FontWeight.bold,
-              fontSize: 22.0,
-              color: Theme.of(context).colorScheme.primary,),),
-            content: const Text(
-                "Toutes vos factures et données seront supprimer. Si vous ne les avez pas enregistrer, nous ne pourrons rien pour vous. Agisser en ames et conscience."),
+            title: Text(titre,
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.primary,
+                )),
+            content: elementAtEnd ?? Text(corps),
             actions: [
               TextButton(
-                onPressed: () => Navigator.pop(context, 'Cancel'),
-                child: const Text("ANNULER"),
+                onPressed: buttonCancelCallback,
+                child: Text(buttonCancelTexte),
               ),
               TextButton(
-                onPressed: () {
-                  Navigator.pop(context, 'ANNULER');
-                  afficherDialogConfirmationDeconnexion2emeValidation();
-                },
-                child: const Text("DECONNEXION"),
-              ),
-            ],
-            elevation: 24.0,
-          );
-        });
-  }
-
-  afficherDialogConfirmationDeconnexion2emeValidation() {
-    showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text("Etes-vous certain ?", style: TextStyle(color: Theme.of(context).colorScheme.primary,)),
-            content: const Text(
-                "Cette action est irréversible pour le moment. Si vous vous déconnecter vos données disparaitrons."),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context, 'Cancel'),
-                child: const Text("NON"),
-              ),
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context, 'deco');
-                  deconnexion();
-                },
-                child: const Text("OUI"),
+                onPressed: buttonValiderCallback,
+                child: Text(buttonValiderTexte),
               ),
             ],
             elevation: 24.0,
@@ -163,7 +214,26 @@ class _ParametresGlobauxState extends State<ParametresGlobaux> {
     await FirebaseAuth.instance.signOut();
   }
 
+  suppression() async {
+    await FireAuth(FirebaseAuth.instance).supprimerCompte(password: controllerMotDePasse.text).then((value) async {
+      if (value ==  true) {
+        _enleverUtilisateurSet();
+        await SharedPref().remove(tableUtilisateur);
+        await AppPsyDatabase.instance.deleteAllData();
+      } else if (value == FireAuth.erreurType1) {
+        _afficherProbleme("Votre mot de passe n'est pas le bon.");
+      } else {
+        _afficherProbleme("Une erreur est survenue, contacter le support pour que nous puissions vous aidez.");
+      }
+    });
+
+  }
+
   _enleverUtilisateurSet() {
     context.read<InfosUtilisateurParametres>().toggleIsSet();
+  }
+
+  _afficherProbleme(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
   }
 }

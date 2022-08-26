@@ -50,17 +50,14 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> {
   final _controllerChampNombreUH = TextEditingController();
   final _controllerNumeroFacture = TextEditingController();
   final _controllerChampDateLimitePayement = TextEditingController();
-  final _controllerRechercheClient = TextEditingController();
   final _controllerSignature = SignatureController(
       penStrokeWidth: 5,
       penColor: Colors.black,
       exportBackgroundColor: Colors.white70);
 
   late List<Client> _listClients;
-  List<Client> _listClientsTrier = [];
   late List<TypeActe> _listTypeActes;
   final List<Client> _clientSelectionner = [];
-  late List<bool> _selected;
   final List<Seance> _listSeances = [];
 
   int _indexStepper = 0;
@@ -556,12 +553,10 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> {
           if (value.isNotEmpty)
             {
               _listClients = value,
-              _selected = List.generate(_listClients.length, (index) => false),
             }
           else
             {
               _listClients = [],
-              _selected = [],
             }
         });
 
@@ -734,24 +729,5 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> {
         content:
             Text("Il viens de se produire une erreur, nous sommes désolé."));
     ScaffoldMessenger.of(context).showSnackBar(snackbar);
-  }
-
-  List<Client>? _sortParRecherche(String? entree) {
-    if (entree == null) {
-      return null;
-    }
-    _listClientsTrier.clear();
-    List<Client> listFinal = [];
-    RegExp regex = RegExp(entree.toLowerCase());
-
-    for (Client client in _listClients) {
-      if (regex.firstMatch(client.nom.toLowerCase()) != null ||
-          regex.firstMatch(client.prenom.toLowerCase()) != null ||
-          regex.firstMatch(client.email.toLowerCase()) != null) {
-        listFinal.add(client);
-      }
-    }
-
-    return listFinal;
   }
 }

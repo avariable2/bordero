@@ -3,6 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 
 class FireAuth {
+
+  static const String erreurType1 = "erreurType1";
+  static const String erreurType2 = "erreurType2";
+
   final FirebaseAuth _firebaseAuth;
 
   Stream<User?> get authStateChanges =>
@@ -109,5 +113,25 @@ class FireAuth {
 
   Future<void> signOut() async {
     await _firebaseAuth.signOut();
+  }
+
+  Future supprimerCompte({required String password}) async {
+    try {
+      var user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        AuthCredential credentials = EmailAuthProvider.credential(
+            email: user.email!, password: password);
+        var result = await user.reauthenticateWithCredential(credentials);
+        result.user?.delete();
+        return true;
+      }
+    } on FirebaseAuthException catch (e) {
+      if (e.code == "wrong-password") {
+        return erreurType1;
+      }
+    } catch (exception, stackTrace) {
+      return false;
+    }
+    return false;
   }
 }
