@@ -11,28 +11,28 @@ import 'dart:io';
 
 import 'package:path_provider/path_provider.dart';
 
+import '../component/expendable_fab.dart';
 import '../db/app_psy_database.dart';
 import '../dialog/preview_pdf.dart';
 
-class PageFactures extends StatelessWidget {
-  const PageFactures({Key? key}) : super(key: key);
+class PageFacturesDevis extends StatelessWidget {
+  const PageFacturesDevis({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return const ViewFactures();
+    return const WidgetDocuments();
   }
 }
 
-class ViewFactures extends StatefulWidget {
-  const ViewFactures({Key? key}) : super(key: key);
+class WidgetDocuments extends StatefulWidget {
+  const WidgetDocuments({Key? key}) : super(key: key);
 
   @override
-  State<ViewFactures> createState() => _ViewFacturesState();
+  State<WidgetDocuments> createState() => _ViewFacturesState();
 }
 
-class _ViewFacturesState extends State<ViewFactures> {
-  late List<Facture> factures = [];
-
+class _ViewFacturesState extends State<WidgetDocuments> {
+  late List<Facture> documents = [];
   bool isLoading = false;
 
   @override
@@ -45,18 +45,31 @@ class _ViewFacturesState extends State<ViewFactures> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        child: const Icon(Icons.add_outlined),
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute<void>(
-              builder: (BuildContext context) =>
-                  const FullScreenDialogCreationFacture(),
-              fullscreenDialog: true,
-            ),
-          ).then((value) => _getListFiles());
-        },
+      floatingActionButton: ExpandableFab(
+        distance: 120,
+        children: [
+          FloatingActionButton.extended(
+            heroTag: "btnFacture",
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute<void>(
+                  builder: (BuildContext context) =>
+                      const FullScreenDialogCreationFacture(),
+                  fullscreenDialog: true,
+                ),
+              ).then((value) => _getListFiles());
+            },
+            label: const Text("Facture"),
+            icon: const Icon(Icons.description_outlined),
+          ),
+          FloatingActionButton.extended(
+            heroTag: "btnDevis",
+            onPressed: () {},
+            label: const Text("Devis"),
+            icon: const Icon(Icons.receipt_long_outlined),
+          ),
+        ],
       ),
       body: SafeArea(
           child: isLoading
@@ -84,7 +97,7 @@ class _ViewFacturesState extends State<ViewFactures> {
           const Padding(
             padding: EdgeInsets.only(bottom: 10),
             child: Text(
-              "Mes factures",
+              "Mes documents",
               style: TextStyle(
                 fontSize: 35,
                 fontWeight: FontWeight.bold,
@@ -95,12 +108,12 @@ class _ViewFacturesState extends State<ViewFactures> {
             titre: '',
             icon: Icons.picture_as_pdf_outlined,
             labelListVide: '',
-            list: factures,
+            list: documents,
             onSelectedItem: (dynamic item) async {
               var file = await getFileFromDBB(item);
               ouvrirPdf(item, file);
             },
-            labelTitreRecherche: "Recherche facture",
+            labelTitreRecherche: "Recherche d'un documents",
             labelHintRecherche: "Essayer le nom du client ou son prénom",
             needRecherche: true,
             needTousEcran: true,
@@ -115,7 +128,7 @@ class _ViewFacturesState extends State<ViewFactures> {
 
   Future<void> _getListFiles() async {
     setState(() => isLoading = true);
-    factures = await AppPsyDatabase.instance.getAllFileName();
+    documents = await AppPsyDatabase.instance.getAllFileName();
     setState(() => isLoading = false);
   }
 

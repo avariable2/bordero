@@ -113,12 +113,7 @@ class _AppPsyState extends State<AppPsy> {
   int currentPageIndex = 0;
   List<Widget> pageList = [
     const PageAccueil(),
-    const PageFactures(),
-    Container(
-      color: Colors.green,
-      alignment: Alignment.center,
-      child: const Text('Page 3'),
-    ),
+    const PageFacturesDevis(),
     const PageParametres(),
   ];
 
@@ -144,12 +139,7 @@ class _AppPsyState extends State<AppPsy> {
           NavigationDestination(
             selectedIcon: Icon(Icons.description),
             icon: Icon(Icons.description_outlined),
-            label: 'Factures',
-          ),
-          NavigationDestination(
-            selectedIcon: Icon(Icons.receipt_long),
-            icon: Icon(Icons.receipt_long_outlined),
-            label: 'Devis',
+            label: 'Documents',
           ),
           NavigationDestination(
             selectedIcon: Icon(Icons.settings),
