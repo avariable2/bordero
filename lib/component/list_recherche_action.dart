@@ -53,8 +53,6 @@ class ListRechercheEtActionState extends State<ListRechercheEtAction> {
 
   @override
   void initState() {
-    _listItemsSelectionners =
-        List.generate(widget.list.length, (index) => false);
     super.initState();
   }
 
@@ -164,6 +162,8 @@ class ListRechercheEtActionState extends State<ListRechercheEtAction> {
   }
 
   Widget buildListTile(List<dynamic> list, int index) {
+    _listItemsSelectionners =
+        List.generate(widget.list.length, (index) => false);
     return ListTile(
         title: Text(
           buildText(list[index]),
