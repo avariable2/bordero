@@ -6,6 +6,8 @@ import 'package:bordero/utils/fire_auth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 import '../utils/infos_utilisateur_parametres.dart';
 import '../utils/shared_pref.dart';
@@ -92,7 +94,11 @@ class _ParametresGlobauxState extends State<ParametresGlobaux> {
               ),
               ListTile(
                 title: const Text("Support"),
-                onTap: () {},
+                onTap: () async {
+                  const urlString = "https://docs.google.com/forms/d/e/1FAIpQLSfjLRAybQuL7fdgk1HqG257yNGOgGlab1kRnxwucySyQGmN-w/viewform?usp=pp_url";
+                  var url = Uri.parse(urlString);
+                  await launchUrl(url);
+                },
               ),
               const Divider(),
               ListTile(
