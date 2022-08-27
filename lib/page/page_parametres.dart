@@ -32,6 +32,7 @@ class ParametresGlobaux extends StatefulWidget {
 
 class _ParametresGlobauxState extends State<ParametresGlobaux> {
   final controllerMotDePasse = TextEditingController();
+  static const _urlString = "https://docs.google.com/forms/d/e/1FAIpQLSfjLRAybQuL7fdgk1HqG257yNGOgGlab1kRnxwucySyQGmN-w/viewform?usp=pp_url";
 
   @override
   void initState() {
@@ -95,8 +96,7 @@ class _ParametresGlobauxState extends State<ParametresGlobaux> {
               ListTile(
                 title: const Text("Support"),
                 onTap: () async {
-                  const urlString = "https://docs.google.com/forms/d/e/1FAIpQLSfjLRAybQuL7fdgk1HqG257yNGOgGlab1kRnxwucySyQGmN-w/viewform?usp=pp_url";
-                  var url = Uri.parse(urlString);
+                  var url = Uri.parse(_urlString);
                   await launchUrl(url);
                 },
               ),
