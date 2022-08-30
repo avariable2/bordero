@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:bordero/dialog/preview_pdf.dart';
 import 'package:bordero/model/facture.dart';
@@ -51,9 +52,9 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> {
   final _controllerNumeroFacture = TextEditingController();
   final _controllerChampDateLimitePayement = TextEditingController();
   final _controllerSignature = SignatureController(
-      penStrokeWidth: 5,
-      penColor: Colors.black,
-      exportBackgroundColor: Colors.white70);
+    penStrokeWidth: 3,
+    penColor: Colors.black,
+  );
 
   late List<Client> _listClients;
   late List<TypeActe> _listTypeActes;
@@ -157,7 +158,7 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> {
     return ListView(
       shrinkWrap: true,
       physics: const BouncingScrollPhysics(),
-      children:[
+      children: [
         ListRechercheEtAction(
           titre: 'Sélectionner client(s)',
           icon: Icons.account_circle_sharp,
@@ -167,8 +168,10 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> {
           list: _listClients,
           onSelectedItem: (dynamic item) {
             setStateIfMounted(() => {
-              _clientSelectionner.contains(item) ? _clientSelectionner.remove(item) : _clientSelectionner.add(item),
-            });
+                  _clientSelectionner.contains(item)
+                      ? _clientSelectionner.remove(item)
+                      : _clientSelectionner.add(item),
+                });
           },
           needSelectedItem: true,
           needRecherche: true,
@@ -285,7 +288,7 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> {
                     child: TextFormField(
                       controller: _controllerChampNombreUH,
                       keyboardType: TextInputType.number,
-                      inputFormatters: [ FilteringTextInputFormatter.digitsOnly],
+                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                       decoration: const InputDecoration(
                           border: OutlineInputBorder(),
                           labelText: 'Quantité',
@@ -354,7 +357,7 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> {
                   child: TextFormField(
                     controller: _controllerNumeroFacture,
                     keyboardType: TextInputType.number,
-                    inputFormatters: [ FilteringTextInputFormatter.digitsOnly],
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                     decoration: const InputDecoration(
                         border: OutlineInputBorder(),
                         labelText: 'Numero de facture',
@@ -421,15 +424,10 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> {
   Widget buildSignature() {
     return Row(
       children: [
-        ClipRect(
-          child: SizedBox(
-            height: 100,
-            child: Signature(
-              width: 200,
-              height: 100,
-              controller: _controllerSignature,
-            ),
-          ),
+        Signature(
+          width: 200,
+          height: 100,
+          controller: _controllerSignature,
         ),
         IconButton(
             onPressed: () {
@@ -596,8 +594,12 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> {
     showDialog(
       context: context,
       builder: (BuildContext context) => AlertDialog(
-        title: Text(title, style: TextStyle(fontSize: 22.0,
-          color: Theme.of(context).colorScheme.primary,fontWeight: FontWeight.bold,)),
+        title: Text(title,
+            style: TextStyle(
+              fontSize: 22.0,
+              color: Theme.of(context).colorScheme.primary,
+              fontWeight: FontWeight.bold,
+            )),
         content: Text(body),
         actions: [
           TextButton(
@@ -627,21 +629,29 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> {
     }
   }
 
-  Future<void> _creationPdfEtOuverture(bool aDateLimite) async {
-    CreationFacture donnesPourFacture = CreationFacture(
+  Future<CreationFacture> _creationObjectPourFacture(bool aDateLimite) async {
+    final Uint8List? byteImage = _controllerSignature.isNotEmpty
+        ? await _controllerSignature.toPngBytes()
+        : null;
+
+    return CreationFacture(
         id: _controllerNumeroFacture.text,
         dateCreationFacture: DateTime.now(),
         listClients: _clientSelectionner,
         listSeances: _listSeances,
         dateLimitePayement: aDateLimite == true ? _dateLimitePayement : null,
-        signaturePNG: await _controllerSignature.toPngBytes());
+        signaturePNG: byteImage);
+  }
 
-    PdfFactureApi.generate(donnesPourFacture).then((value) {
-      if (value == null) {
-        return afficherErreur();
-      }
-      checkSiFactureDejaCreerEtAjout(value);
-    });
+  Future<void> _creationPdfEtOuverture(bool aDateLimite) async {
+    _creationObjectPourFacture(aDateLimite).then((objectCreationFacture) => {
+          PdfFactureApi.generate(objectCreationFacture).then((value) {
+            if (value == null) {
+              return afficherErreur();
+            }
+            checkSiFactureDejaCreerEtAjout(value);
+          })
+        });
   }
 
   void ajoutFactureFileDansBDD(File fichier) async {
@@ -703,7 +713,10 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> {
     showDialog(
       context: context,
       builder: (BuildContext context) => AlertDialog(
-        title: Text("Cette facture existe déjà !", style: TextStyle(color: Theme.of(context).colorScheme.primary,)),
+        title: Text("Cette facture existe déjà !",
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.primary,
+            )),
         content: const Text(
             "Voulez-vous vraiment modifier cette facture ? Il est impossible de modifier une facture sur Bordero sauf si c'est le jour même. Nous déclinons de toutes responsabilités en cas de fraude."),
         actions: [

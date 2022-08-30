@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'dart:math' as math;
 
 class ExpandableFab extends StatefulWidget {
-  const ExpandableFab({Key? key, required this.children, required this.distance}) : super(key: key);
+  const ExpandableFab(
+      {Key? key, required this.children, required this.distance})
+      : super(key: key);
 
   final List<Widget> children;
   final double distance;
@@ -11,8 +13,8 @@ class ExpandableFab extends StatefulWidget {
   ExpandableFabState createState() => ExpandableFabState();
 }
 
-class ExpandableFabState extends State<ExpandableFab> with SingleTickerProviderStateMixin {
-
+class ExpandableFabState extends State<ExpandableFab>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _expandAnimation;
   bool _open = false;
@@ -29,16 +31,15 @@ class ExpandableFabState extends State<ExpandableFab> with SingleTickerProviderS
     _expandAnimation = CurvedAnimation(
         parent: _controller,
         curve: Curves.fastOutSlowIn,
-        reverseCurve: Curves.easeOutQuad
-    );
+        reverseCurve: Curves.easeOutQuad);
   }
 
   void _toggle() {
     setState(() {
       _open = !_open;
-      if(_open){
+      if (_open) {
         _controller.forward();
-      }else{
+      } else {
         _controller.reverse();
       }
     });
@@ -92,10 +93,8 @@ class ExpandableFabState extends State<ExpandableFab> with SingleTickerProviderS
     return AnimatedContainer(
       duration: const Duration(milliseconds: 250),
       transformAlignment: Alignment.center,
-      transform: Matrix4.diagonal3Values(
-          _open ? 0.7 : 1.0,
-          _open ? 0.7 : 1.0,
-          1.0),
+      transform:
+          Matrix4.diagonal3Values(_open ? 0.7 : 1.0, _open ? 0.7 : 1.0, 1.0),
       curve: Curves.easeOut,
       child: AnimatedOpacity(
         opacity: _open ? 0.0 : 1.0,
@@ -114,14 +113,14 @@ class ExpandableFabState extends State<ExpandableFab> with SingleTickerProviderS
     final count = widget.children.length;
     final step = 90.0 / (count - 1);
 
-    for(var i=0, angleInDegrees = 0.0; i< count; i++, angleInDegrees += step){
-      children.add(
-          _ExpandableFab(
-              directionDegrees: angleInDegrees,
-              maxDistance: widget.distance,
-              progress: _expandAnimation,
-              child: widget.children[i])
-      );
+    for (var i = 0, angleInDegrees = 0.0;
+        i < count;
+        i++, angleInDegrees += step) {
+      children.add(_ExpandableFab(
+          directionDegrees: angleInDegrees,
+          maxDistance: widget.distance,
+          progress: _expandAnimation,
+          child: widget.children[i]));
     }
 
     return children;
@@ -129,7 +128,13 @@ class ExpandableFabState extends State<ExpandableFab> with SingleTickerProviderS
 }
 
 class _ExpandableFab extends StatelessWidget {
-  const _ExpandableFab({Key? key, required this.directionDegrees, required this.maxDistance, required this.progress, required this.child}) : super(key: key);
+  const _ExpandableFab(
+      {Key? key,
+      required this.directionDegrees,
+      required this.maxDistance,
+      required this.progress,
+      required this.child})
+      : super(key: key);
 
   final double directionDegrees;
   final double maxDistance;
@@ -142,9 +147,7 @@ class _ExpandableFab extends StatelessWidget {
       animation: progress!,
       builder: (context, child) {
         final offset = Offset.fromDirection(
-            directionDegrees * (math.pi / 180),
-            progress!.value * maxDistance
-        );
+            directionDegrees * (math.pi / 180), progress!.value * maxDistance);
 
         return Positioned(
           right: 4.0 + offset.dx,
