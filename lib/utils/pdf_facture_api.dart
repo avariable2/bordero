@@ -14,7 +14,7 @@ class PdfFactureApi {
   static Future<File?> generate(CreationFacture facture) async {
     Utilisateur? infos;
     try {
-      infos = Utilisateur.fromJson( await SharedPref().read(tableUtilisateur));
+      infos = Utilisateur.fromJson(await SharedPref().read(tableUtilisateur));
     } on Exception catch (exception, stackTrace) {
       await Sentry.captureException(exception, stackTrace: stackTrace);
       return null;
@@ -32,7 +32,6 @@ class PdfFactureApi {
               Divider(),
               buildTotal(facture, infos.exonererTVA == 0 ? false : true),
               buildPayement(facture, infos),
-              buildSignature(facture),
             ]));
 
     var prenoms = "";
@@ -116,7 +115,8 @@ class PdfFactureApi {
       ];
     }).toList();
 
-    return Table.fromTextArray(
+    return Container(
+        child: Table.fromTextArray(
       headers: enTete,
       data: donnees,
       border: null,
@@ -129,7 +129,7 @@ class PdfFactureApi {
         2: Alignment.centerRight,
         3: Alignment.centerRight,
       },
-    );
+    ));
   }
 
   static Widget buildTotal(CreationFacture facture, bool exonererTVA) {
@@ -200,17 +200,21 @@ class PdfFactureApi {
   }
 
   static Widget buildPayement(CreationFacture facture, Utilisateur infos) {
-    var dateLimite = "";
-    if (facture.dateLimitePayement != null) {
-      dateLimite = AppPsyUtils.toDateString(facture.dateLimitePayement!);
-    }
-    var listePayement = AppPsyUtils.getTypePayements(infos);
-
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      SizedBox(height: 30),
-      Text('Echéance : $dateLimite'),
-      Text('Règlement : $listePayement'),
-    ]);
+    return Container(
+      child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              SizedBox(height: 15),
+              Text(
+                  'Echéance : ${facture.dateLimitePayement != null ? AppPsyUtils.toDateString(facture.dateLimitePayement!) : ""}'),
+              Text('Règlement : ${AppPsyUtils.getTypePayements(infos)}'),
+            ]),
+            Spacer(flex: 2),
+            buildSignature(facture),
+          ]),
+    );
   }
 
   static Widget buildSignature(CreationFacture facture) {
@@ -218,10 +222,11 @@ class PdfFactureApi {
     if (data != null) {
       var image = MemoryImage(data);
 
-      return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        SizedBox(height: 20),
-        Image(image, width: 100),
-      ]);
+      return Container(
+          child:
+              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Image(image, width: 150),
+      ]));
     } else {
       return Container();
     }

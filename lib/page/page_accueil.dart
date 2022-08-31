@@ -5,6 +5,7 @@ import 'package:bordero/dialog/modifier_type_acte.dart';
 import 'package:bordero/model/type_acte.dart';
 import 'package:flutter/material.dart';
 
+import '../component/list_recherche_action.dart';
 import '../dialog/ajouter_client.dart';
 import '../model/client.dart';
 
@@ -25,10 +26,8 @@ class MonAccueil extends StatefulWidget {
 }
 
 class _MonAccueilState extends State<MonAccueil> {
-  final _controllerChampRecherche = TextEditingController();
   late List<Client> listClients;
   late List<TypeActe> listTypeActes;
-  List<Client> listClientsTrier = [];
   bool isLoading = false;
 
   @override
@@ -91,84 +90,62 @@ class _MonAccueilState extends State<MonAccueil> {
         right: 20,
       ),
       children: [
-        Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: const [
-            Text(
-              "Mon espace de gestion",
-              style: TextStyle(
-                fontSize: 35,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ],
-        ),
         const Padding(
-          padding: EdgeInsets.only(top: 25, bottom: 15),
+          padding: EdgeInsets.only(bottom: 15),
           child: Text(
-            "Clients",
+            "Mon espace de gestion",
             style: TextStyle(
-              fontSize: 24,
+              fontSize: 35,
               fontWeight: FontWeight.bold,
-              inherit: true,
-              letterSpacing: 0.4,
             ),
           ),
         ),
-        Row(
-          children: [
-            Expanded(
-              child: TextField(
-                controller: _controllerChampRecherche,
-                keyboardType: TextInputType.name,
-                decoration: InputDecoration(
-                  prefixIcon: const Icon(Icons.search),
-                  border: const OutlineInputBorder(),
-                  labelText: 'Recherche client',
-                  helperText: 'Essayer le nom du client ou son prénom',
-                  suffixIcon: IconButton(
-                    onPressed: () {
-                      setState(() {
-                        _controllerChampRecherche.text = "";
-                        listClientsTrier = [];
-                      });
-                    },
-                    color: _controllerChampRecherche.text.isNotEmpty
-                        ? Colors.grey
-                        : Colors.transparent,
-                    icon: const Icon(Icons.clear),
-                  ),
+        ListRechercheEtAction(
+          titre: 'Clients',
+          icon: Icons.account_circle_sharp,
+          labelTitreRecherche: 'Recherche client',
+          labelHintRecherche: 'Essayer le nom ou prénom du client',
+          labelListVide: '🤔​ Aucun client enregistré',
+          list: listClients,
+          onSelectedItem: (dynamic item) {
+            Navigator.push(
+              context,
+              MaterialPageRoute<void>(
+                builder: (BuildContext context) =>
+                    FullScreenDialogModifierClient(
+                  client: item,
                 ),
-                onChanged: (String? entree) => setState(() {
-                  if (entree != null && entree.length > 1) {
-                    listClientsTrier = _sortParRecherche(entree) ?? [];
-                  }
-                }),
+                fullscreenDialog: true,
               ),
-            ),
-          ],
+            ).then((value) => refreshLists());
+          },
+          needRecherche: true,
+          filterChipsNames: const [],
         ),
-        const SizedBox(
-          height: 15,
-        ),
-        buildListClient(_controllerChampRecherche.text.isNotEmpty
-            ? listClientsTrier
-            : listClients),
         buildButton(true),
-        const Padding(
-          padding: EdgeInsets.only(top: 25, bottom: 15),
-          child: Text(
-            "Type d'actes",
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              inherit: true,
-              letterSpacing: 0.4,
-            ),
-          ),
+        const SizedBox(
+          height: 10,
         ),
-        buildListTypeActe(),
+        ListRechercheEtAction(
+          titre: "Type d'actes",
+          icon: Icons.work_outline,
+          labelListVide: '🤔​ Aucun type de séance enregistré',
+          list: listTypeActes,
+          onSelectedItem: (dynamic item) {
+            Navigator.push(
+              context,
+              MaterialPageRoute<void>(
+                builder: (BuildContext context) =>
+                    FullScreenDialogModifierTypeActe(
+                  typeActe: item,
+                ),
+                fullscreenDialog: true,
+              ),
+            ).then((value) => refreshLists());
+          },
+          needRecherche: false,
+          filterChipsNames: const [],
+        ),
         buildButton(false),
         const SizedBox(
           height: 15,
@@ -182,91 +159,6 @@ class _MonAccueilState extends State<MonAccueil> {
             ))
       ],
     );
-  }
-
-  Widget buildListClient(List<Client> listUtiliser) {
-    if (listClients.isEmpty) {
-      return const Text(
-        "🤔​ Aucun clients ",
-        style: TextStyle(
-          fontSize: 18,
-        ),
-      );
-    } else {
-      return SizedBox(
-        height: 150,
-        child: Card(
-          borderOnForeground: true,
-          child: ListView(
-            scrollDirection: Axis.vertical,
-            shrinkWrap: true,
-            addAutomaticKeepAlives: false,
-            children: [
-              for (Client client in listUtiliser)
-                ListTile(
-                  title:
-                      Text("${client.prenom} ${client.nom} / ${client.email}"),
-                  leading: const Icon(Icons.account_circle_sharp),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute<void>(
-                        builder: (BuildContext context) =>
-                            FullScreenDialogModifierClient(
-                          client: client,
-                        ),
-                        fullscreenDialog: true,
-                      ),
-                    ).then((value) => refreshLists());
-                  },
-                ),
-            ],
-          ),
-        ),
-      );
-    }
-  }
-
-  Widget buildListTypeActe() {
-    if (listTypeActes.isEmpty) {
-      return const Text(
-        "🤔​ Aucun type de seance enregistré",
-        style: TextStyle(
-          fontSize: 18,
-        ),
-      );
-    } else {
-      return SizedBox(
-        height: 150,
-        child: Card(
-          borderOnForeground: true,
-          child: ListView(
-            scrollDirection: Axis.vertical,
-            shrinkWrap: true,
-            addAutomaticKeepAlives: false,
-            children: [
-              for (TypeActe typeActe in listTypeActes)
-                ListTile(
-                  title: Text(typeActe.nom),
-                  leading: const Icon(Icons.work_outline),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute<void>(
-                        builder: (BuildContext context) =>
-                            FullScreenDialogModifierTypeActe(
-                          typeActe: typeActe,
-                        ),
-                        fullscreenDialog: true,
-                      ),
-                    ).then((value) => refreshLists());
-                  },
-                ),
-            ],
-          ),
-        ),
-      );
-    }
   }
 
   Widget buildButton(bool buttonPourClient) {
@@ -285,24 +177,5 @@ class _MonAccueilState extends State<MonAccueil> {
       icon: const Icon(Icons.add),
       label: const Text("Ajouter"),
     );
-  }
-
-  List<Client>? _sortParRecherche(String? entree) {
-    if (entree == null) {
-      return null;
-    }
-    listClientsTrier.clear();
-    List<Client> listFinal = [];
-    RegExp regex = RegExp(entree.toLowerCase());
-
-    for (Client client in listClients) {
-      if (regex.firstMatch(client.nom.toLowerCase()) != null ||
-          regex.firstMatch(client.prenom.toLowerCase()) != null ||
-          regex.firstMatch(client.email.toLowerCase()) != null) {
-        listFinal.add(client);
-      }
-    }
-
-    return listFinal;
   }
 }
