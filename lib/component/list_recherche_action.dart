@@ -156,7 +156,7 @@ class ListRechercheEtActionState extends State<ListRechercheEtAction> {
         });
     return SizedBox(
       height:
-          widget.needTousEcran ? MediaQuery.of(context).size.height / 2.4 : 150,
+          widget.needTousEcran ? MediaQuery.of(context).size.height / 2 : 150,
       child: listview,
     );
   }

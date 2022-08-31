@@ -86,7 +86,7 @@ class _ParametresGlobauxState extends State<ParametresGlobaux> {
               Consumer<ThemeSettings>(
                 builder: (context, value, child) {
                   return SwitchListTile(
-                    activeColor: Theme.of(context).selectedRowColor,
+                    activeColor: Theme.of(context).primaryColorLight,
                     title: const Text("Theme sombre"),
                     value: value.darkTheme,
                     onChanged: (newValue) => value.toggleTheme(),
