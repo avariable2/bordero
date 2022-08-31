@@ -1,3 +1,5 @@
+import 'package:animations/animations.dart';
+import 'package:bordero/color_schemes.g.dart';
 import 'package:bordero/model/theme_settings.dart';
 import 'package:bordero/page/page_accueil.dart';
 import 'package:bordero/page/page_factures.dart';
@@ -117,40 +119,44 @@ class _AppPsyState extends State<AppPsy> {
     const PageParametres(),
   ];
 
-  // TODO(https://codelabs.developers.google.com/codelabs/material-motion-flutter?hl=fr#4)
-  // Animation
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      bottomNavigationBar: NavigationBar(
-        onDestinationSelected: (int index) {
+      bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: Theme.of(context).bottomAppBarTheme.color,
+        type: BottomNavigationBarType.fixed,
+        onTap: (int index) {
           setState(() {
             currentPageIndex = index;
           });
         },
-        selectedIndex: currentPageIndex,
-        destinations: const <Widget>[
-          NavigationDestination(
-            selectedIcon: Icon(Icons.home),
+        currentIndex: currentPageIndex,
+        items: const [
+          BottomNavigationBarItem(
+            activeIcon: Icon(Icons.home),
             icon: Icon(Icons.home_outlined),
             label: 'Accueil',
           ),
-          NavigationDestination(
-            selectedIcon: Icon(Icons.description),
+          BottomNavigationBarItem(
+            activeIcon: Icon(Icons.description),
             icon: Icon(Icons.description_outlined),
             label: 'Documents',
           ),
-          NavigationDestination(
-            selectedIcon: Icon(Icons.settings),
+          BottomNavigationBarItem(
+            activeIcon: Icon(Icons.settings),
             icon: Icon(Icons.settings_outlined),
             label: 'Paramètres',
-          )
+          ),
         ],
       ),
-      body: IndexedStack(
-        index: currentPageIndex,
-        children: pageList,
+      body: PageTransitionSwitcher(
+        transitionBuilder: (Widget child, Animation<double> primaryAnimation,
+                Animation<double> secondaryAnimation) =>
+            FadeThroughTransition(
+                animation: primaryAnimation,
+                secondaryAnimation: secondaryAnimation,
+                child: child),
+        child: pageList[currentPageIndex],
       ),
     );
   }
