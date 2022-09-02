@@ -150,12 +150,24 @@ class _MonAccueilState extends State<MonAccueil> {
         const SizedBox(
           height: 15,
         ),
-        const SizedBox(
+        const Divider(),
+        SizedBox(
             height: 200,
             child: Card(
               borderOnForeground: true,
-              child: Text(
-                  "Actuellement la premiere version ! Du chemin nous attends."),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: const [
+                  Image(
+                    height: 150,
+                    image: AssetImage('assets/images/iPhone.png'),
+                  ),
+                  Center(
+                    child: Text(
+                        "Actuellement la premiere version ! Du chemin nous attends."),
+                  ),
+                ],
+              ),
             ))
       ],
     );
