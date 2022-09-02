@@ -3,6 +3,7 @@
 import 'dart:io';
 
 import 'package:bordero/model/utilisateur.dart';
+import 'package:flutter/material.dart';
 import 'package:path/path.dart';
 
 import '../model/facture.dart';
@@ -39,6 +40,38 @@ class AppPsyUtils {
 
   static String getNameOfFile(File file) {
     return basename(file.path);
+  }
+
+  static afficherDialog(
+      {required BuildContext context, required String titre,
+        required String corps,
+        required String buttonCancelTexte,
+        required String buttonValiderTexte,
+        Function()? buttonCancelCallback,
+        Function()? buttonValiderCallback,
+        Widget? elementAtEnd}) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text(titre,
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.primary,
+                )),
+            content: elementAtEnd ?? Text(corps),
+            actions: [
+              TextButton(
+                onPressed: buttonCancelCallback,
+                child: Text(buttonCancelTexte),
+              ),
+              TextButton(
+                onPressed: buttonValiderCallback,
+                child: Text(buttonValiderTexte),
+              ),
+            ],
+            elevation: 24.0,
+          );
+        });
   }
 
 }

@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 
+import '../utils/app_psy_utils.dart';
 import '../utils/infos_utilisateur_parametres.dart';
 
 class FullScreenDialogInformationPraticien extends StatelessWidget {
@@ -18,12 +19,7 @@ class FullScreenDialogInformationPraticien extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Vos informations'),
-      ),
-      body: DialogInfoPraticien(firstTime: firstTime),
-    );
+    return DialogInfoPraticien(firstTime: firstTime);
   }
 }
 
@@ -43,6 +39,8 @@ class DialogInfoPraticien extends StatefulWidget {
 }
 
 class DialogInfoPraticienState extends State<DialogInfoPraticien> {
+  bool _chargeLesDonnes = false;
+
   final _formPersonnelKey = GlobalKey<FormState>();
   final _formProfessionelKey = GlobalKey<FormState>();
 
@@ -67,9 +65,7 @@ class DialogInfoPraticienState extends State<DialogInfoPraticien> {
 
   int _indexStepper = 0;
 
-  void setStateIfMounted(f) {
-    if (mounted) setState(f);
-  }
+  Utilisateur? user;
 
   @override
   void initState() {
@@ -95,8 +91,19 @@ class DialogInfoPraticienState extends State<DialogInfoPraticien> {
 
   @override
   Widget build(BuildContext context) {
-    // Build a Form widget using the _formKey created above.
+    return Scaffold(
+        appBar: AppBar(
+          title: const Text('Vos informations'),
+          actions: [
+            IconButton(
+                onPressed: () => _sauvegardeDesDonnees(),
+                icon: const Icon(Icons.save_outlined)),
+          ],
+        ),
+        body: !widget.firstTime ? buildPageInformations() : buildStepper());
+  }
 
+  Stepper buildStepper() {
     return Stepper(
       type: StepperType.horizontal,
       currentStep: _indexStepper,
@@ -112,7 +119,7 @@ class DialogInfoPraticienState extends State<DialogInfoPraticien> {
           }
         } else if (_indexStepper == 1 &&
             _formProfessionelKey.currentState!.validate()) {
-          sauvegardeDesDonneesEtAffichageMain();
+          _sauvegardeDesDonnees();
         }
       },
       controlsBuilder: (BuildContext context, ControlsDetails details) {
@@ -138,320 +145,332 @@ class DialogInfoPraticienState extends State<DialogInfoPraticien> {
         Step(
             title: const Text("Personel"),
             isActive: _indexStepper >= 0,
-            content: buildInfos()),
+            content: SingleChildScrollView(child: buildFormInfos())),
         Step(
             title: const Text("Professionel"),
             isActive: _indexStepper >= 1,
-            content: buildProfessionel()),
+            content: SingleChildScrollView(child: buildFormProfessionel())),
       ],
     );
   }
 
-  Widget buildInfos() {
-    return SingleChildScrollView(
-      child: Form(
-        key: _formPersonnelKey,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            const Padding(
-              padding: EdgeInsets.only(top: 10, bottom: 10),
-              child: Text(
-                "Données globaux",
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
+  buildFormInfos() {
+    return Form(
+      key: _formPersonnelKey,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          const Padding(
+            padding: EdgeInsets.only(top: 10, bottom: 10),
+            child: Text(
+              "Données globaux",
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
+          ),
 
-            /* PARTIE NOM ET PRENOM */
+          /* PARTIE NOM ET PRENOM */
 
-            Row(
-              children: [
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 10, bottom: 10),
-                    child: TextFormField(
-                      controller: controllerChampNom,
-                      keyboardType: TextInputType.name,
-                      decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: 'Nom *',
-                          icon: Icon(Icons.account_box_outlined)),
-                      // The validator receives the text that the user has entered.
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Entrer un nom';
-                        }
-                        return null;
-                      },
-                    ),
+          Row(
+            children: [
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 10, bottom: 10),
+                  child: TextFormField(
+                    controller: controllerChampNom,
+                    keyboardType: TextInputType.name,
+                    decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: 'Nom *',
+                        icon: Icon(Icons.account_box_outlined)),
+                    // The validator receives the text that the user has entered.
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Entrer un nom';
+                      }
+                      return null;
+                    },
                   ),
                 ),
-                const SizedBox(
-                  width: 20,
-                ),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 10, bottom: 10),
-                    child: TextFormField(
-                      controller: controllerChampPrenom,
-                      keyboardType: TextInputType.name,
-                      decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: 'Prénom *',
-                          icon: Icon(Icons.account_box_outlined)),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Entrer un prénom';
-                        }
-                        return null;
-                      },
-                    ),
+              ),
+              const SizedBox(
+                width: 20,
+              ),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 10, bottom: 10),
+                  child: TextFormField(
+                    controller: controllerChampPrenom,
+                    keyboardType: TextInputType.name,
+                    decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: 'Prénom *',
+                        icon: Icon(Icons.account_box_outlined)),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Entrer un prénom';
+                      }
+                      return null;
+                    },
                   ),
                 ),
-              ],
-            ),
-
-            /* PARTIE Adresse, code postal et ville */
-
-            Padding(
-              padding: const EdgeInsets.only(),
-              child: TextFormField(
-                controller: controllerChampAdresse,
-                keyboardType: TextInputType.streetAddress,
-                decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'Adresse *',
-                    icon: Icon(Icons.person_pin_circle_outlined)),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Entrer une adresse';
-                  }
-                  return null;
-                },
               ),
+            ],
+          ),
+
+          /* PARTIE Adresse, code postal et ville */
+
+          Padding(
+            padding: const EdgeInsets.only(),
+            child: TextFormField(
+              controller: controllerChampAdresse,
+              keyboardType: TextInputType.streetAddress,
+              decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: 'Adresse *',
+                  icon: Icon(Icons.person_pin_circle_outlined)),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Entrer une adresse';
+                }
+                return null;
+              },
             ),
-            Row(
-              children: [
-                Expanded(
-                  child: Padding(
-                    padding:
-                        const EdgeInsets.only(top: 10, bottom: 10, right: 3),
-                    child: TextFormField(
-                      controller: controllerChampCodePostal,
-                      inputFormatters: [ FilteringTextInputFormatter.digitsOnly],
-                      keyboardType: TextInputType.number,
-                      decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: 'Code postal *',
-                          icon: Icon(Icons.domain_outlined)),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Entrer un code postal';
-                        }
-                        if (value.length != 5) {
-                          return 'Entrer un code postal valide';
-                        }
-                        return null;
-                      },
-                    ),
+          ),
+          Row(
+            children: [
+              Expanded(
+                child: Padding(
+                  padding:
+                      const EdgeInsets.only(top: 10, bottom: 10, right: 10),
+                  child: TextFormField(
+                    controller: controllerChampCodePostal,
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                    keyboardType: TextInputType.number,
+                    decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: 'Code postal *',
+                        icon: Icon(Icons.domain_outlined)),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Entrer un code postal';
+                      }
+                      if (value.length != 5) {
+                        return 'Entrer un code postal valide';
+                      }
+                      return null;
+                    },
                   ),
                 ),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 10, bottom: 10),
-                    child: TextFormField(
-                      controller: controllerChampVille,
-                      keyboardType: TextInputType.streetAddress,
-                      decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: 'Ville *',
-                          icon: Icon(Icons.location_city_outlined)),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Entrer une ville';
-                        }
-                        return null;
-                      },
-                    ),
+              ),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 10, bottom: 10, left: 10),
+                  child: TextFormField(
+                    controller: controllerChampVille,
+                    keyboardType: TextInputType.streetAddress,
+                    decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: 'Ville *',
+                        icon: Icon(Icons.location_city_outlined)),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Entrer une ville';
+                      }
+                      return null;
+                    },
                   ),
                 ),
-              ],
-            ),
-
-            /* PARTIE Numero de téléphone et EMAIl */
-
-            Padding(
-              padding: const EdgeInsets.only(),
-              child: TextFormField(
-                controller: controllerChampNumero,
-                keyboardType: TextInputType.phone,
-                decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'Numéro de téléphone *',
-                    icon: Icon(Icons.phone_outlined)),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Entrer un numéro de téléphone';
-                  }
-                  return null;
-                },
               ),
+            ],
+          ),
+
+          /* PARTIE Numero de téléphone et EMAIl */
+
+          Padding(
+            padding: const EdgeInsets.only(),
+            child: TextFormField(
+              controller: controllerChampNumero,
+              keyboardType: TextInputType.phone,
+              decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: 'Numéro de téléphone *',
+                  icon: Icon(Icons.phone_outlined)),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Entrer un numéro de téléphone';
+                }
+                return null;
+              },
             ),
-            Padding(
-              padding: const EdgeInsets.only(top: 10, bottom: 20),
-              child: TextFormField(
-                controller: controllerChampEmail,
-                keyboardType: TextInputType.emailAddress,
-                decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'Email *',
-                    icon: Icon(Icons.email_outlined)),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Entrer une email';
-                  }
-                  if (!EmailValidator.validate(value.trim())) {
-                    return 'Entrer une email valide';
-                  }
-                  return null;
-                },
-              ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(top: 10, bottom: 10),
+            child: TextFormField(
+              controller: controllerChampEmail,
+              keyboardType: TextInputType.emailAddress,
+              decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: 'Email *',
+                  icon: Icon(Icons.email_outlined)),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Entrer une email';
+                }
+                if (!EmailValidator.validate(value.trim())) {
+                  return 'Entrer une email valide';
+                }
+                return null;
+              },
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 
-  Widget buildProfessionel() {
+  Widget buildFormProfessionel() {
+    return Form(
+        key: _formProfessionelKey,
+        child: Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
+          SwitchListTile(
+              title: const Text("Etes-vous exonéré de TVA ?"),
+              value: estExonererDeTVA,
+              onChanged: (bool value) =>
+                  setStateIfMounted(() => estExonererDeTVA = value)),
+          Padding(
+            padding: const EdgeInsets.only(top: 10, bottom: 10),
+            child: TextFormField(
+              controller: controllerChampNumeroSIRET,
+              keyboardType: TextInputType.number,
+              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+              decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: 'Numéro SIRET *',
+                  hintText: "Il est composé de 9 chiffres",
+                  icon: Icon(Icons.pin_outlined)),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Entrer un numéro de SIRET';
+                }
+                if (value.length != 9) {
+                  return 'Entrer un numéro de SIRET valide';
+                }
+                return null;
+              },
+            ),
+          ),
+          const SizedBox(
+            width: 20,
+          ),
+          Padding(
+            padding: const EdgeInsets.only(top: 10, bottom: 10),
+            child: TextFormField(
+              controller: controllerChampNumeroADELI,
+              keyboardType: TextInputType.number,
+              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: 'Code ADELI *',
+                icon: Icon(Icons.medical_information_outlined),
+                hintText: "Il est composé de 9 chiffres",
+              ),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Entrer un numéro de SIRET';
+                }
+                if (value.length != 9) {
+                  return 'Entrer un numéro de SIRET valide';
+                }
+                return null;
+              },
+            ),
+          ),
+          const Padding(
+            padding: EdgeInsets.only(
+              top: 10,
+              bottom: 10,
+            ),
+            child: Text("Type de payement autorisé *",
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+          ),
+          Row(
+            children: [
+              Expanded(
+                child: CheckboxListTile(
+                  title: Text(listTypePayements[0].key),
+                  value: listTypePayements[0].selectionner,
+                  onChanged: (bool? value) => {
+                    setStateIfMounted(() => listTypePayements[0].selectionner =
+                        !listTypePayements[0].selectionner)
+                  },
+                  controlAffinity: ListTileControlAffinity.leading,
+                ),
+              ),
+              Expanded(
+                child: CheckboxListTile(
+                  title: Text(listTypePayements[1].key),
+                  value: listTypePayements[1].selectionner,
+                  onChanged: (bool? value) => {
+                    setStateIfMounted(() => listTypePayements[1].selectionner =
+                        !listTypePayements[1].selectionner)
+                  },
+                  controlAffinity: ListTileControlAffinity.leading,
+                ),
+              ),
+            ],
+          ),
+          Row(
+            children: [
+              Expanded(
+                child: CheckboxListTile(
+                  title: Text(listTypePayements[2].key),
+                  value: listTypePayements[2].selectionner,
+                  onChanged: (bool? value) => {
+                    setStateIfMounted(() => listTypePayements[2].selectionner =
+                        !listTypePayements[2].selectionner)
+                  },
+                  controlAffinity: ListTileControlAffinity.leading,
+                ),
+              ),
+              Expanded(
+                child: CheckboxListTile(
+                  title: Text(listTypePayements[3].key),
+                  value: listTypePayements[3].selectionner,
+                  onChanged: (bool? value) => {
+                    setStateIfMounted(() => listTypePayements[3].selectionner =
+                        !listTypePayements[3].selectionner)
+                  },
+                  controlAffinity: ListTileControlAffinity.leading,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(
+            height: 10,
+          ),
+        ]));
+  }
+
+  Widget buildPageInformations() {
     return SingleChildScrollView(
-        child: Form(
-            key: _formProfessionelKey,
-            child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  SwitchListTile(
-                      title: const Text("Etes-vous exonéré de TVA ?"),
-                      value: estExonererDeTVA,
-                      onChanged: (bool value) =>
-                          setStateIfMounted(() => estExonererDeTVA = value)),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 10, bottom: 10),
-                    child: TextFormField(
-                      controller: controllerChampNumeroSIRET,
-                      keyboardType: TextInputType.number,
-                      inputFormatters: [ FilteringTextInputFormatter.digitsOnly],
-                      decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: 'Numéro SIRET *',
-                          hintText: "Il est composé de 9 chiffres",
-                          icon: Icon(Icons.pin_outlined)),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Entrer un numéro de SIRET';
-                        }
-                        if (value.length != 9) {
-                          return 'Entrer un numéro de SIRET valide';
-                        }
-                        return null;
-                      },
-                    ),
-                  ),
-                  const SizedBox(
-                    width: 20,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 10, bottom: 10),
-                    child: TextFormField(
-                      controller: controllerChampNumeroADELI,
-                      keyboardType: TextInputType.number,
-                      inputFormatters: [ FilteringTextInputFormatter.digitsOnly],
-                      decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: 'Code ADELI *',
-                        icon: Icon(Icons.medical_information_outlined),
-                        hintText: "Il est composé de 9 chiffres",
+        child: !_chargeLesDonnes
+            ? Padding(
+                padding: const EdgeInsets.only(left: 20, right: 20),
+                child: Column(
+                  children: [
+                    buildFormInfos(),
+                    buildFormProfessionel(),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 20),
+                      child: ElevatedButton.icon(
+                        onPressed: () => _sauvegardeDesDonnees(),
+                        label: const Text("Enregistrer"),
+                        icon: const Icon(Icons.save_outlined),
                       ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Entrer une code ADELI';
-                        }
-                        if (value.length != 9) {
-                          return 'Entrer un code ADELI valide';
-                        }
-                        return null;
-                      },
-                    ),
-                  ),
-                  const Padding(
-                    padding: EdgeInsets.only(
-                      top: 10,
-                      bottom: 10,
-                    ),
-                    child: Text("Type de payement autorisé *",
-                        style: TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.bold)),
-                  ),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: CheckboxListTile(
-                          title: Text(listTypePayements[0].key),
-                          value: listTypePayements[0].selectionner,
-                          onChanged: (bool? value) => {
-                            setStateIfMounted(() =>
-                                listTypePayements[0].selectionner =
-                                    !listTypePayements[0].selectionner)
-                          },
-                          controlAffinity: ListTileControlAffinity.leading,
-                        ),
-                      ),
-                      Expanded(
-                        child: CheckboxListTile(
-                          title: Text(listTypePayements[1].key),
-                          value: listTypePayements[1].selectionner,
-                          onChanged: (bool? value) => {
-                            setStateIfMounted(() =>
-                                listTypePayements[1].selectionner =
-                                    !listTypePayements[1].selectionner)
-                          },
-                          controlAffinity: ListTileControlAffinity.leading,
-                        ),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: CheckboxListTile(
-                          title: Text(listTypePayements[2].key),
-                          value: listTypePayements[2].selectionner,
-                          onChanged: (bool? value) => {
-                            setStateIfMounted(() =>
-                                listTypePayements[2].selectionner =
-                                    !listTypePayements[2].selectionner)
-                          },
-                          controlAffinity: ListTileControlAffinity.leading,
-                        ),
-                      ),
-                      Expanded(
-                        child: CheckboxListTile(
-                          title: Text(listTypePayements[3].key),
-                          value: listTypePayements[3].selectionner,
-                          onChanged: (bool? value) => {
-                            setStateIfMounted(() =>
-                                listTypePayements[3].selectionner =
-                                    !listTypePayements[3].selectionner)
-                          },
-                          controlAffinity: ListTileControlAffinity.leading,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                ])));
+                    )
+                  ],
+                ))
+            : const CircularProgressIndicator());
   }
 
   Utilisateur _creerInfosPraticien() {
@@ -475,14 +494,19 @@ class DialogInfoPraticienState extends State<DialogInfoPraticien> {
 
   Future<void> _castTextToController() async {
     if (widget.firstTime) return;
+
+    setStateIfMounted(() => _chargeLesDonnes = true);
+
     Utilisateur infosPraticien;
     try {
       infosPraticien =
           Utilisateur.fromJson(await SharedPref().read(tableUtilisateur));
     } catch (exception, stackTrace) {
       await Sentry.captureException(exception, stackTrace: stackTrace);
-      _afficherErreur();
-      print("ERROR requete : $exception");
+      _afficherMessage(
+          "Une erreur est sruvenue. Vos informations n'ont pas été charger.",
+          true);
+      setStateIfMounted(() => _chargeLesDonnes = false);
       return;
     }
 
@@ -504,32 +528,35 @@ class DialogInfoPraticienState extends State<DialogInfoPraticien> {
     listTypePayements[3].selectionner =
         infosPraticien.payementCheque == 0 ? false : true;
     estExonererDeTVA = infosPraticien.exonererTVA == 0 ? false : true;
+
+    setStateIfMounted(() => _chargeLesDonnes = false);
   }
 
-  Future<void> sauvegardeDesDonneesEtAffichageMain() async {
-    await SharedPref().save(tableUtilisateur, _creerInfosPraticien());
-    _afficherInfosEnregistrer();
+  Future<void> _sauvegardeDesDonnees() async {
+    user = _creerInfosPraticien();
+    await SharedPref().save(tableUtilisateur, user);
+    _afficherMessage("Vos informations ont bien été enregistrés.", false);
     if (widget.firstTime) {
-      _sauvegarderInfosModifier();
+      _toggleInfosUtilisateurIsSet();
     }
   }
 
-  _sauvegarderInfosModifier() {
+  _toggleInfosUtilisateurIsSet() {
     context.read<InfosUtilisateurParametres>().toggleIsSet();
   }
 
-  _afficherErreur() {
+  _afficherMessage(String text, bool finish) {
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-          content: Text(
-              "Une erreur est sruvenue. Vos informations n'ont pas été charger.")),
+      SnackBar(content: Text(text)),
     );
-    Navigator.of(context).pop();
+    finish ? Navigator.of(context).pop() : null;
   }
 
-  void _afficherInfosEnregistrer() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Vos informations ont bien été modifiées.")),
-    );
+  _userSaveChanges() {
+    return user != null && user == _creerInfosPraticien();
+  }
+
+  void setStateIfMounted(f) {
+    if (mounted) setState(f);
   }
 }
