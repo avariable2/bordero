@@ -2,64 +2,70 @@ import 'dart:typed_data';
 import 'package:bordero/model/seance.dart';
 import 'client.dart';
 
-const String tableFacture = 'facture';
+const String tableDocument = 'document';
 
-class FactureChamps {
+class DocumentChamps {
   static final List<String> values = [
     // Ajouter tous les champs
-    id, nom, fichier
+    id, nom, fichier, estFacture,
   ];
 
   static const String id = '_id';
   static const String nom = 'nom';
   static const String fichier = 'fichier';
+  static const String estFacture = 'estFacture';
 }
 
-class Facture {
+class Document {
   final int? id;
   final String nom;
   final Uint8List fichier;
+  final bool estFacture;
 
-  const Facture(
+  const Document(
       {this.id,
       required this.nom,
-      required this.fichier});
+      required this.fichier, required this.estFacture});
 
-  Facture copy({int? id, String? nom, Uint8List? fichier, int? estFacture}) =>
-      Facture(
+  Document copy({int? id, String? nom, Uint8List? fichier, bool? estFacture}) =>
+      Document(
         id: id ?? this.id,
         nom: nom ?? this.nom,
         fichier: fichier ?? this.fichier,
+        estFacture: estFacture ?? this.estFacture,
       );
 
-  static Facture fromJson(Map<String, Object?> json) => Facture(
-        id: json[FactureChamps.id] as int?,
-        nom: json[FactureChamps.nom] as String,
-        fichier: json[FactureChamps.fichier] as Uint8List,
+  static Document fromJson(Map<String, Object?> json) => Document(
+        id: json[DocumentChamps.id] as int?,
+        nom: json[DocumentChamps.nom] as String,
+        fichier: json[DocumentChamps.fichier] as Uint8List,
+    estFacture: json[DocumentChamps.estFacture] as bool,
       );
 
   Map<String, Object?> toJson() => {
-        FactureChamps.id: id,
-        FactureChamps.nom: nom,
-        FactureChamps.fichier: fichier,
+    DocumentChamps.id: id,
+    DocumentChamps.nom: nom,
+    DocumentChamps.fichier: fichier,
       };
 }
 
-class CreationFacture {
+class CreationDocument {
   final String id;
   final DateTime dateCreationFacture;
   final List<Client> listClients;
   final List<Seance> listSeances;
   final DateTime? dateLimitePayement;
   final Uint8List? signaturePNG;
+  final bool estFacture;
 
-  const CreationFacture({
+  const CreationDocument({
     required this.id,
     required this.dateCreationFacture,
     required this.listClients,
     required this.listSeances,
     required this.dateLimitePayement,
     required this.signaturePNG,
+    required this.estFacture,
   });
 }
 

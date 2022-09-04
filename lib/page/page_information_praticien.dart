@@ -95,9 +95,10 @@ class DialogInfoPraticienState extends State<DialogInfoPraticien> {
         appBar: AppBar(
           title: const Text('Vos informations'),
           actions: [
-            IconButton(
-                onPressed: () => _sauvegardeDesDonnees(),
-                icon: const Icon(Icons.save_outlined)),
+            if (!widget.firstTime)
+              IconButton(
+                  onPressed: () => _sauvegardeDesDonnees(),
+                  icon: const Icon(Icons.save_outlined)),
           ],
         ),
         body: !widget.firstTime ? buildPageInformations() : buildStepper());

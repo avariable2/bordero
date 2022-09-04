@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../model/client.dart';
-import '../model/facture.dart';
+import '../model/document.dart';
 import '../model/type_acte.dart';
 import '../utils/app_psy_utils.dart';
 import '../model/filter_chips_callback.dart';
@@ -211,7 +211,7 @@ class ListRechercheEtActionState extends State<ListRechercheEtAction> {
       titre = item.nom;
     } else if (item is Client) {
       titre = "${item.nom} ${item.prenom} / ${item.email}";
-    } else if (item is Facture) {
+    } else if (item is Document) {
       titre = AppPsyUtils.getName(item);
     } else {
       throw "Exception: (buildText)) type not supported in param";
@@ -228,7 +228,7 @@ class ListRechercheEtActionState extends State<ListRechercheEtAction> {
     RegExp regex = RegExp(entree.toLowerCase());
 
     for (dynamic item in widget.list) {
-      if (item is Facture) {
+      if (item is Document) {
         var nomFacture = AppPsyUtils.getName(item).toLowerCase();
         if (regex.firstMatch(nomFacture) != null) {
           listFinal.add(item);

@@ -2,7 +2,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:bordero/dialog/preview_pdf.dart';
-import 'package:bordero/model/facture.dart';
+import 'package:bordero/model/document.dart';
 import 'package:bordero/model/seance.dart';
 import 'package:bordero/model/type_acte.dart';
 import 'package:bordero/utils/app_psy_utils.dart';
@@ -17,23 +17,29 @@ import '../db/app_psy_database.dart';
 import '../model/client.dart';
 
 class FullScreenDialogCreationFacture extends StatelessWidget {
+  final bool estFacture;
+
   const FullScreenDialogCreationFacture({
     Key? key,
+    required this.estFacture,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Création d'une facture"),
+        title: Text("Création ${estFacture ? "facture" : "devis"}"),
       ),
-      body: const FormulaireCreationFacture(),
+      body: FormulaireCreationFacture(estFacture: estFacture),
     );
   }
 }
 
 class FormulaireCreationFacture extends StatefulWidget {
-  const FormulaireCreationFacture({Key? key}) : super(key: key);
+  final bool estFacture;
+
+  const FormulaireCreationFacture({Key? key, required this.estFacture})
+      : super(key: key);
 
   @override
   State<FormulaireCreationFacture> createState() =>
@@ -86,12 +92,6 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> {
     _controllerNumeroFacture.dispose();
     _controllerChampDateLimitePayement.dispose();
     _controllerSignature.dispose();
-  }
-
-  /// Pour empecher les fuites memoires et les potenciel bugs.
-  /// Uniquement pour les setState dans une fonction await
-  void setStateIfMounted(f) {
-    if (mounted) setState(f);
   }
 
   @override
@@ -147,7 +147,7 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> {
                   isActive: _indexStepper >= 1,
                   content: buildSeance()),
               Step(
-                  title: const Text("Facture"),
+                  title: Text(widget.estFacture ? "Facture" : "Devis"),
                   isActive: _indexStepper >= 2,
                   content: buildFacture())
             ],
@@ -360,12 +360,12 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> {
                     inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                     decoration: const InputDecoration(
                         border: OutlineInputBorder(),
-                        labelText: 'Numero de facture',
+                        labelText: 'Numero du documents',
                         icon: Icon(Icons.numbers_outlined)),
                     // The validator receives the text that the user has entered.
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Entrer un numéro de facture';
+                        return 'Entrer un numéro pour votre documents';
                       }
                       return null;
                     },
@@ -405,13 +405,6 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> {
             ],
           ),
           const Divider(),
-          const Padding(
-            padding: EdgeInsets.only(top: 10, bottom: 10),
-            child: Text(
-              "Signature",
-              style: TextStyle(fontSize: 18),
-            ),
-          ),
           buildSignature(),
           const SizedBox(
             height: 20,
@@ -422,18 +415,32 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> {
   }
 
   Widget buildSignature() {
-    return Row(
+    if (!widget.estFacture) {
+      return Container();
+    }
+    return Column(
       children: [
-        Signature(
-          width: 200,
-          height: 100,
-          controller: _controllerSignature,
+        const Padding(
+          padding: EdgeInsets.only(top: 10, bottom: 10),
+          child: Text(
+            "Signature",
+            style: TextStyle(fontSize: 18),
+          ),
         ),
-        IconButton(
-            onPressed: () {
-              setState(() => _controllerSignature.clear());
-            },
-            icon: const Icon(Icons.refresh_outlined))
+        Row(
+          children: [
+            Signature(
+              width: 200,
+              height: 100,
+              controller: _controllerSignature,
+            ),
+            IconButton(
+                onPressed: () {
+                  setState(() => _controllerSignature.clear());
+                },
+                icon: const Icon(Icons.refresh_outlined))
+          ],
+        )
       ],
     );
   }
@@ -588,7 +595,7 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> {
     } else if (_indexStepper == 2) {
       title = "Remplissez tous les champs";
       body =
-          "Assurez-vous de remplir bien le bon numero de facture et une signature.";
+          "Assurez-vous de remplir bien le bon numero pour votre document et une signature.";
     }
 
     showDialog(
@@ -629,35 +636,38 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> {
     }
   }
 
-  Future<CreationFacture> _creationObjectPourFacture(bool aDateLimite) async {
+  Future<CreationDocument> _creationObjectPourDocument(bool aDateLimite) async {
     final Uint8List? byteImage = _controllerSignature.isNotEmpty
         ? await _controllerSignature.toPngBytes()
         : null;
 
-    return CreationFacture(
+    return CreationDocument(
         id: _controllerNumeroFacture.text,
         dateCreationFacture: DateTime.now(),
         listClients: _clientSelectionner,
         listSeances: _listSeances,
         dateLimitePayement: aDateLimite == true ? _dateLimitePayement : null,
-        signaturePNG: byteImage);
+        signaturePNG: byteImage,
+        estFacture: widget.estFacture);
   }
 
   Future<void> _creationPdfEtOuverture(bool aDateLimite) async {
-    _creationObjectPourFacture(aDateLimite).then((objectCreationFacture) => {
+    _creationObjectPourDocument(aDateLimite).then((objectCreationFacture) => {
           PdfFactureApi.generate(objectCreationFacture).then((value) {
             if (value == null) {
               return afficherErreur();
             }
-            checkSiFactureDejaCreerEtAjout(value);
+            checkSiDocumentDejaCreerEtAjout(value);
           })
         });
   }
 
   void ajoutFactureFileDansBDD(File fichier) async {
-    Facture facture = Facture(
-        nom: path.basename(fichier.path), fichier: fichier.readAsBytesSync());
-    await AppPsyDatabase.instance.createFactureInDB(facture).then((value) => {
+    Document facture = Document(
+        nom: path.basename(fichier.path),
+        fichier: fichier.readAsBytesSync(),
+        estFacture: widget.estFacture);
+    await AppPsyDatabase.instance.createDocumentInDB(facture).then((value) => {
           if (!value)
             {
               afficherErreur(),
@@ -668,14 +678,15 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> {
                   builder: (context) => PreviewPdf(
                         idFacture: PreviewPdf.idPasEncoreConnu,
                         fichier: fichier,
+                        estFacture: widget.estFacture,
                       ))),
             }
         });
   }
 
-  Future<void> checkSiFactureDejaCreerEtAjout(File fichier) async {
+  Future<void> checkSiDocumentDejaCreerEtAjout(File fichier) async {
     await AppPsyDatabase.instance
-        .readIfFactureIsAlreadySet(path.basename(fichier.path))
+        .readIfDocumentIsAlreadySet(path.basename(fichier.path))
         .then((value) => {
               if (value != null)
                 {
@@ -686,20 +697,22 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> {
             });
   }
 
-  changerFactureDansBDD(File fichier, Facture facture) async {
-    Facture nouvelleFacture = Facture(
-        id: facture.id,
+  changerFactureDansBDD(File fichier, Document document) async {
+    Document futureDocInBdd = Document(
+        id: document.id,
         nom: path.basename(fichier.path),
-        fichier: fichier.readAsBytesSync());
+        fichier: fichier.readAsBytesSync(),
+        estFacture: widget.estFacture);
     await AppPsyDatabase.instance
-        .updateFacture(nouvelleFacture)
+        .updateDocument(futureDocInBdd)
         .then((value) => {
               if (value == 1)
                 {
                   Navigator.of(context).push(MaterialPageRoute(
                       builder: (context) => PreviewPdf(
-                            idFacture: facture.id!,
+                            idFacture: document.id!,
                             fichier: fichier,
+                            estFacture: widget.estFacture,
                           ))),
                 }
               else
@@ -709,16 +722,16 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> {
             });
   }
 
-  afficherDialogConfirmationModification(File fichier, Facture facture) {
+  afficherDialogConfirmationModification(File fichier, Document document) {
     showDialog(
       context: context,
       builder: (BuildContext context) => AlertDialog(
-        title: Text("Cette facture existe déjà !",
+        title: Text("Ce document existe déjà !",
             style: TextStyle(
               color: Theme.of(context).colorScheme.primary,
             )),
         content: const Text(
-            "Voulez-vous vraiment modifier cette facture ? Il est impossible de modifier une facture sur Bordero sauf si c'est le jour même. Nous déclinons de toutes responsabilités en cas de fraude."),
+            "Voulez-vous vraiment modifier ce document ? Il est impossible de modifier un document sur Bordero sauf si c'est le jour même. Nous déclinons de toutes responsabilités en cas de fraude."),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, 'Cancel'),
@@ -727,7 +740,7 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> {
           TextButton(
             onPressed: () {
               Navigator.pop(context, 'OK');
-              changerFactureDansBDD(fichier, facture);
+              changerFactureDansBDD(fichier, document);
             },
             child: const Text("MODIFIER"),
           ),
@@ -742,5 +755,11 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> {
         content:
             Text("Il viens de se produire une erreur, nous sommes désolé."));
     ScaffoldMessenger.of(context).showSnackBar(snackbar);
+  }
+
+  /// Pour empecher les fuites memoires et les potenciel bugs.
+  /// Uniquement pour les setState dans une fonction await
+  void setStateIfMounted(f) {
+    if (mounted) setState(f);
   }
 }

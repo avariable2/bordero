@@ -6,7 +6,7 @@ import 'package:bordero/model/utilisateur.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart';
 
-import '../model/facture.dart';
+import '../model/document.dart';
 
 class AppPsyUtils {
 
@@ -34,7 +34,7 @@ class AppPsyUtils {
     return res;
   }
 
-  static String getName(Facture facture) {
+  static String getName(Document facture) {
     return basename(facture.nom);
   }
 
