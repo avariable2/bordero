@@ -160,6 +160,21 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> {
       shrinkWrap: true,
       physics: const BouncingScrollPhysics(),
       children: [
+        Padding(
+          padding: const EdgeInsets.only(top: 10, bottom: 10),
+          child: OutlinedButton.icon(
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute<void>(
+                builder: (BuildContext context) =>
+                const FullScreenDialogAjouterClient(),
+                fullscreenDialog: true,
+              ),
+            ).then((value) => _getListClients()),
+            label: const Text("Créer un client"),
+            icon: const Icon(Icons.create),
+          ),
+        ),
         ListRechercheEtAction(
           titre: 'Sélectionner client(s)',
           icon: Icons.account_circle_sharp,
@@ -178,21 +193,7 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> {
           needRecherche: true,
           filterChipsNames: const [],
         ),
-        Padding(
-          padding: const EdgeInsets.only(top: 10, bottom: 10),
-          child: OutlinedButton.icon(
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute<void>(
-                builder: (BuildContext context) =>
-                    const FullScreenDialogAjouterClient(),
-                fullscreenDialog: true,
-              ),
-            ).then((value) => _getListClients()),
-            label: const Text("Créer un client"),
-            icon: const Icon(Icons.add),
-          ),
-        ),
+
         const Divider(
           height: 30,
         ),
@@ -212,6 +213,21 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
+            Padding(
+              padding: const EdgeInsets.only(top: 10, bottom: 10),
+              child: OutlinedButton.icon(
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute<void>(
+                    builder: (BuildContext context) =>
+                    const FullScreenDialogAjouterClient(),
+                    fullscreenDialog: true,
+                  ),
+                ).then((value) => _getListClients()),
+                label: const Text("Créer un client"),
+                icon: const Icon(Icons.create),
+              ),
+            ),
             Row(
               children: [
                 Expanded(
@@ -321,7 +337,7 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> {
                 ),
               ],
             ),
-            ElevatedButton.icon(
+            OutlinedButton.icon(
               onPressed: () {
                 if (_formKeySeance.currentState!.validate()) {
                   Seance s = Seance(

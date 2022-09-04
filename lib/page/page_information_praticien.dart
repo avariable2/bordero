@@ -334,6 +334,7 @@ class DialogInfoPraticienState extends State<DialogInfoPraticien> {
         key: _formProfessionelKey,
         child: Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
           SwitchListTile(
+              activeColor: Theme.of(context).colorScheme.primary,
               title: const Text("Etes-vous exonéré de TVA ?"),
               value: estExonererDeTVA,
               onChanged: (bool value) =>
@@ -398,6 +399,7 @@ class DialogInfoPraticienState extends State<DialogInfoPraticien> {
             children: [
               Expanded(
                 child: CheckboxListTile(
+                  activeColor: Theme.of(context).colorScheme.primary,
                   title: Text(listTypePayements[0].key),
                   value: listTypePayements[0].selectionner,
                   onChanged: (bool? value) => {
@@ -409,6 +411,7 @@ class DialogInfoPraticienState extends State<DialogInfoPraticien> {
               ),
               Expanded(
                 child: CheckboxListTile(
+                  activeColor: Theme.of(context).colorScheme.primary,
                   title: Text(listTypePayements[1].key),
                   value: listTypePayements[1].selectionner,
                   onChanged: (bool? value) => {
@@ -424,6 +427,7 @@ class DialogInfoPraticienState extends State<DialogInfoPraticien> {
             children: [
               Expanded(
                 child: CheckboxListTile(
+                  activeColor: Theme.of(context).colorScheme.primary,
                   title: Text(listTypePayements[2].key),
                   value: listTypePayements[2].selectionner,
                   onChanged: (bool? value) => {
@@ -435,6 +439,7 @@ class DialogInfoPraticienState extends State<DialogInfoPraticien> {
               ),
               Expanded(
                 child: CheckboxListTile(
+                  activeColor: Theme.of(context).colorScheme.primary,
                   title: Text(listTypePayements[3].key),
                   value: listTypePayements[3].selectionner,
                   onChanged: (bool? value) => {

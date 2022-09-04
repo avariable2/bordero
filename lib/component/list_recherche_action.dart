@@ -172,6 +172,7 @@ class ListRechercheEtActionState extends State<ListRechercheEtAction> {
         ),
         leading: Icon(widget.icon),
         selected: _listItemsSelectionners[index],
+        tileColor: Theme.of(context).colorScheme.surfaceVariant,
         onTap: () => {
               widget.onSelectedItem(widget.list[index]),
               if (widget.needSelectedItem)
