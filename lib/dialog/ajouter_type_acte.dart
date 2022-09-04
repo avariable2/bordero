@@ -46,7 +46,7 @@ class DialogAjouterTypeActeState extends State<DialogAjouterTypeActe> {
         // Il y'a un doublon
         afficherDialogConfirmationCreationDoublon()
       } else {
-        insertionClientDansBDD()
+        insertionTypeActeDansBDD()
       }
     });
   }
@@ -69,7 +69,7 @@ class DialogAjouterTypeActeState extends State<DialogAjouterTypeActe> {
     );
   }
 
-  Future<void> insertionClientDansBDD() async {
+  Future<void> insertionTypeActeDansBDD() async {
     TypeActe typeActe = TypeActe(
         nom: controllerChampNom.text.trim(),
         prix: AppPsyUtils.tryParseDouble(controllerChampPrix.text.trim()),

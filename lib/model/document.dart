@@ -25,7 +25,8 @@ class Document {
   const Document(
       {this.id,
       required this.nom,
-      required this.fichier, required this.estFacture});
+      required this.fichier,
+      required this.estFacture});
 
   Document copy({int? id, String? nom, Uint8List? fichier, bool? estFacture}) =>
       Document(
@@ -39,13 +40,14 @@ class Document {
         id: json[DocumentChamps.id] as int?,
         nom: json[DocumentChamps.nom] as String,
         fichier: json[DocumentChamps.fichier] as Uint8List,
-    estFacture: json[DocumentChamps.estFacture] as bool,
+        estFacture: json[DocumentChamps.estFacture] == 1 ? true : false,
       );
 
   Map<String, Object?> toJson() => {
-    DocumentChamps.id: id,
-    DocumentChamps.nom: nom,
-    DocumentChamps.fichier: fichier,
+        DocumentChamps.id: id,
+        DocumentChamps.nom: nom,
+        DocumentChamps.fichier: fichier,
+        DocumentChamps.estFacture: estFacture,
       };
 }
 
@@ -76,10 +78,10 @@ class InfoPageFacture {
   final int id;
   final String nom;
 
-  InfoPageFacture({ required this.id, required this.nom});
+  InfoPageFacture({required this.id, required this.nom});
 
   static InfoPageFacture fromJson(Map<String, Object?> json) => InfoPageFacture(
-    id: json[champId] as int,
-    nom: json[champNom] as String,
-  );
+        id: json[champId] as int,
+        nom: json[champNom] as String,
+      );
 }

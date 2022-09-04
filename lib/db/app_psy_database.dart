@@ -252,15 +252,15 @@ class AppPsyDatabase {
 
   /// FACTURE
 
-  Future<bool> createDocumentInDB(Document facture) async {
+  Future<bool> createDocumentInDB(Document document) async {
     final db = await instance.database;
     int result = 0;
 
     try {
-      result = await db.insert(tableDocument, facture.toJson());
+      result = await db.insert(tableDocument, document.toJson());
     } catch (exception, stackTrace) {
       await Sentry.captureException(exception, stackTrace: stackTrace);
-      print("0 success for create TypeActe");
+      print("0 success for create $tableDocument");
     }
 
     return result > 0 ? true : false;

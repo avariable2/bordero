@@ -137,7 +137,7 @@ class _ViewFacturesState extends State<WidgetDocuments> {
               ouvrirPdf(item, file);
             },
             labelTitreRecherche: "Recherche d'un documents",
-            labelHintRecherche: "Essayer le nom du client ou son prénom",
+            labelHintRecherche: "Essayer le nom ou le prénom du client ",
             needRecherche: true,
             needTousEcran: true,
             needChips: true,

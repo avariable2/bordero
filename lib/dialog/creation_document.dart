@@ -16,6 +16,7 @@ import '../component/list_recherche_action.dart';
 import '../db/app_psy_database.dart';
 import '../model/client.dart';
 import 'ajouter_client.dart';
+import 'ajouter_type_acte.dart';
 
 class FullScreenDialogCreationFacture extends StatelessWidget {
   final bool estFacture;
@@ -213,21 +214,6 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Padding(
-              padding: const EdgeInsets.only(top: 10, bottom: 10),
-              child: OutlinedButton.icon(
-                onPressed: () => Navigator.push(
-                  context,
-                  MaterialPageRoute<void>(
-                    builder: (BuildContext context) =>
-                    const FullScreenDialogAjouterClient(),
-                    fullscreenDialog: true,
-                  ),
-                ).then((value) => _getListClients()),
-                label: const Text("Créer un client"),
-                icon: const Icon(Icons.create),
-              ),
-            ),
             Row(
               children: [
                 Expanded(
@@ -367,6 +353,7 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> {
                     for (Seance seance in _listSeances)
                       Card(
                         child: ListTile(
+                          tileColor: Theme.of(context).colorScheme.surfaceVariant,
                           title: Text(
                               "${seance.quantite} ${seance.nom} le (${seance.date.day}/${seance.date.month}/${seance.date.year})"),
                           leading: const Icon(Icons.work_history_outlined),
