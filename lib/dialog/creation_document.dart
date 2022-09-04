@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:bordero/dialog/preview_pdf.dart';
+import 'package:bordero/dialog/presentation_pdf.dart';
 import 'package:bordero/model/document.dart';
 import 'package:bordero/model/seance.dart';
 import 'package:bordero/model/type_acte.dart';
@@ -308,7 +308,17 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> {
             ElevatedButton.icon(
               onPressed: () {
                 if (_formKeySeance.currentState!.validate()) {
-                  setState(() => _ajouterSeance());
+                  Seance s = Seance(
+                    nom: _dropdownSelectionnerTypeActe.trim(),
+                    date: _dateEmission,
+                    prix: AppPsyUtils.tryParseDouble(
+                        _controllerChampPrix.text.trim()),
+                    quantite: int.parse(_controllerChampNombreUH.text.trim()),
+                    uniteTemps: null,
+                  );
+                  setState(() {
+                    _listSeances.add(s);
+                  });
                 }
               },
               label: const Text("AJOUTER"),
@@ -328,9 +338,23 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> {
                           title: Text(
                               "${seance.quantite} ${seance.nom} le (${seance.date.day}/${seance.date.month}/${seance.date.year})"),
                           leading: const Icon(Icons.work_history_outlined),
-                          onTap: () {
-                            _afficherAvertissementAvantSuppression(seance);
-                          },
+                          onTap: () => AppPsyUtils.afficherDialog(
+                              context: context,
+                              titre: "Supprimer cette séance ?",
+                              corps: "Vous pourrez la recréer par la suite.",
+                              buttonCancelTexte: "ANNULER",
+                              buttonValiderTexte: "SUPPRIMER",
+                              textStyleTitre: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 22.0,
+                                color: Theme.of(context).colorScheme.primary,
+                              ),
+                              buttonValiderCallback: () {
+                                setState(() {
+                                  _listSeances.remove(seance);
+                                });
+                                Navigator.pop(context, 'SUPPRIMER');
+                              }),
                         ),
                       ),
                   ]),
@@ -445,59 +469,6 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> {
     );
   }
 
-  /// Il affiche une boîte de dialogue avec un message d'avertissement et deux
-  /// boutons, un pour annuler l'action et un pour la confirmer
-  ///
-  /// Args:
-  ///   seance (Seance): l'objet qui sera supprimé
-  void _afficherAvertissementAvantSuppression(Seance seance) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) => AlertDialog(
-        title: Text("Supprimer cette séance ?",
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 22.0,
-              color: Theme.of(context).colorScheme.primary,
-            )),
-        content: const Text("Vous pourrez la recréer par la suite."),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, 'RETOUR'),
-            child: const Text("ANNULER"),
-          ),
-          TextButton(
-            onPressed: () {
-              _supprimerSeances(seance);
-            },
-            child: const Text(
-              "SUPPRIMER",
-            ),
-          ),
-        ],
-        elevation: 24.0,
-      ),
-    );
-  }
-
-  void _supprimerSeances(Seance seance) {
-    setState(() {
-      _listSeances.remove(seance);
-    });
-    Navigator.pop(context, 'SUPPRIMER');
-  }
-
-  void _ajouterSeance() {
-    Seance s = Seance(
-      nom: _dropdownSelectionnerTypeActe.trim(),
-      date: _dateEmission,
-      prix: AppPsyUtils.tryParseDouble(_controllerChampPrix.text.trim()),
-      quantite: int.parse(_controllerChampNombreUH.text.trim()),
-      uniteTemps: null,
-    );
-    _listSeances.add(s);
-  }
-
   void _afficherPrixDansController() {
     var res = _getTypeActeDepuisNomTypeActe();
     if (res != null) {
@@ -598,24 +569,13 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> {
           "Assurez-vous de remplir bien le bon numero pour votre document et une signature.";
     }
 
-    showDialog(
+    AppPsyUtils.afficherDialog(
       context: context,
-      builder: (BuildContext context) => AlertDialog(
-        title: Text(title,
-            style: TextStyle(
-              fontSize: 22.0,
-              color: Theme.of(context).colorScheme.primary,
-              fontWeight: FontWeight.bold,
-            )),
-        content: Text(body),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, 'RETOUR'),
-            child: const Text("OK"),
-          ),
-        ],
-        elevation: 24.0,
-      ),
+      titre: title,
+      corps: body,
+      buttonCancelTexte: '',
+      buttonValiderTexte: 'COMPRIS',
+      buttonValiderCallback: () => Navigator.pop(context, 'RETOUR'),
     );
   }
 
@@ -690,7 +650,17 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> {
         .then((value) => {
               if (value != null)
                 {
-                  afficherDialogConfirmationModification(fichier, value),
+                  AppPsyUtils.afficherDialog(
+                      context: context,
+                      titre: "Ce document existe déjà !",
+                      corps:
+                          "Voulez-vous vraiment modifier ce document ? Il est impossible de modifier un document sur Bordero sauf si c'est le jour même. Nous déclinons de toutes responsabilités en cas de fraude.",
+                      buttonCancelTexte: "ANNULER",
+                      buttonValiderTexte: "MODIFIER",
+                      buttonValiderCallback: () {
+                        Navigator.pop(context, 'OK');
+                        changerFactureDansBDD(fichier, value);
+                      }),
                 }
               else
                 {ajoutFactureFileDansBDD(fichier)}
@@ -722,39 +692,9 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> {
             });
   }
 
-  afficherDialogConfirmationModification(File fichier, Document document) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) => AlertDialog(
-        title: Text("Ce document existe déjà !",
-            style: TextStyle(
-              color: Theme.of(context).colorScheme.primary,
-            )),
-        content: const Text(
-            "Voulez-vous vraiment modifier ce document ? Il est impossible de modifier un document sur Bordero sauf si c'est le jour même. Nous déclinons de toutes responsabilités en cas de fraude."),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, 'Cancel'),
-            child: const Text("ANNULER"),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context, 'OK');
-              changerFactureDansBDD(fichier, document);
-            },
-            child: const Text("MODIFIER"),
-          ),
-        ],
-        elevation: 24.0,
-      ),
-    );
-  }
-
   void afficherErreur() {
-    var snackbar = const SnackBar(
-        content:
-            Text("Il viens de se produire une erreur, nous sommes désolé."));
-    ScaffoldMessenger.of(context).showSnackBar(snackbar);
+    AppPsyUtils.afficherSnackbar(
+        context, "Il vient de se produire une erreur. Nous en sommes désolé.");
   }
 
   /// Pour empecher les fuites memoires et les potenciel bugs.

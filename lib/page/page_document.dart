@@ -3,7 +3,7 @@ import 'dart:typed_data';
 import 'package:bordero/component/simple_dialog_item.dart';
 import 'package:bordero/model/filter_chips_callback.dart';
 import 'package:bordero/component/list_recherche_action.dart';
-import 'package:bordero/dialog/creation_facture.dart';
+import 'package:bordero/dialog/creation_document.dart';
 import 'package:bordero/model/document.dart';
 import 'package:bordero/utils/app_psy_utils.dart';
 import 'package:flutter/material.dart';
@@ -14,7 +14,7 @@ import 'package:path_provider/path_provider.dart';
 
 import '../component/expendable_fab.dart';
 import '../db/app_psy_database.dart';
-import '../dialog/preview_pdf.dart';
+import '../dialog/presentation_pdf.dart';
 
 class PageFacturesDevis extends StatelessWidget {
   const PageFacturesDevis({Key? key}) : super(key: key);

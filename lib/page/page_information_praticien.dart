@@ -547,9 +547,7 @@ class DialogInfoPraticienState extends State<DialogInfoPraticien> {
   }
 
   _afficherMessage(String text, bool finish) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(text)),
-    );
+    AppPsyUtils.afficherSnackbar(context, text);
     finish ? Navigator.of(context).pop() : null;
   }
 

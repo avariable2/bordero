@@ -2,7 +2,7 @@ import 'package:animations/animations.dart';
 import 'package:bordero/color_schemes.g.dart';
 import 'package:bordero/model/theme_settings.dart';
 import 'package:bordero/page/page_accueil.dart';
-import 'package:bordero/page/page_factures.dart';
+import 'package:bordero/page/page_document.dart';
 import 'package:bordero/page/page_information_praticien.dart';
 import 'package:bordero/page/page_parametres.dart';
 import 'package:bordero/page/presentation.dart';

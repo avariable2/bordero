@@ -1,5 +1,3 @@
-
-
 import 'dart:io';
 
 import 'package:bordero/model/utilisateur.dart';
@@ -9,7 +7,6 @@ import 'package:path/path.dart';
 import '../model/document.dart';
 
 class AppPsyUtils {
-
   static bool isNumeric(String s) {
     if (s == null || s.isEmpty) {
       return false;
@@ -43,25 +40,29 @@ class AppPsyUtils {
   }
 
   static afficherDialog(
-      {required BuildContext context, required String titre,
-        required String corps,
-        required String buttonCancelTexte,
-        required String buttonValiderTexte,
-        Function()? buttonCancelCallback,
-        Function()? buttonValiderCallback,
-        Widget? elementAtEnd}) {
+      {required BuildContext context,
+      required String titre,
+      required String corps,
+      required String buttonCancelTexte,
+      required String buttonValiderTexte,
+      Function()? buttonCancelCallback,
+      Function()? buttonValiderCallback,
+      TextStyle? textStyleTitre,
+      Widget? elementAtEnd}) {
     showDialog(
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
             title: Text(titre,
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.primary,
-                )),
+                style: textStyleTitre ??
+                    TextStyle(
+                      color: Theme.of(context).colorScheme.primary,
+                    )),
             content: elementAtEnd ?? Text(corps),
             actions: [
               TextButton(
-                onPressed: buttonCancelCallback,
+                onPressed: buttonCancelCallback ??
+                    () => Navigator.pop(context, 'RETOUR'),
                 child: Text(buttonCancelTexte),
               ),
               TextButton(
@@ -74,4 +75,7 @@ class AppPsyUtils {
         });
   }
 
+  static void afficherSnackbar(BuildContext context, String text) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(text)));
+  }
 }
