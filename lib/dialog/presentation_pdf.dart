@@ -167,7 +167,7 @@ class _AffichageInfoPdfState extends State<AffichageInfoPdf> {
             children: [
               TextButton(
                   onPressed: () => _afficherInformationPourSauvegarde(),
-                  child: const Text("POURQUOI ?"))
+                  child: const Text("Pourquoi ?"))
             ],
           ),
         ),
@@ -187,7 +187,7 @@ class _AffichageInfoPdfState extends State<AffichageInfoPdf> {
           child: OutlinedButton.icon(
               onPressed: () => _onShare(context),
               icon: const Icon(Icons.share_outlined),
-              label: const Text("ENVOYER")),
+              label: const Text("Envoyer")),
         ),
       ]),
     );

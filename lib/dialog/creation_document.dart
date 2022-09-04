@@ -339,7 +339,7 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> {
                   });
                 }
               },
-              label: const Text("AJOUTER"),
+              label: const Text("Ajouter séance"),
               icon: const Icon(Icons.add),
             ),
             const Divider(),
