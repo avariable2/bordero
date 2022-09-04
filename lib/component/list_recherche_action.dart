@@ -188,6 +188,7 @@ class ListRechercheEtActionState extends State<ListRechercheEtAction> {
       children: [
         for (FilterChipCallback obj in widget.filterChipsNames) ...[
           FilterChip(
+            selectedColor: Theme.of(context).colorScheme.primary,
             label: Text(obj.name),
             selected: chipsActive == obj,
             onSelected: (bool value) {
