@@ -5,14 +5,17 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../color_schemes.g.dart';
 
 ThemeData lightTheme = ThemeData(
+    useMaterial3: true,
     colorScheme: lightColorScheme,
     pageTransitionsTheme: pageTransitionsTheme,
     textTheme: GoogleFonts.robotoSerifTextTheme());
 
 ThemeData darkTheme = ThemeData(
+    useMaterial3: true,
     colorScheme: darkColorScheme,
     pageTransitionsTheme: pageTransitionsTheme,
-    textTheme: GoogleFonts.robotoSerifTextTheme().apply(bodyColor: Colors.white));
+    textTheme:
+        GoogleFonts.robotoSerifTextTheme().apply(bodyColor: Colors.white));
 
 class ThemeSettings with ChangeNotifier {
   bool _darktheme = true;

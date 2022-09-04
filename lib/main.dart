@@ -123,7 +123,6 @@ class _AppPsyState extends State<AppPsy> {
   Widget build(BuildContext context) {
     return Scaffold(
       bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Theme.of(context).bottomAppBarTheme.color,
         type: BottomNavigationBarType.fixed,
         onTap: (int index) {
           setState(() {

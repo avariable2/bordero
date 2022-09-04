@@ -122,7 +122,7 @@ class _MonAccueilState extends State<MonAccueil> {
           needRecherche: true,
           filterChipsNames: const [],
         ),
-        buildButton(true),
+        buildButton(buttonPourClient: true),
         const SizedBox(
           height: 10,
         ),
@@ -146,7 +146,7 @@ class _MonAccueilState extends State<MonAccueil> {
           needRecherche: false,
           filterChipsNames: const [],
         ),
-        buildButton(false),
+        buildButton(buttonPourClient: false),
         const SizedBox(
           height: 15,
         ),
@@ -163,8 +163,8 @@ class _MonAccueilState extends State<MonAccueil> {
                     image: AssetImage('assets/images/iPhone.png'),
                   ),
                   Center(
-                    child: Text(
-                        "Actuellement la premiere version ! Du chemin nous attends."),
+                    child: Text(textAlign: TextAlign.center,
+                        "Actuellement la premiere version !\nDu chemin nous attends."),
                   ),
                 ],
               ),
@@ -173,7 +173,7 @@ class _MonAccueilState extends State<MonAccueil> {
     );
   }
 
-  Widget buildButton(bool buttonPourClient) {
+  Widget buildButton({required bool buttonPourClient}) {
     return ElevatedButton.icon(
       onPressed: () {
         Navigator.push(

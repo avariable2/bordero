@@ -132,10 +132,12 @@ class ListRechercheEtActionState extends State<ListRechercheEtAction> {
 
   Widget buildListTraitement(List<dynamic> list) {
     if (widget.list.isEmpty) {
-      return Text(
-        widget.labelListVide,
-        style: const TextStyle(
-          fontSize: 18,
+      return Center(
+        child: Text(
+          widget.labelListVide,
+          style: const TextStyle(
+            fontSize: 18,
+          ),
         ),
       );
     } else {

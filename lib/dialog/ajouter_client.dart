@@ -49,25 +49,29 @@ class DialogAjouterClientState extends State<DialogAjouterClient> {
 
   void afficherDialogConfirmationCreationDoublon() {
     showDialog(
-        context: context,
-        builder: (BuildContext context) =>
-            AlertDialog(
-              title: Text("Ce client existe déjà !", style: TextStyle(color: Theme.of(context).colorScheme.primary,)),
-              content: const Text("Voulez-vous vraiment l'ajouter (il se peut que 2 clients possède le meme nom et prenom)."),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context, 'Cancel'),
-                  child: const Text("Non"),
-                ),
-                TextButton(
-                  onPressed: () {
-                    Navigator.pop(context, 'OK');
-                    insertionClientDansBDD();
-                  },
-                  child: const Text("Oui"),),
-              ],
-              elevation: 24.0,
-            ),
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        title: Text("Ce client existe déjà !",
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.primary,
+            )),
+        content: const Text(
+            "Voulez-vous vraiment l'ajouter (il se peut que 2 clients possède le meme nom et prenom)."),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, 'Cancel'),
+            child: const Text("Non"),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context, 'OK');
+              insertionClientDansBDD();
+            },
+            child: const Text("Oui"),
+          ),
+        ],
+        elevation: 24.0,
+      ),
     );
   }
 
@@ -79,35 +83,42 @@ class DialogAjouterClientState extends State<DialogAjouterClient> {
         codePostal: controllerChampCodePostal.text.trim(),
         ville: controllerChampVille.text.trim(),
         numeroTelephone: controllerChampNumero.text.trim(),
-        email: controllerChampEmail.text.trim()
-    );
-
+        email: controllerChampEmail.text.trim());
 
     await AppPsyDatabase.instance.createClient(c).then((value) => {
-      // Le client a bien été enregistrer
-      if (value) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${controllerChampPrenom.text.toUpperCase()} à bien été ajouté')),
-        )
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Oups ! Une erreur sait produite =(')),
-        )
-      }
-    });
+          // Le client a bien été enregistrer
+          if (value)
+            {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                    content: Text(
+                        '${controllerChampPrenom.text.toUpperCase()} à bien été ajouté')),
+              )
+            }
+          else
+            {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                    content: Text('Oups ! Une erreur sait produite =(')),
+              )
+            }
+        });
   }
 
   /// Methode asynchrone pour verifier que l'utilisateur n'est pas déjà présent dans la base de donnée.
   Future<void> checkSiClientEstDejaSet() async {
-    await AppPsyDatabase.instance.readIfClientIsAlreadySet(controllerChampNom.text, controllerChampPrenom.text)
+    await AppPsyDatabase.instance
+        .readIfClientIsAlreadySet(
+            controllerChampNom.text, controllerChampPrenom.text)
         .then((value) => {
-          if (value) {
-            // Il y'a un doublon
-            afficherDialogConfirmationCreationDoublon()
-          } else {
-            insertionClientDansBDD()
-          }
-    });
+              if (value)
+                {
+                  // Il y'a un doublon
+                  afficherDialogConfirmationCreationDoublon()
+                }
+              else
+                {insertionClientDansBDD()}
+            });
   }
 
   @override
@@ -129,86 +140,84 @@ class DialogAjouterClientState extends State<DialogAjouterClient> {
     return SingleChildScrollView(
       child: Form(
         key: _formKey,
-        child:
-
-        Column(
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-
             const SizedBox(
               height: 15,
             ),
-
             Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: const [
-                  Expanded(flex: 1, child: Icon(Icons.info_outline)),
-                  Expanded(flex: 4, child: Text('''Les champs marqués avec (*) sont oblicatoire.'''), ),
-                ],
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: const [
+                Expanded(flex: 1, child: Icon(Icons.info_outline)),
+                Expanded(
+                  flex: 4,
+                  child:
+                      Text('''Les champs marqués avec (*) sont oblicatoire.'''),
+                ),
+              ],
             ),
-
             const SizedBox(
               height: 15,
             ),
-
             const Divider(),
 
             /* PARTIE NOM ET PRENOM */
 
-            Row(children: [
-              Expanded(child:
-              Padding(padding: const EdgeInsets.only( top:10, left: 8, bottom: 10),
-                child: TextFormField(
-                  controller: controllerChampNom,
-                  keyboardType: TextInputType.name,
-                  decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'Nom *',
-                      icon: Icon(Icons.account_box_outlined)
-                  ),
-                  // The validator receives the text that the user has entered.
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Entrer un nom';
-                    }
-                    return null;
-                  },
-                ),
-              ),
-              ),
-
-              const SizedBox(
-                width: 20,
-              ),
-
-              Expanded(
-                child: Padding(padding: const EdgeInsets.only( top:10 ,right: 8, left: 8, bottom: 10),
-                  child: TextFormField(
-                    controller: controllerChampPrenom,
-                    keyboardType: TextInputType.name,
-                    decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: 'Prénom *',
-                        icon: Icon(Icons.account_box_outlined)),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Entrer un prénom';
-                      }
-                      return null;
-                    },
+            Row(
+              children: [
+                Expanded(
+                  child: Padding(
+                    padding:
+                        const EdgeInsets.only(top: 10, left: 8, bottom: 10),
+                    child: TextFormField(
+                      controller: controllerChampNom,
+                      keyboardType: TextInputType.name,
+                      decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          labelText: 'Nom *',
+                          icon: Icon(Icons.account_box_outlined)),
+                      // The validator receives the text that the user has entered.
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Entrer un nom';
+                        }
+                        return null;
+                      },
+                    ),
                   ),
                 ),
-              ),
-            ],
+                const SizedBox(
+                  width: 20,
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                        top: 10, right: 8, left: 8, bottom: 10),
+                    child: TextFormField(
+                      controller: controllerChampPrenom,
+                      keyboardType: TextInputType.name,
+                      decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          labelText: 'Prénom *',
+                          icon: Icon(Icons.account_box_outlined)),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Entrer un prénom';
+                        }
+                        return null;
+                      },
+                    ),
+                  ),
+                ),
+              ],
             ),
-
 
             /* PARTIE Adresse, code postal et ville */
 
-
-            Padding(padding: const EdgeInsets.only(right: 8, left: 8),
-              child:
-              TextFormField(
+            Padding(
+              padding: const EdgeInsets.only(right: 8, left: 8),
+              child: TextFormField(
                 controller: controllerChampAdresse,
                 keyboardType: TextInputType.streetAddress,
                 decoration: const InputDecoration(
@@ -223,22 +232,20 @@ class DialogAjouterClientState extends State<DialogAjouterClient> {
                 },*/
               ),
             ),
-
-
-
-
-            Row(children: [
-              Expanded(child:
-                Padding(padding: const EdgeInsets.only(top:10, right: 8, left: 8, bottom: 10),
-                  child:
-                  TextFormField(
-                    controller: controllerChampCodePostal,
-                    keyboardType: TextInputType.number,
-                    decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: 'Code postal',
-                        icon: Icon(Icons.domain_outlined)),
-                    /*validator: (value) {
+            Row(
+              children: [
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                        top: 10, right: 8, left: 8, bottom: 10),
+                    child: TextFormField(
+                      controller: controllerChampCodePostal,
+                      keyboardType: TextInputType.number,
+                      decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          labelText: 'Code postal',
+                          icon: Icon(Icons.domain_outlined)),
+                      /*validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Entrer un code postal';
                       }
@@ -247,43 +254,40 @@ class DialogAjouterClientState extends State<DialogAjouterClient> {
                       }
                       return null;
                     },*/
+                    ),
                   ),
                 ),
-              ),
-
-              const SizedBox(
-                width: 20,
-              ),
-
-              Expanded(
-                child:
-                Padding(padding: const EdgeInsets.only(top:10, right: 8, left: 8, bottom: 10),
-                  child:
-                  TextFormField(
-                    controller: controllerChampVille,
-                    keyboardType: TextInputType.streetAddress,
-                    decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: 'Ville',
-                        icon: Icon(Icons.location_city_outlined)),
-                    /*validator: (value) {
+                const SizedBox(
+                  width: 20,
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                        top: 10, right: 8, left: 8, bottom: 10),
+                    child: TextFormField(
+                      controller: controllerChampVille,
+                      keyboardType: TextInputType.streetAddress,
+                      decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          labelText: 'Ville',
+                          icon: Icon(Icons.location_city_outlined)),
+                      /*validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Entrer une ville';
                       }
                       return null;
                     },*/
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
             ),
 
             /* PARTIE Numero de téléphone et EMAIl */
 
-
-            Padding(padding: const EdgeInsets.only( right: 8, left: 8),
-              child:
-              TextFormField(
+            Padding(
+              padding: const EdgeInsets.only(right: 8, left: 8),
+              child: TextFormField(
                 controller: controllerChampNumero,
                 keyboardType: TextInputType.phone,
                 decoration: const InputDecoration(
@@ -298,10 +302,9 @@ class DialogAjouterClientState extends State<DialogAjouterClient> {
                 },*/
               ),
             ),
-
-            Padding(padding: const EdgeInsets.only(top:10, right: 8, left: 8),
-              child:
-              TextFormField(
+            Padding(
+              padding: const EdgeInsets.only(top: 10, right: 8, left: 8),
+              child: TextFormField(
                 controller: controllerChampEmail,
                 keyboardType: TextInputType.emailAddress,
                 decoration: const InputDecoration(
@@ -309,7 +312,7 @@ class DialogAjouterClientState extends State<DialogAjouterClient> {
                     labelText: 'Email *',
                     icon: Icon(Icons.email_outlined)),
                 validator: (value) {
-                  if (value == null || value.isEmpty ) {
+                  if (value == null || value.isEmpty) {
                     return 'Entrer une email';
                   }
                   if (!EmailValidator.validate(value.trim())) {
@@ -319,12 +322,9 @@ class DialogAjouterClientState extends State<DialogAjouterClient> {
                 },
               ),
             ),
-
             const SizedBox(
               height: 20,
             ),
-
-
             ElevatedButton(
               onPressed: () async {
                 if (_formKey.currentState!.validate()) {
@@ -337,11 +337,9 @@ class DialogAjouterClientState extends State<DialogAjouterClient> {
               },
               child: const Text('Ajouter'),
             ),
-
           ],
         ),
       ),
     );
-
   }
 }

@@ -56,7 +56,7 @@ class _ViewFacturesState extends State<WidgetDocuments> {
                     children: [
                       SimpleDialogItem(
                           icon: Icons.description_outlined,
-                          color: Colors.lightGreen,
+                          color: Theme.of(context).colorScheme.primary,
                           text: "Factures",
                           onPressed: () {
                             Navigator.pop(context);
@@ -74,7 +74,7 @@ class _ViewFacturesState extends State<WidgetDocuments> {
                       ),
                       SimpleDialogItem(
                           icon: Icons.receipt_long_outlined,
-                          color: Colors.lightGreen,
+                          color: Theme.of(context).colorScheme.primary,
                           text: "Devis",
                           onPressed: () {
                             Navigator.pop(context);
