@@ -32,16 +32,16 @@ class PreviewPdf extends StatelessWidget {
               itemBuilder: (BuildContext context) => <PopupMenuEntry>[
                 PopupMenuItem(
                   child: ListTile(
-                    leading: const Icon(Icons.delete),
-                    title: const Text('Supprimer'),
-                    onTap: () => _afficherAvertissementSuppression(context),
+                    leading: const Icon(Icons.share),
+                    title: const Text('Envoyer'),
+                    onTap: () => _onShare(context),
                   ),
                 ),
                 PopupMenuItem(
                   child: ListTile(
-                    leading: const Icon(Icons.share),
-                    title: const Text('Envoyer'),
-                    onTap: () => _onShare(context),
+                    leading: const Icon(Icons.delete),
+                    title: const Text('Supprimer'),
+                    onTap: () => _afficherAvertissementSuppression(context),
                   ),
                 ),
               ],
@@ -145,11 +145,14 @@ class _AffichageInfoPdfState extends State<AffichageInfoPdf> {
           padding: const EdgeInsets.only(top: 15),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: const [
+            children: [
               Expanded(
                   flex: 1,
-                  child: CircleAvatar(child: Icon(Icons.info_outline))),
-              Expanded(
+                  child: CircleAvatar(
+                    backgroundColor: Theme.of(context).colorScheme.primary,
+                    child: const Icon(Icons.info_outline),
+                  )),
+              const Expanded(
                 flex: 4,
                 child: Text(
                     '''Ce document n'est pas enregistrer sur une base de donnée externe. Penser à la sauvegarder (Drive, vous l'envoyez par mail, ...) !'''),
@@ -181,7 +184,7 @@ class _AffichageInfoPdfState extends State<AffichageInfoPdf> {
         ),
         Padding(
           padding: const EdgeInsets.only(top: 5),
-          child: ElevatedButton.icon(
+          child: OutlinedButton.icon(
               onPressed: () => _onShare(context),
               icon: const Icon(Icons.share_outlined),
               label: const Text("ENVOYER")),

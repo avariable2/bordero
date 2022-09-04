@@ -421,6 +421,7 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> {
           Row(
             children: [
               Switch(
+                  activeColor: Theme.of(context).colorScheme.primary,
                   value: _aUneDateLimite,
                   onChanged: (bool value) {
                     setState(() => _aUneDateLimite = !_aUneDateLimite);

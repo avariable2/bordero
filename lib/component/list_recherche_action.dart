@@ -189,7 +189,7 @@ class ListRechercheEtActionState extends State<ListRechercheEtAction> {
         for (FilterChipCallback obj in widget.filterChipsNames) ...[
           FilterChip(
             selectedColor: Theme.of(context).colorScheme.primary,
-            label: Text(obj.name),
+            label: Text(obj.name, style: TextStyle(color: chipsActive == obj ? Theme.of(context).colorScheme.onPrimary : null),),
             selected: chipsActive == obj,
             onSelected: (bool value) {
               if (chipsActive == obj) {
