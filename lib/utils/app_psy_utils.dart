@@ -1,14 +1,12 @@
-
-
 import 'dart:io';
 
 import 'package:bordero/model/utilisateur.dart';
+import 'package:flutter/material.dart';
 import 'package:path/path.dart';
 
-import '../model/facture.dart';
+import '../model/document.dart';
 
 class AppPsyUtils {
-
   static bool isNumeric(String s) {
     if (s == null || s.isEmpty) {
       return false;
@@ -33,7 +31,7 @@ class AppPsyUtils {
     return res;
   }
 
-  static String getName(Facture facture) {
+  static String getName(Document facture) {
     return basename(facture.nom);
   }
 
@@ -41,4 +39,43 @@ class AppPsyUtils {
     return basename(file.path);
   }
 
+  static afficherDialog(
+      {required BuildContext context,
+      required String titre,
+      required String corps,
+      required String buttonCancelTexte,
+      required String buttonValiderTexte,
+      Function()? buttonCancelCallback,
+      Function()? buttonValiderCallback,
+      TextStyle? textStyleTitre,
+      Widget? elementAtEnd}) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text(titre,
+                style: textStyleTitre ??
+                    TextStyle(
+                      color: Theme.of(context).colorScheme.primary,
+                    )),
+            content: elementAtEnd ?? Text(corps),
+            actions: [
+              TextButton(
+                onPressed: buttonCancelCallback ??
+                    () => Navigator.pop(context, 'RETOUR'),
+                child: Text(buttonCancelTexte),
+              ),
+              TextButton(
+                onPressed: buttonValiderCallback,
+                child: Text(buttonValiderTexte),
+              ),
+            ],
+            elevation: 24.0,
+          );
+        });
+  }
+
+  static void afficherSnackbar(BuildContext context, String text) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(text)));
+  }
 }

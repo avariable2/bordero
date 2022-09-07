@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:bordero/model/facture.dart';
 import 'package:bordero/model/utilisateur.dart';
 import 'package:bordero/utils/app_psy_utils.dart';
 import 'package:bordero/utils/pdf_api.dart';
@@ -9,9 +8,11 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import '../model/client.dart';
+import '../model/document.dart' as model_document_bordero;
 
 class PdfFactureApi {
-  static Future<File?> generate(CreationFacture facture) async {
+  static Future<File?> generate(
+      model_document_bordero.CreationDocument document) async {
     Utilisateur? infos;
     try {
       infos = Utilisateur.fromJson(await SharedPref().read(tableUtilisateur));
@@ -26,24 +27,27 @@ class PdfFactureApi {
     pdf.addPage(MultiPage(
         pageFormat: PdfPageFormat.a4,
         build: (context) => [
-              buildTitre(facture, infos!),
-              buildInformationsClients(facture),
-              buildInformationsSeances(facture),
+              buildTitre(document, infos!),
+              buildInformationsClients(document),
+              buildInformationsSeances(document),
               Divider(),
-              buildTotal(facture, infos.exonererTVA == 0 ? false : true),
-              buildPayement(facture, infos),
+              buildTotal(document, infos.exonererTVA == 0 ? false : true),
+              buildPayement(document, infos),
             ]));
 
     var prenoms = "";
-    for (Client c in facture.listClients) {
+    for (Client c in document.listClients) {
       prenoms += "-${c.prenom.trim()}-${c.nom.trim()}";
     }
-    final titre =
-        'Facture#${facture.id}$prenoms(${facture.dateCreationFacture.month}-${facture.dateCreationFacture.year}).pdf';
+    final titre = document.estFacture
+        ? 'Facture#${document.id}$prenoms(${document.dateCreationFacture.month}-${document.dateCreationFacture.year}).pdf'
+        : 'Devis#${document.id}$prenoms(${document.dateCreationFacture.month}-${document.dateCreationFacture.year}).pdf';
+
     return PdfApi.saveDocument(name: titre, pdf: pdf);
   }
 
-  static Widget buildTitre(CreationFacture facture, Utilisateur infos) {
+  static Widget buildTitre(
+      model_document_bordero.CreationDocument document, Utilisateur infos) {
     return Row(children: [
       Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Text("${infos.nom} ${infos.prenom}",
@@ -60,21 +64,26 @@ class PdfFactureApi {
       Column(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          Text("NOTE D'HONORAIRE",
+          Text(
+              document.estFacture
+                  ? "NOTE D'HONORAIRE"
+                  : "DEVIS N°${document.id}",
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
           SizedBox(height: 0.6 * PdfPageFormat.cm),
-          Text(AppPsyUtils.toDateString(facture.dateCreationFacture),
+          Text(AppPsyUtils.toDateString(document.dateCreationFacture),
               style: const TextStyle(fontSize: 16)),
-          Text("N°${facture.id}", style: const TextStyle(fontSize: 18)),
+          if (document.estFacture)
+            Text("N°${document.id}", style: const TextStyle(fontSize: 18)),
           SizedBox(height: 100),
         ],
       )
     ]);
   }
 
-  static Widget buildInformationsClients(CreationFacture facture) {
+  static Widget buildInformationsClients(
+      model_document_bordero.CreationDocument document) {
     return Column(children: [
-      for (Client client in facture.listClients)
+      for (Client client in document.listClients)
         Row(children: [
           Spacer(flex: 6),
           Column(
@@ -96,14 +105,15 @@ class PdfFactureApi {
     ]);
   }
 
-  static Widget buildInformationsSeances(CreationFacture facture) {
+  static Widget buildInformationsSeances(
+      model_document_bordero.CreationDocument document) {
     final enTete = [
       "Prestations".toUpperCase(),
       "Quantité".toUpperCase(),
       "Prix unitaire HT".toUpperCase(),
       "Montant HT".toUpperCase()
     ];
-    final donnees = facture.listSeances.map((item) {
+    final donnees = document.listSeances.map((item) {
       final total = item.prix * item.quantite;
       final description =
           "${AppPsyUtils.toDateString(item.date)} | ${item.nom}";
@@ -132,8 +142,9 @@ class PdfFactureApi {
     ));
   }
 
-  static Widget buildTotal(CreationFacture facture, bool exonererTVA) {
-    final totalHT = facture.listSeances
+  static Widget buildTotal(
+      model_document_bordero.CreationDocument document, bool exonererTVA) {
+    final totalHT = document.listSeances
         .map((item) => item.prix * item.quantite)
         .reduce((item1, item2) => item1 + item2);
     // Si pas exonéré tva ? calcul classique : sinon 0
@@ -199,7 +210,8 @@ class PdfFactureApi {
         ]));
   }
 
-  static Widget buildPayement(CreationFacture facture, Utilisateur infos) {
+  static Widget buildPayement(
+      model_document_bordero.CreationDocument document, Utilisateur infos) {
     return Container(
       child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -207,18 +219,19 @@ class PdfFactureApi {
           children: [
             Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               SizedBox(height: 15),
-              Text(
-                  'Echéance : ${facture.dateLimitePayement != null ? AppPsyUtils.toDateString(facture.dateLimitePayement!) : ""}'),
               Text('Règlement : ${AppPsyUtils.getTypePayements(infos)}'),
+              Text(
+                  'Echéance : ${document.dateLimitePayement != null ? AppPsyUtils.toDateString(document.dateLimitePayement!) : "aucune"}'),
             ]),
             Spacer(flex: 2),
-            buildSignature(facture),
+            buildSignature(document),
           ]),
     );
   }
 
-  static Widget buildSignature(CreationFacture facture) {
-    final data = facture.signaturePNG;
+  static Widget buildSignature(
+      model_document_bordero.CreationDocument document) {
+    final data = document.signaturePNG;
     if (data != null) {
       var image = MemoryImage(data);
 

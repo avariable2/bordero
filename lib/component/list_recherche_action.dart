@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../model/client.dart';
-import '../model/facture.dart';
+import '../model/document.dart';
 import '../model/type_acte.dart';
 import '../utils/app_psy_utils.dart';
 import '../model/filter_chips_callback.dart';
@@ -132,10 +132,12 @@ class ListRechercheEtActionState extends State<ListRechercheEtAction> {
 
   Widget buildListTraitement(List<dynamic> list) {
     if (widget.list.isEmpty) {
-      return Text(
-        widget.labelListVide,
-        style: const TextStyle(
-          fontSize: 18,
+      return Center(
+        child: Text(
+          widget.labelListVide,
+          style: const TextStyle(
+            fontSize: 18,
+          ),
         ),
       );
     } else {
@@ -170,6 +172,7 @@ class ListRechercheEtActionState extends State<ListRechercheEtAction> {
         ),
         leading: Icon(widget.icon),
         selected: _listItemsSelectionners[index],
+        tileColor: Theme.of(context).colorScheme.surfaceVariant,
         onTap: () => {
               widget.onSelectedItem(widget.list[index]),
               if (widget.needSelectedItem)
@@ -185,7 +188,8 @@ class ListRechercheEtActionState extends State<ListRechercheEtAction> {
       children: [
         for (FilterChipCallback obj in widget.filterChipsNames) ...[
           FilterChip(
-            label: Text(obj.name),
+            selectedColor: Theme.of(context).colorScheme.primary,
+            label: Text(obj.name, style: TextStyle(color: chipsActive == obj ? Theme.of(context).colorScheme.onPrimary : null),),
             selected: chipsActive == obj,
             onSelected: (bool value) {
               if (chipsActive == obj) {
@@ -211,7 +215,7 @@ class ListRechercheEtActionState extends State<ListRechercheEtAction> {
       titre = item.nom;
     } else if (item is Client) {
       titre = "${item.nom} ${item.prenom} / ${item.email}";
-    } else if (item is Facture) {
+    } else if (item is Document) {
       titre = AppPsyUtils.getName(item);
     } else {
       throw "Exception: (buildText)) type not supported in param";
@@ -228,7 +232,7 @@ class ListRechercheEtActionState extends State<ListRechercheEtAction> {
     RegExp regex = RegExp(entree.toLowerCase());
 
     for (dynamic item in widget.list) {
-      if (item is Facture) {
+      if (item is Document) {
         var nomFacture = AppPsyUtils.getName(item).toLowerCase();
         if (regex.firstMatch(nomFacture) != null) {
           listFinal.add(item);

@@ -1,8 +1,8 @@
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:bordero/dialog/preview_pdf.dart';
-import 'package:bordero/model/facture.dart';
+import 'package:bordero/dialog/presentation_pdf.dart';
+import 'package:bordero/model/document.dart';
 import 'package:bordero/model/seance.dart';
 import 'package:bordero/model/type_acte.dart';
 import 'package:bordero/utils/app_psy_utils.dart';
@@ -15,25 +15,33 @@ import 'package:signature/signature.dart';
 import '../component/list_recherche_action.dart';
 import '../db/app_psy_database.dart';
 import '../model/client.dart';
+import 'ajouter_client.dart';
+import 'ajouter_type_acte.dart';
 
 class FullScreenDialogCreationFacture extends StatelessWidget {
+  final bool estFacture;
+
   const FullScreenDialogCreationFacture({
     Key? key,
+    required this.estFacture,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Création d'une facture"),
+        title: Text("Création ${estFacture ? "facture" : "devis"}"),
       ),
-      body: const FormulaireCreationFacture(),
+      body: FormulaireCreationFacture(estFacture: estFacture),
     );
   }
 }
 
 class FormulaireCreationFacture extends StatefulWidget {
-  const FormulaireCreationFacture({Key? key}) : super(key: key);
+  final bool estFacture;
+
+  const FormulaireCreationFacture({Key? key, required this.estFacture})
+      : super(key: key);
 
   @override
   State<FormulaireCreationFacture> createState() =>
@@ -86,12 +94,6 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> {
     _controllerNumeroFacture.dispose();
     _controllerChampDateLimitePayement.dispose();
     _controllerSignature.dispose();
-  }
-
-  /// Pour empecher les fuites memoires et les potenciel bugs.
-  /// Uniquement pour les setState dans une fonction await
-  void setStateIfMounted(f) {
-    if (mounted) setState(f);
   }
 
   @override
@@ -147,7 +149,7 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> {
                   isActive: _indexStepper >= 1,
                   content: buildSeance()),
               Step(
-                  title: const Text("Facture"),
+                  title: Text(widget.estFacture ? "Facture" : "Devis"),
                   isActive: _indexStepper >= 2,
                   content: buildFacture())
             ],
@@ -159,6 +161,21 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> {
       shrinkWrap: true,
       physics: const BouncingScrollPhysics(),
       children: [
+        Padding(
+          padding: const EdgeInsets.only(top: 10, bottom: 10),
+          child: OutlinedButton.icon(
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute<void>(
+                builder: (BuildContext context) =>
+                const FullScreenDialogAjouterClient(),
+                fullscreenDialog: true,
+              ),
+            ).then((value) => _getListClients()),
+            label: const Text("Créer un client"),
+            icon: const Icon(Icons.create),
+          ),
+        ),
         ListRechercheEtAction(
           titre: 'Sélectionner client(s)',
           icon: Icons.account_circle_sharp,
@@ -177,6 +194,7 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> {
           needRecherche: true,
           filterChipsNames: const [],
         ),
+
         const Divider(
           height: 30,
         ),
@@ -305,13 +323,23 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> {
                 ),
               ],
             ),
-            ElevatedButton.icon(
+            OutlinedButton.icon(
               onPressed: () {
                 if (_formKeySeance.currentState!.validate()) {
-                  setState(() => _ajouterSeance());
+                  Seance s = Seance(
+                    nom: _dropdownSelectionnerTypeActe.trim(),
+                    date: _dateEmission,
+                    prix: AppPsyUtils.tryParseDouble(
+                        _controllerChampPrix.text.trim()),
+                    quantite: int.parse(_controllerChampNombreUH.text.trim()),
+                    uniteTemps: null,
+                  );
+                  setState(() {
+                    _listSeances.add(s);
+                  });
                 }
               },
-              label: const Text("AJOUTER"),
+              label: const Text("Ajouter séance"),
               icon: const Icon(Icons.add),
             ),
             const Divider(),
@@ -325,12 +353,27 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> {
                     for (Seance seance in _listSeances)
                       Card(
                         child: ListTile(
+                          tileColor: Theme.of(context).colorScheme.surfaceVariant,
                           title: Text(
                               "${seance.quantite} ${seance.nom} le (${seance.date.day}/${seance.date.month}/${seance.date.year})"),
                           leading: const Icon(Icons.work_history_outlined),
-                          onTap: () {
-                            _afficherAvertissementAvantSuppression(seance);
-                          },
+                          onTap: () => AppPsyUtils.afficherDialog(
+                              context: context,
+                              titre: "Supprimer cette séance ?",
+                              corps: "Vous pourrez la recréer par la suite.",
+                              buttonCancelTexte: "ANNULER",
+                              buttonValiderTexte: "SUPPRIMER",
+                              textStyleTitre: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 22.0,
+                                color: Theme.of(context).colorScheme.primary,
+                              ),
+                              buttonValiderCallback: () {
+                                setState(() {
+                                  _listSeances.remove(seance);
+                                });
+                                Navigator.pop(context, 'SUPPRIMER');
+                              }),
                         ),
                       ),
                   ]),
@@ -360,12 +403,12 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> {
                     inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                     decoration: const InputDecoration(
                         border: OutlineInputBorder(),
-                        labelText: 'Numero de facture',
+                        labelText: 'Numero du documents',
                         icon: Icon(Icons.numbers_outlined)),
                     // The validator receives the text that the user has entered.
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Entrer un numéro de facture';
+                        return 'Entrer un numéro pour votre documents';
                       }
                       return null;
                     },
@@ -378,6 +421,7 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> {
           Row(
             children: [
               Switch(
+                  activeColor: Theme.of(context).colorScheme.primary,
                   value: _aUneDateLimite,
                   onChanged: (bool value) {
                     setState(() => _aUneDateLimite = !_aUneDateLimite);
@@ -405,13 +449,6 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> {
             ],
           ),
           const Divider(),
-          const Padding(
-            padding: EdgeInsets.only(top: 10, bottom: 10),
-            child: Text(
-              "Signature",
-              style: TextStyle(fontSize: 18),
-            ),
-          ),
           buildSignature(),
           const SizedBox(
             height: 20,
@@ -422,73 +459,34 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> {
   }
 
   Widget buildSignature() {
-    return Row(
+    if (!widget.estFacture) {
+      return Container();
+    }
+    return Column(
       children: [
-        Signature(
-          width: 200,
-          height: 100,
-          controller: _controllerSignature,
+        const Padding(
+          padding: EdgeInsets.only(top: 10, bottom: 10),
+          child: Text(
+            "Signature",
+            style: TextStyle(fontSize: 18),
+          ),
         ),
-        IconButton(
-            onPressed: () {
-              setState(() => _controllerSignature.clear());
-            },
-            icon: const Icon(Icons.refresh_outlined))
+        Row(
+          children: [
+            Signature(
+              width: 200,
+              height: 100,
+              controller: _controllerSignature,
+            ),
+            IconButton(
+                onPressed: () {
+                  setState(() => _controllerSignature.clear());
+                },
+                icon: const Icon(Icons.refresh_outlined))
+          ],
+        )
       ],
     );
-  }
-
-  /// Il affiche une boîte de dialogue avec un message d'avertissement et deux
-  /// boutons, un pour annuler l'action et un pour la confirmer
-  ///
-  /// Args:
-  ///   seance (Seance): l'objet qui sera supprimé
-  void _afficherAvertissementAvantSuppression(Seance seance) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) => AlertDialog(
-        title: Text("Supprimer cette séance ?",
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 22.0,
-              color: Theme.of(context).colorScheme.primary,
-            )),
-        content: const Text("Vous pourrez la recréer par la suite."),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, 'RETOUR'),
-            child: const Text("ANNULER"),
-          ),
-          TextButton(
-            onPressed: () {
-              _supprimerSeances(seance);
-            },
-            child: const Text(
-              "SUPPRIMER",
-            ),
-          ),
-        ],
-        elevation: 24.0,
-      ),
-    );
-  }
-
-  void _supprimerSeances(Seance seance) {
-    setState(() {
-      _listSeances.remove(seance);
-    });
-    Navigator.pop(context, 'SUPPRIMER');
-  }
-
-  void _ajouterSeance() {
-    Seance s = Seance(
-      nom: _dropdownSelectionnerTypeActe.trim(),
-      date: _dateEmission,
-      prix: AppPsyUtils.tryParseDouble(_controllerChampPrix.text.trim()),
-      quantite: int.parse(_controllerChampNombreUH.text.trim()),
-      uniteTemps: null,
-    );
-    _listSeances.add(s);
   }
 
   void _afficherPrixDansController() {
@@ -588,27 +586,16 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> {
     } else if (_indexStepper == 2) {
       title = "Remplissez tous les champs";
       body =
-          "Assurez-vous de remplir bien le bon numero de facture et une signature.";
+          "Assurez-vous de remplir bien le bon numero pour votre document et une signature.";
     }
 
-    showDialog(
+    AppPsyUtils.afficherDialog(
       context: context,
-      builder: (BuildContext context) => AlertDialog(
-        title: Text(title,
-            style: TextStyle(
-              fontSize: 22.0,
-              color: Theme.of(context).colorScheme.primary,
-              fontWeight: FontWeight.bold,
-            )),
-        content: Text(body),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, 'RETOUR'),
-            child: const Text("OK"),
-          ),
-        ],
-        elevation: 24.0,
-      ),
+      titre: title,
+      corps: body,
+      buttonCancelTexte: '',
+      buttonValiderTexte: 'COMPRIS',
+      buttonValiderCallback: () => Navigator.pop(context, 'RETOUR'),
     );
   }
 
@@ -629,35 +616,38 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> {
     }
   }
 
-  Future<CreationFacture> _creationObjectPourFacture(bool aDateLimite) async {
+  Future<CreationDocument> _creationObjectPourDocument(bool aDateLimite) async {
     final Uint8List? byteImage = _controllerSignature.isNotEmpty
         ? await _controllerSignature.toPngBytes()
         : null;
 
-    return CreationFacture(
+    return CreationDocument(
         id: _controllerNumeroFacture.text,
         dateCreationFacture: DateTime.now(),
         listClients: _clientSelectionner,
         listSeances: _listSeances,
         dateLimitePayement: aDateLimite == true ? _dateLimitePayement : null,
-        signaturePNG: byteImage);
+        signaturePNG: byteImage,
+        estFacture: widget.estFacture);
   }
 
   Future<void> _creationPdfEtOuverture(bool aDateLimite) async {
-    _creationObjectPourFacture(aDateLimite).then((objectCreationFacture) => {
+    _creationObjectPourDocument(aDateLimite).then((objectCreationFacture) => {
           PdfFactureApi.generate(objectCreationFacture).then((value) {
             if (value == null) {
               return afficherErreur();
             }
-            checkSiFactureDejaCreerEtAjout(value);
+            checkSiDocumentDejaCreerEtAjout(value);
           })
         });
   }
 
   void ajoutFactureFileDansBDD(File fichier) async {
-    Facture facture = Facture(
-        nom: path.basename(fichier.path), fichier: fichier.readAsBytesSync());
-    await AppPsyDatabase.instance.createFactureInDB(facture).then((value) => {
+    Document facture = Document(
+        nom: path.basename(fichier.path),
+        fichier: fichier.readAsBytesSync(),
+        estFacture: widget.estFacture);
+    await AppPsyDatabase.instance.createDocumentInDB(facture).then((value) => {
           if (!value)
             {
               afficherErreur(),
@@ -668,38 +658,51 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> {
                   builder: (context) => PreviewPdf(
                         idFacture: PreviewPdf.idPasEncoreConnu,
                         fichier: fichier,
+                        estFacture: widget.estFacture,
                       ))),
             }
         });
   }
 
-  Future<void> checkSiFactureDejaCreerEtAjout(File fichier) async {
+  Future<void> checkSiDocumentDejaCreerEtAjout(File fichier) async {
     await AppPsyDatabase.instance
-        .readIfFactureIsAlreadySet(path.basename(fichier.path))
+        .readIfDocumentIsAlreadySet(path.basename(fichier.path))
         .then((value) => {
               if (value != null)
                 {
-                  afficherDialogConfirmationModification(fichier, value),
+                  AppPsyUtils.afficherDialog(
+                      context: context,
+                      titre: "Ce document existe déjà !",
+                      corps:
+                          "Voulez-vous vraiment modifier ce document ? Il est impossible de modifier un document sur Bordero sauf si c'est le jour même. Nous déclinons de toutes responsabilités en cas de fraude.",
+                      buttonCancelTexte: "ANNULER",
+                      buttonValiderTexte: "MODIFIER",
+                      buttonValiderCallback: () {
+                        Navigator.pop(context, 'OK');
+                        changerFactureDansBDD(fichier, value);
+                      }),
                 }
               else
                 {ajoutFactureFileDansBDD(fichier)}
             });
   }
 
-  changerFactureDansBDD(File fichier, Facture facture) async {
-    Facture nouvelleFacture = Facture(
-        id: facture.id,
+  changerFactureDansBDD(File fichier, Document document) async {
+    Document futureDocInBdd = Document(
+        id: document.id,
         nom: path.basename(fichier.path),
-        fichier: fichier.readAsBytesSync());
+        fichier: fichier.readAsBytesSync(),
+        estFacture: widget.estFacture);
     await AppPsyDatabase.instance
-        .updateFacture(nouvelleFacture)
+        .updateDocument(futureDocInBdd)
         .then((value) => {
               if (value == 1)
                 {
                   Navigator.of(context).push(MaterialPageRoute(
                       builder: (context) => PreviewPdf(
-                            idFacture: facture.id!,
+                            idFacture: document.id!,
                             fichier: fichier,
+                            estFacture: widget.estFacture,
                           ))),
                 }
               else
@@ -709,38 +712,14 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> {
             });
   }
 
-  afficherDialogConfirmationModification(File fichier, Facture facture) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) => AlertDialog(
-        title: Text("Cette facture existe déjà !",
-            style: TextStyle(
-              color: Theme.of(context).colorScheme.primary,
-            )),
-        content: const Text(
-            "Voulez-vous vraiment modifier cette facture ? Il est impossible de modifier une facture sur Bordero sauf si c'est le jour même. Nous déclinons de toutes responsabilités en cas de fraude."),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, 'Cancel'),
-            child: const Text("ANNULER"),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context, 'OK');
-              changerFactureDansBDD(fichier, facture);
-            },
-            child: const Text("MODIFIER"),
-          ),
-        ],
-        elevation: 24.0,
-      ),
-    );
+  void afficherErreur() {
+    AppPsyUtils.afficherSnackbar(
+        context, "Il vient de se produire une erreur. Nous en sommes désolé.");
   }
 
-  void afficherErreur() {
-    var snackbar = const SnackBar(
-        content:
-            Text("Il viens de se produire une erreur, nous sommes désolé."));
-    ScaffoldMessenger.of(context).showSnackBar(snackbar);
+  /// Pour empecher les fuites memoires et les potenciel bugs.
+  /// Uniquement pour les setState dans une fonction await
+  void setStateIfMounted(f) {
+    if (mounted) setState(f);
   }
 }

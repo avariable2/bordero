@@ -1,12 +1,12 @@
 import 'package:bordero/model/client.dart';
-import 'package:bordero/model/facture.dart';
+import 'package:bordero/model/document.dart';
 import 'package:bordero/model/type_acte.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart' as p;
 
 class AppPsyDatabase {
-  final int VERSION_DBB = 15;
+  final int VERSION_DBB = 3;
 
   static final AppPsyDatabase instance = AppPsyDatabase._init();
 
@@ -15,7 +15,7 @@ class AppPsyDatabase {
   AppPsyDatabase._init();
 
   Future<Database> get database async {
-    if (_database != null ) return _database!;
+    if (_database != null) return _database!;
 
     _database = await _initDB('app_psy.db');
     return _database!;
@@ -58,22 +58,23 @@ class AppPsyDatabase {
     ''');
 
     await db.execute('''
-    CREATE TABLE $tableFacture(
-    ${FactureChamps.id} $idType,
-    ${FactureChamps.nom} $stringType,
-    ${FactureChamps.fichier} $blobType
+    CREATE TABLE $tableDocument(
+    ${DocumentChamps.id} $idType,
+    ${DocumentChamps.nom} $stringType,
+    ${DocumentChamps.fichier} $blobType,
+    ${DocumentChamps.estFacture} $booleanType
     );
     ''');
   }
 
   /// CLIENTS ///
-  
-  Future<int> nbClients() async{
+
+  Future<int> nbClients() async {
     final db = await instance.database;
     int result = 0;
     try {
       result = db.rawQuery('SELECT COUNT(*) FROM $tableClient') as int;
-    } catch(exception, stackTrace ) {
+    } catch (exception, stackTrace) {
       await Sentry.captureException(exception, stackTrace: stackTrace);
       print("ERROR requete : $exception");
     }
@@ -91,7 +92,7 @@ class AppPsyDatabase {
     int result = 0;
     try {
       result = await db.insert(tableClient, client.toJson());
-    } catch(exception, stackTrace ) {
+    } catch (exception, stackTrace) {
       await Sentry.captureException(exception, stackTrace: stackTrace);
       print("0 success for create client");
     }
@@ -162,12 +163,12 @@ class AppPsyDatabase {
 
   /// TYPE D'ACTE ///
 
-  Future<int> nbTypeActe() async{
+  Future<int> nbTypeActe() async {
     final db = await instance.database;
     int result = 0;
     try {
       result = db.rawQuery('SELECT COUNT(*) FROM $tableTypeActe') as int;
-    } catch(exception, stackTrace ) {
+    } catch (exception, stackTrace) {
       await Sentry.captureException(exception, stackTrace: stackTrace);
       print("ERROR requete : $exception");
     }
@@ -180,7 +181,7 @@ class AppPsyDatabase {
 
     try {
       result = await db.insert(tableTypeActe, typeActe.toJson());
-    } catch(exception, stackTrace ) {
+    } catch (exception, stackTrace) {
       await Sentry.captureException(exception, stackTrace: stackTrace);
       print("0 success for create TypeActe");
     }
@@ -251,87 +252,86 @@ class AppPsyDatabase {
 
   /// FACTURE
 
-  Future<bool> createFactureInDB(Facture facture) async {
+  Future<bool> createDocumentInDB(Document document) async {
     final db = await instance.database;
     int result = 0;
 
     try {
-      result = await db.insert(tableFacture, facture.toJson());
-    } catch(exception, stackTrace ) {
+      result = await db.insert(tableDocument, document.toJson());
+    } catch (exception, stackTrace) {
       await Sentry.captureException(exception, stackTrace: stackTrace);
-      print("0 success for create TypeActe");
+      print("0 success for create $tableDocument");
     }
 
     return result > 0 ? true : false;
   }
 
-  Future<List<Facture>> getAllFileName() async {
+  Future<List<Document>> getAllFileName() async {
     final db = await instance.database;
 
-    final result = await db.query(
-      tableFacture,
-      columns: FactureChamps.values,
-      orderBy: "${FactureChamps.id} DESC"
-    );
+    final result = await db.query(tableDocument,
+        columns: DocumentChamps.values, orderBy: "${DocumentChamps.id} DESC");
 
-    return result.map((json) => Facture.fromJson(json)).toList();
+    return result.map((json) => Document.fromJson(json)).toList();
   }
 
-  Future<Facture?> readFacture(int id) async {
+  Future<Document?> readDocument(int id) async {
     final db = await instance.database;
 
     final maps = await db.query(
-      tableFacture,
-      columns: FactureChamps.values,
-      where: '${FactureChamps.id} = ?',
+      tableDocument,
+      columns: DocumentChamps.values,
+      where: '${DocumentChamps.id} = ?',
       whereArgs: [id],
     );
 
     if (maps.isNotEmpty) {
-      return Facture.fromJson(maps.first);
+      return Document.fromJson(maps.first);
     } else {
       return null;
     }
   }
 
-  Future<Facture?> readIfFactureIsAlreadySet(String nom) async {
+  Future<Document?> readIfDocumentIsAlreadySet(String nom) async {
     final db = await instance.database;
 
     final maps = await db.query(
-      tableFacture,
-      columns: FactureChamps.values,
-      where: '${FactureChamps.nom} = ?',
+      tableDocument,
+      columns: DocumentChamps.values,
+      where: '${DocumentChamps.nom} = ?',
       whereArgs: [nom],
     );
 
-    return maps.isEmpty ? null : Facture.fromJson(maps.first); // Si c'est vide pas de user
+    return maps.isEmpty
+        ? null
+        : Document.fromJson(maps.first); // Si c'est vide pas de user
   }
 
-  Future<List<Facture>> readAllFacture() async {
+  Future<List<Document>> readAllDocument() async {
     final db = await instance.database;
 
-    final result = await db.query(tableFacture);
+    final result = await db.query(tableDocument);
 
-    return result.map((json) => Facture.fromJson(json)).toList();
+    return result.map((json) => Document.fromJson(json)).toList();
   }
 
-  Future<int> updateFacture(Facture facture) async {
+  Future<int> updateDocument(Document facture) async {
     final db = await instance.database;
 
     return db.update(
-      tableFacture,
+      tableDocument,
       facture.toJson(),
-      where: '${FactureChamps.id} = ?',
+      where: '${DocumentChamps.id} = ?',
       whereArgs: [facture.id],
     );
   }
 
-  Future<int> deleteFacture(int id) async {
+  Future<int> deleteDocument(int id) async {
     final db = await instance.database;
 
     return await db.delete(
-      tableFacture,
-      where: '${FactureChamps.id} = ?',
+      tableDocument,
+      where: '${DocumentChamps.id} = ?',
       whereArgs: [id],
     );
   }
@@ -342,7 +342,7 @@ class AppPsyDatabase {
     final db = await instance.database;
     await db.execute("DELETE FROM $tableClient");
     await db.execute("DELETE FROM $tableTypeActe");
-    await db.execute("DELETE FROM $tableFacture");
+    await db.execute("DELETE FROM $tableDocument");
   }
 
   Future close() async {

@@ -1,9 +1,10 @@
 import 'dart:typed_data';
 
+import 'package:bordero/component/simple_dialog_item.dart';
 import 'package:bordero/model/filter_chips_callback.dart';
 import 'package:bordero/component/list_recherche_action.dart';
-import 'package:bordero/dialog/creation_facture.dart';
-import 'package:bordero/model/facture.dart';
+import 'package:bordero/dialog/creation_document.dart';
+import 'package:bordero/model/document.dart';
 import 'package:bordero/utils/app_psy_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -13,7 +14,7 @@ import 'package:path_provider/path_provider.dart';
 
 import '../component/expendable_fab.dart';
 import '../db/app_psy_database.dart';
-import '../dialog/preview_pdf.dart';
+import '../dialog/presentation_pdf.dart';
 
 class PageFacturesDevis extends StatelessWidget {
   const PageFacturesDevis({Key? key}) : super(key: key);
@@ -32,7 +33,7 @@ class WidgetDocuments extends StatefulWidget {
 }
 
 class _ViewFacturesState extends State<WidgetDocuments> {
-  late List<Facture> documents = [];
+  late List<Document> documents = [];
   bool isLoading = false;
 
   @override
@@ -45,31 +46,53 @@ class _ViewFacturesState extends State<WidgetDocuments> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: ExpandableFab(
-        distance: 120,
-        children: [
-          FloatingActionButton.extended(
-            heroTag: "btnFacture",
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute<void>(
-                  builder: (BuildContext context) =>
-                      const FullScreenDialogCreationFacture(),
-                  fullscreenDialog: true,
-                ),
-              ).then((value) => _getListFiles());
-            },
-            label: const Text("Facture"),
-            icon: const Icon(Icons.description_outlined),
-          ),
-          FloatingActionButton.extended(
-            heroTag: "btnDevis",
-            onPressed: () {},
-            label: const Text("Devis"),
-            icon: const Icon(Icons.receipt_long_outlined),
-          ),
-        ],
+      floatingActionButton: FloatingActionButton(
+        onPressed: () =>
+            showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return SimpleDialog(
+                    title: const Text("Quel type de documents"),
+                    children: [
+                      SimpleDialogItem(
+                          icon: Icons.description_outlined,
+                          color: Theme.of(context).colorScheme.primary,
+                          text: "Factures",
+                          onPressed: () {
+                            Navigator.pop(context);
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute<void>(
+                                builder: (BuildContext context) =>
+                                const FullScreenDialogCreationFacture(
+                                  estFacture: true,
+                                ),
+                                fullscreenDialog: true,
+                              ),
+                            ).then((value) => _getListFiles());
+                          }
+                      ),
+                      SimpleDialogItem(
+                          icon: Icons.receipt_long_outlined,
+                          color: Theme.of(context).colorScheme.primary,
+                          text: "Devis",
+                          onPressed: () {
+                            Navigator.pop(context);
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute<void>(
+                                builder: (BuildContext context) =>
+                                const FullScreenDialogCreationFacture(
+                                  estFacture: false,
+                                ),
+                                fullscreenDialog: true,
+                              ),
+                            ).then((value) => _getListFiles());
+                          })
+                    ],
+                  );
+                }),
+        child: const Icon(Icons.create),
       ),
       body: SafeArea(
           child: isLoading
@@ -114,7 +137,7 @@ class _ViewFacturesState extends State<WidgetDocuments> {
               ouvrirPdf(item, file);
             },
             labelTitreRecherche: "Recherche d'un documents",
-            labelHintRecherche: "Essayer le nom du client ou son prénom",
+            labelHintRecherche: "Essayer le nom ou le prénom du client ",
             needRecherche: true,
             needTousEcran: true,
             needChips: true,
@@ -132,11 +155,11 @@ class _ViewFacturesState extends State<WidgetDocuments> {
     setState(() => isLoading = false);
   }
 
-  Future<File> getFileFromDBB(Facture facture) async {
-    Uint8List imageInUnit8List = facture.fichier;
+  Future<File> getFileFromDBB(Document document) async {
+    Uint8List imageInUnit8List = document.fichier;
     final tempDir = await getTemporaryDirectory();
     File file =
-        await File('${tempDir.path}/${AppPsyUtils.getName(facture)}').create();
+    await File('${tempDir.path}/${AppPsyUtils.getName(document)}').create();
     file.writeAsBytesSync(imageInUnit8List);
     return file;
   }
@@ -144,10 +167,12 @@ class _ViewFacturesState extends State<WidgetDocuments> {
   ouvrirPdf(dynamic item, File file) {
     Navigator.of(context)
         .push(MaterialPageRoute(
-            builder: (context) => PreviewPdf(
-                  idFacture: item.id!,
-                  fichier: file,
-                )))
+        builder: (context) =>
+            PreviewPdf(
+              idFacture: item.id!,
+              fichier: file,
+              estFacture: item.estFacture,
+            )))
         .then((value) => _getListFiles());
   }
 

@@ -12,34 +12,36 @@ class PreviewPdf extends StatelessWidget {
 
   final File fichier;
   final int idFacture;
+  final bool estFacture;
 
   const PreviewPdf({
     Key? key,
     required this.idFacture,
     required this.fichier,
+    required this.estFacture,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text("Gestion de votre facture"),
+          title: Text("Gestion de votre ${estFacture ? "facture" : "devis"}"),
           actions: [
             PopupMenuButton(
               icon: const Icon(Icons.more_vert),
               itemBuilder: (BuildContext context) => <PopupMenuEntry>[
                 PopupMenuItem(
                   child: ListTile(
-                    leading: const Icon(Icons.delete),
-                    title: const Text('Supprimer'),
-                    onTap: () => _afficherAvertissementSuppression(context),
+                    leading: const Icon(Icons.share),
+                    title: const Text('Envoyer'),
+                    onTap: () => _onShare(context),
                   ),
                 ),
                 PopupMenuItem(
                   child: ListTile(
-                    leading: const Icon(Icons.share),
-                    title: const Text('Envoyer'),
-                    onTap: () => _onShare(context),
+                    leading: const Icon(Icons.delete),
+                    title: const Text('Supprimer'),
+                    onTap: () => _afficherAvertissementSuppression(context),
                   ),
                 ),
               ],
@@ -55,11 +57,16 @@ class PreviewPdf extends StatelessWidget {
     showDialog(
       context: context,
       builder: (BuildContext context) => AlertDialog(
-        title: Text("Attention : êtes-vous sur de vouloir supprimer cette facture ?",
-            style:
-            TextStyle(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.primary,fontSize: 22.0,)),
-        content: const Text(
-            "Vous avez une obligation légales de garder pendant 5 ans vos factures. Nous esquivons toutes responsabilités en cas de litige."),
+        title:
+            Text("Attention : êtes-vous sur de vouloir supprimer ce document ?",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).colorScheme.primary,
+                  fontSize: 22.0,
+                )),
+        content: Text(estFacture
+            ? "Vous avez une obligation légales de garder pendant 5 ans vos factures. Nous esquivons toutes responsabilités en cas de litige."
+            : ""),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, 'Cancel'),
@@ -88,7 +95,7 @@ class PreviewPdf extends StatelessWidget {
     var id = idFacture;
     if (idFacture == idPasEncoreConnu) {
       await AppPsyDatabase.instance
-          .readIfFactureIsAlreadySet(AppPsyUtils.getNameOfFile(fichier))
+          .readIfDocumentIsAlreadySet(AppPsyUtils.getNameOfFile(fichier))
           .then((value) {
         if (value != null) {
           id = value.id!;
@@ -98,7 +105,7 @@ class PreviewPdf extends StatelessWidget {
         }
       });
     }
-    await AppPsyDatabase.instance.deleteFacture(id);
+    await AppPsyDatabase.instance.deleteDocument(id);
   }
 
   void affichageErreur(BuildContext context) {
@@ -138,14 +145,17 @@ class _AffichageInfoPdfState extends State<AffichageInfoPdf> {
           padding: const EdgeInsets.only(top: 15),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: const [
+            children: [
               Expanded(
                   flex: 1,
-                  child: CircleAvatar(child: Icon(Icons.info_outline))),
-              Expanded(
+                  child: CircleAvatar(
+                    backgroundColor: Theme.of(context).colorScheme.primary,
+                    child: const Icon(Icons.info_outline),
+                  )),
+              const Expanded(
                 flex: 4,
                 child: Text(
-                    '''Cette facture n'est pas enregistrer sur une base de donnée externe. Penser à la sauvegarder (Drive, vous l'envoyez par mail, ...) !'''),
+                    '''Ce document n'est pas enregistrer sur une base de donnée externe. Penser à la sauvegarder (Drive, vous l'envoyez par mail, ...) !'''),
               ),
             ],
           ),
@@ -157,7 +167,7 @@ class _AffichageInfoPdfState extends State<AffichageInfoPdf> {
             children: [
               TextButton(
                   onPressed: () => _afficherInformationPourSauvegarde(),
-                  child: const Text("POURQUOI ?"))
+                  child: const Text("Pourquoi ?"))
             ],
           ),
         ),
@@ -174,10 +184,10 @@ class _AffichageInfoPdfState extends State<AffichageInfoPdf> {
         ),
         Padding(
           padding: const EdgeInsets.only(top: 5),
-          child: ElevatedButton.icon(
+          child: OutlinedButton.icon(
               onPressed: () => _onShare(context),
               icon: const Icon(Icons.share_outlined),
-              label: const Text("ENVOYER")),
+              label: const Text("Envoyer")),
         ),
       ]),
     );
@@ -200,14 +210,13 @@ class _AffichageInfoPdfState extends State<AffichageInfoPdf> {
     showDialog(
       context: this.context,
       builder: (BuildContext context) => AlertDialog(
-        title: Text(
-            "Les données personnels de vos clients sont une priorité",
+        title: Text("Les données personnels de vos clients sont une priorité",
             style: TextStyle(
               fontWeight: FontWeight.bold,
               color: Theme.of(context).colorScheme.primary,
             )),
         content: const Text(
-            "Cette application ne possède pas de serveur pour sauvegarder vos factures tout en protegeant celle-ci."
+            "Cette application ne possède pas de serveur pour sauvegarder vos factures et devis tout en protegeant celle-ci."
             "\nN'hesitez pas à contribuer pour que nous puissions vous apporter toujours plus d'outils pour votre entreprise."),
         actions: [
           TextButton(

@@ -2,6 +2,7 @@ import 'package:bordero/db/app_psy_database.dart';
 import 'package:bordero/model/theme_settings.dart';
 import 'package:bordero/model/utilisateur.dart';
 import 'package:bordero/page/page_information_praticien.dart';
+import 'package:bordero/utils/app_psy_utils.dart';
 import 'package:bordero/utils/fire_auth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -86,7 +87,7 @@ class _ParametresGlobauxState extends State<ParametresGlobaux> {
               Consumer<ThemeSettings>(
                 builder: (context, value, child) {
                   return SwitchListTile(
-                    activeColor: Theme.of(context).primaryColorLight,
+                    activeColor: Theme.of(context).colorScheme.primary,
                     title: const Text("Theme sombre"),
                     value: value.darkTheme,
                     onChanged: (newValue) => value.toggleTheme(),
@@ -116,7 +117,7 @@ class _ParametresGlobauxState extends State<ParametresGlobaux> {
               const Divider(),
               ListTile(
                 title: const Text("Déconnexion"),
-                onTap: () => afficherDialog(
+                onTap: () => AppPsyUtils.afficherDialog(context: context,
                     titre: "Souhaitez-vous vous déconnecter ?",
                     corps:
                         "Toutes vos factures et données seront supprimer. Si vous ne les avez pas enregistrer, nous ne pourrons rien pour vous. Agisser en ames et conscience.",
@@ -126,7 +127,7 @@ class _ParametresGlobauxState extends State<ParametresGlobaux> {
                         Navigator.pop(context, 'Cancel'),
                     buttonValiderCallback: () {
                       Navigator.pop(context, 'Cancel');
-                      afficherDialog(
+                      AppPsyUtils.afficherDialog(context: context,
                           titre: "Etes-vous certain ?",
                           corps:
                               "Cette action est irréversible pour le moment. Si vous vous déconnecter vos données disparaitrons.",
@@ -142,7 +143,7 @@ class _ParametresGlobauxState extends State<ParametresGlobaux> {
               ),
               ListTile(
                   title: const Text("Supprimer son compte"),
-                  onTap: () => afficherDialog(
+                  onTap: () => AppPsyUtils.afficherDialog(context: context,
                       titre: "Etes vous sur de vouloir supprimer votre compte ?",
                       corps:
                           "Vous ne pourrez plus vous reconnecter à nos services.",
@@ -179,38 +180,6 @@ class _ParametresGlobauxState extends State<ParametresGlobaux> {
         ],
       ),
     );
-  }
-
-  afficherDialog(
-      {required String titre,
-      required String corps,
-      required String buttonCancelTexte,
-      required String buttonValiderTexte,
-      Function()? buttonCancelCallback,
-      Function()? buttonValiderCallback,
-      Widget? elementAtEnd}) {
-    showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text(titre,
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.primary,
-                )),
-            content: elementAtEnd ?? Text(corps),
-            actions: [
-              TextButton(
-                onPressed: buttonCancelCallback,
-                child: Text(buttonCancelTexte),
-              ),
-              TextButton(
-                onPressed: buttonValiderCallback,
-                child: Text(buttonValiderTexte),
-              ),
-            ],
-            elevation: 24.0,
-          );
-        });
   }
 
   deconnexion() async {
