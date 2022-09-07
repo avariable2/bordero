@@ -64,6 +64,6 @@ class DefaultFirebaseOptions {
     projectId: 'bordero-2d01a',
     storageBucket: 'bordero-2d01a.appspot.com',
     iosClientId: '910507710550-ik41uj5hfhkbl83k8eed9dnrvbg6gbu9.apps.googleusercontent.com',
-    iosBundleId: 'com.example.appPsy',
+    iosBundleId: 'com.atp.bordero',
   );
 }
