@@ -184,7 +184,7 @@ class _AffichageInfoPdfState extends State<AffichageInfoPdf> {
         ),
         Padding(
           padding: const EdgeInsets.only(top: 5),
-          child: OutlinedButton.icon(
+          child: ElevatedButton.icon(
               onPressed: () => _onShare(context),
               icon: const Icon(Icons.share_outlined),
               label: const Text("Envoyer")),

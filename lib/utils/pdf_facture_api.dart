@@ -234,11 +234,13 @@ class PdfFactureApi {
     final data = document.signaturePNG;
     if (data != null) {
       var image = MemoryImage(data);
-
       return Container(
           child:
               Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Image(image, width: 150),
+        Container(
+            width: 200,
+            height: 120,
+            child: Image(image, fit: BoxFit.fitWidth, width: 200)),
       ]));
     } else {
       return Container();
