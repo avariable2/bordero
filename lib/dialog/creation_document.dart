@@ -16,7 +16,6 @@ import '../component/list_recherche_action.dart';
 import '../db/app_psy_database.dart';
 import '../model/client.dart';
 import 'ajouter_client.dart';
-import 'ajouter_type_acte.dart';
 
 class FullScreenDialogCreationFacture extends StatelessWidget {
   final bool estFacture;
@@ -553,6 +552,8 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> {
 
   Future _getListClients() async {
     setState(() => _isLoading = true);
+
+    _clientSelectionner.clear();
 
     await AppPsyDatabase.instance.readAllClient().then((value) => {
           if (value.isNotEmpty)
