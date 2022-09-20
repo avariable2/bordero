@@ -100,60 +100,69 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> {
   Widget build(BuildContext context) {
     return _isLoading
         ? const Center(child: CircularProgressIndicator())
-        : Stepper(
-            type: StepperType.horizontal,
-            currentStep: _indexStepper,
-            onStepCancel: () {
-              if (_indexStepper > 0) {
-                setStateIfMounted(() => _indexStepper--);
+        : buildStepper();
+  }
+
+  Widget buildStepper() {
+    return Padding(
+        padding: const EdgeInsets.only(
+          left: 3,
+          right: 3,
+        ),
+        child: Stepper(
+          type: StepperType.horizontal,
+          currentStep: _indexStepper,
+          onStepCancel: () {
+            if (_indexStepper > 0) {
+              setStateIfMounted(() => _indexStepper--);
+            }
+          },
+          onStepContinue: () {
+            if (_indexStepper < 2 && _indexStepper >= 0) {
+              if (_checkConditionsPourContinuer()) {
+                setStateIfMounted(() => _indexStepper++);
+              } else {
+                _afficherAvertissementEtConditionPourPoursuivre();
               }
-            },
-            onStepContinue: () {
-              if (_indexStepper < 2 && _indexStepper >= 0) {
-                if (_checkConditionsPourContinuer()) {
-                  setStateIfMounted(() => _indexStepper++);
-                } else {
-                  _afficherAvertissementEtConditionPourPoursuivre();
-                }
-              } else if (_indexStepper == 2) {
-                if (_formKeyFacture.currentState!.validate()) {
-                  //_afficherAvertissementEtConditionPourPoursuivre();
-                  _creationPdfEtOuverture(_aUneDateLimite);
-                }
+            } else if (_indexStepper == 2) {
+              if (_formKeyFacture.currentState!.validate()) {
+                //_afficherAvertissementEtConditionPourPoursuivre();
+                _creationPdfEtOuverture(_aUneDateLimite);
               }
-            },
-            controlsBuilder: (BuildContext context, ControlsDetails details) {
-              return Row(
-                children: <Widget>[
-                  ElevatedButton(
-                    onPressed: details.onStepContinue,
-                    child: const Text('CONTINUER'),
-                  ),
-                  const SizedBox(
-                    width: 10,
-                  ),
-                  TextButton(
-                    onPressed: details.onStepCancel,
-                    child: const Text('RETOUR'),
-                  ),
-                ],
-              );
-            },
-            steps: [
-              Step(
-                  title: const Text("Client(s)"),
-                  isActive: _indexStepper >= 0,
-                  content: buildClient()),
-              Step(
-                  title: const Text("Séance(s)"),
-                  isActive: _indexStepper >= 1,
-                  content: buildSeance()),
-              Step(
-                  title: Text(widget.estFacture ? "Facture" : "Devis"),
-                  isActive: _indexStepper >= 2,
-                  content: buildFacture())
-            ],
-          );
+            }
+          },
+          controlsBuilder: (BuildContext context, ControlsDetails details) {
+            return Row(
+              children: <Widget>[
+                ElevatedButton(
+                  onPressed: details.onStepContinue,
+                  child: const Text('CONTINUER'),
+                ),
+                const SizedBox(
+                  width: 10,
+                ),
+                TextButton(
+                  onPressed: details.onStepCancel,
+                  child: const Text('RETOUR'),
+                ),
+              ],
+            );
+          },
+          steps: [
+            Step(
+                title: const Text("Client(s)"),
+                isActive: _indexStepper >= 0,
+                content: buildClient()),
+            Step(
+                title: const Text("Séance(s)"),
+                isActive: _indexStepper >= 1,
+                content: buildSeance()),
+            Step(
+                title: Text(widget.estFacture ? "Facture" : "Devis"),
+                isActive: _indexStepper >= 2,
+                content: buildFacture())
+          ],
+        ));
   }
 
   Widget buildClient() {
@@ -168,7 +177,7 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> {
               context,
               MaterialPageRoute<void>(
                 builder: (BuildContext context) =>
-                const FullScreenDialogAjouterClient(),
+                    const FullScreenDialogAjouterClient(),
                 fullscreenDialog: true,
               ),
             ).then((value) => _getListClients()),
@@ -194,7 +203,6 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> {
           needRecherche: true,
           filterChipsNames: const [],
         ),
-
         const Divider(
           height: 30,
         ),
@@ -353,7 +361,8 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> {
                     for (Seance seance in _listSeances)
                       Card(
                         child: ListTile(
-                          tileColor: Theme.of(context).colorScheme.surfaceVariant,
+                          tileColor:
+                              Theme.of(context).colorScheme.surfaceVariant,
                           title: Text(
                               "${seance.quantite} ${seance.nom} le (${seance.date.day}/${seance.date.month}/${seance.date.year})"),
                           leading: const Icon(Icons.work_history_outlined),

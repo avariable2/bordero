@@ -159,7 +159,7 @@ class _MonAccueilState extends State<MonAccueil> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: const [
                   Image(
-                    height: 150,
+                    height: 140,
                     image: AssetImage('assets/images/iPhone.png'),
                   ),
                   Center(

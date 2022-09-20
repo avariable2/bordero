@@ -124,9 +124,10 @@ class _PageConnexionState extends State<PageConnexion> {
                       }
                     },
                   )),
-              Row(
+              Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
+                  const SizedBox(height: 20,),
                   const Text('Vous ne possèder pas de compte ?'),
                   TextButton(
                     child: const Text(
@@ -150,7 +151,7 @@ class _PageConnexionState extends State<PageConnexion> {
           child: ListView(
             children: <Widget>[
               AnimationDelais(
-                delay: 1000,
+                delay: 500,
                 child: Container(
                     alignment: Alignment.center,
                     padding: const EdgeInsets.all(10),
@@ -161,7 +162,7 @@ class _PageConnexionState extends State<PageConnexion> {
                     )),
               ),
               AnimationDelais(
-                delay: 2000,
+                delay: 1000,
                 child: Container(
                     alignment: Alignment.center,
                     padding: const EdgeInsets.all(10),
@@ -171,7 +172,7 @@ class _PageConnexionState extends State<PageConnexion> {
                     )),
               ),
               AnimationDelais(
-                delay: 3000,
+                delay: 1500,
                 child: Container(
                   padding: const EdgeInsets.all(10),
                   child: TextFormField(
@@ -193,7 +194,7 @@ class _PageConnexionState extends State<PageConnexion> {
                 ),
               ),
               AnimationDelais(
-                delay: 4000,
+                delay: 2000,
                 child: Container(
                   padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
                   child: TextFormField(
@@ -213,7 +214,7 @@ class _PageConnexionState extends State<PageConnexion> {
                 ),
               ),
               AnimationDelais(
-                delay: 4000,
+                delay: 2500,
                 child: Container(
                   padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
                   child: TextFormField(
@@ -235,7 +236,7 @@ class _PageConnexionState extends State<PageConnexion> {
                 ),
               ),
               AnimationDelais(
-                delay: 5000,
+                delay: 3000,
                 child: Container(
                     height: 50,
                     padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
@@ -259,10 +260,11 @@ class _PageConnexionState extends State<PageConnexion> {
                     )),
               ),
               AnimationDelais(
-                delay: 6000,
-                child: Row(
+                delay: 3500,
+                child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
+                    const SizedBox(height: 20,),
                     const Text('Vous possèder un compte ?'),
                     TextButton(
                       child: const Text(
