@@ -46,7 +46,7 @@ class DialogInfoPraticienState extends State<DialogInfoPraticien> {
 
   List<TypePayement> listTypePayements = [
     TypePayement(key: "Virement bancaire", selectionner: false),
-    TypePayement(key: "Liquide", selectionner: false),
+    TypePayement(key: "Espèces", selectionner: false),
     TypePayement(key: "Carte bleu", selectionner: false),
     TypePayement(key: "Chèque", selectionner: false)
   ];
@@ -144,11 +144,11 @@ class DialogInfoPraticienState extends State<DialogInfoPraticien> {
       },
       steps: [
         Step(
-            title: const Text("Personel"),
+            title: const Text("Personnel"),
             isActive: _indexStepper >= 0,
             content: SingleChildScrollView(child: buildFormInfos())),
         Step(
-            title: const Text("Professionel"),
+            title: const Text("Professionnel"),
             isActive: _indexStepper >= 1,
             content: SingleChildScrollView(child: buildFormProfessionel())),
       ],
@@ -164,7 +164,7 @@ class DialogInfoPraticienState extends State<DialogInfoPraticien> {
           const Padding(
             padding: EdgeInsets.only(top: 10, bottom: 10),
             child: Text(
-              "Données globaux",
+              "Données globales",
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
           ),
@@ -186,7 +186,7 @@ class DialogInfoPraticienState extends State<DialogInfoPraticien> {
                     // The validator receives the text that the user has entered.
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Entrer un nom';
+                        return 'Entrez un nom';
                       }
                       return null;
                     },
@@ -208,7 +208,7 @@ class DialogInfoPraticienState extends State<DialogInfoPraticien> {
                         icon: Icon(Icons.account_box_outlined)),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Entrer un prénom';
+                        return 'Entrez un prénom';
                       }
                       return null;
                     },
@@ -231,7 +231,7 @@ class DialogInfoPraticienState extends State<DialogInfoPraticien> {
                   icon: Icon(Icons.person_pin_circle_outlined)),
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'Entrer une adresse';
+                  return 'Entrez une adresse';
                 }
                 return null;
               },
@@ -253,10 +253,10 @@ class DialogInfoPraticienState extends State<DialogInfoPraticien> {
                         icon: Icon(Icons.domain_outlined)),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Entrer un code postal';
+                        return 'Entrez un code postal';
                       }
                       if (value.length != 5) {
-                        return 'Entrer un code postal valide';
+                        return 'Entrez un code postal valide';
                       }
                       return null;
                     },
@@ -275,7 +275,7 @@ class DialogInfoPraticienState extends State<DialogInfoPraticien> {
                         icon: Icon(Icons.location_city_outlined)),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Entrer une ville';
+                        return 'Entrez une ville';
                       }
                       return null;
                     },
@@ -298,7 +298,7 @@ class DialogInfoPraticienState extends State<DialogInfoPraticien> {
                   icon: Icon(Icons.phone_outlined)),
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'Entrer un numéro de téléphone';
+                  return 'Entrez un numéro de téléphone';
                 }
                 return null;
               },
@@ -315,10 +315,10 @@ class DialogInfoPraticienState extends State<DialogInfoPraticien> {
                   icon: Icon(Icons.email_outlined)),
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'Entrer une email';
+                  return 'Entrez un email';
                 }
                 if (!EmailValidator.validate(value.trim())) {
-                  return 'Entrer une email valide';
+                  return 'Entrez un email valide';
                 }
                 return null;
               },
@@ -335,7 +335,7 @@ class DialogInfoPraticienState extends State<DialogInfoPraticien> {
         child: Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
           SwitchListTile(
               activeColor: Theme.of(context).colorScheme.primary,
-              title: const Text("Etes-vous exonéré de TVA ?"),
+              title: const Text("Êtes-vous exonéré de TVA ?"),
               value: estExonererDeTVA,
               onChanged: (bool value) =>
                   setStateIfMounted(() => estExonererDeTVA = value)),
@@ -352,10 +352,10 @@ class DialogInfoPraticienState extends State<DialogInfoPraticien> {
                   icon: Icon(Icons.pin_outlined)),
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'Entrer un numéro de SIRET';
+                  return 'Entrez un numéro de SIRET';
                 }
                 if (value.length != 9) {
-                  return 'Entrer un numéro de SIRET valide';
+                  return 'Entrez un numéro de SIRET valide';
                 }
                 return null;
               },
@@ -378,10 +378,10 @@ class DialogInfoPraticienState extends State<DialogInfoPraticien> {
               ),
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'Entrer un numéro de SIRET';
+                  return 'Entrez un code ADELI';
                 }
                 if (value.length != 9) {
-                  return 'Entrer un numéro de SIRET valide';
+                  return 'Entrez un code ADELI';
                 }
                 return null;
               },
@@ -510,7 +510,7 @@ class DialogInfoPraticienState extends State<DialogInfoPraticien> {
     } catch (exception, stackTrace) {
       await Sentry.captureException(exception, stackTrace: stackTrace);
       _afficherMessage(
-          "Une erreur est sruvenue. Vos informations n'ont pas été charger.",
+          "Une erreur est survenue. Vos informations n'ont pas été chargées.",
           true);
       setStateIfMounted(() => _chargeLesDonnes = false);
       return;
@@ -541,7 +541,7 @@ class DialogInfoPraticienState extends State<DialogInfoPraticien> {
   Future<void> _sauvegardeDesDonnees() async {
     user = _creerInfosPraticien();
     await SharedPref().save(tableUtilisateur, user);
-    _afficherMessage("Vos informations ont bien été enregistrés.", false);
+    _afficherMessage("Vos informations ont bien été enregistrées.", false);
     if (widget.firstTime) {
       _toggleInfosUtilisateurIsSet();
     }

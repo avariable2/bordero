@@ -57,7 +57,7 @@ class DialogAjouterTypeActeState extends State<DialogAjouterTypeActe> {
       builder: (BuildContext context) =>
           AlertDialog(
             title: Text("Ce type d'acte existe déjà !", style: TextStyle(fontSize: 22, color: Theme.of(context).colorScheme.primary,),),
-            content: const Text("Il est préférable de modifier le type de séance déjà crée."),
+            content: const Text("Il est préférable de modifier le type de séance déjà créé."),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context, 'Cancel'),
@@ -84,11 +84,11 @@ class DialogAjouterTypeActeState extends State<DialogAjouterTypeActe> {
   void _afficherResultatSnackbarPuisRetourEnArriere(BuildContext context, bool value) {
     if (value) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Le type de séance à bien été enregistrer')),
+        const SnackBar(content: Text('Le type de séance a bien été enregistré')),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Oups ! Une erreur sait produite =(')),
+        const SnackBar(content: Text('Oups ! Une erreur s\'est produite =(')),
       );
     }
 
@@ -115,7 +115,7 @@ class DialogAjouterTypeActeState extends State<DialogAjouterTypeActe> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: const [
                 Expanded(flex: 1, child: Icon(Icons.info_outline)),
-                Expanded(flex: 4, child: Text('''Toutes les informations sont nécessaire pour la création d'un type de séance.'''), ),
+                Expanded(flex: 4, child: Text('''Toutes les informations sont nécessaires pour la création d'un type de séance.'''), ),
                 ],
               ),
 
@@ -137,7 +137,7 @@ class DialogAjouterTypeActeState extends State<DialogAjouterTypeActe> {
                   // The validator receives the text that the user has entered.
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Entrer un nom de séance';
+                      return 'Entrez un nom de séance';
                     }
                     return null;
                   },
@@ -157,12 +157,12 @@ class DialogAjouterTypeActeState extends State<DialogAjouterTypeActe> {
                   keyboardType: TextInputType.number,
                   decoration: const InputDecoration(
                       border: OutlineInputBorder(),
-                      labelText: 'Prix',
+                      labelText: 'Prix HT',
                       icon: Icon(Icons.euro_outlined)),
                   // The validator receives the text that the user has entered.
                   validator: (value) {
                     if (value == null || value.isEmpty || !AppPsyUtils.isNumeric(value)) {
-                      return 'Entrer un prix vraisemblable';
+                      return 'Entrez un prix vraisemblable';
                     }
                     return null;
                   },

@@ -56,7 +56,7 @@ class DialogAjouterClientState extends State<DialogAjouterClient> {
               color: Theme.of(context).colorScheme.primary,
             )),
         content: const Text(
-            "Voulez-vous vraiment l'ajouter (il se peut que 2 clients possède le meme nom et prenom)."),
+            "Voulez-vous vraiment l'ajouter (il se peut que 2 clients possèdent le même nom et prénom)."),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, 'Cancel'),
@@ -86,20 +86,20 @@ class DialogAjouterClientState extends State<DialogAjouterClient> {
         email: controllerChampEmail.text.trim());
 
     await AppPsyDatabase.instance.createClient(c).then((value) => {
-          // Le client a bien été enregistrer
+          // Le client a bien été enregistré
           if (value)
             {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                     content: Text(
-                        '${controllerChampPrenom.text.toUpperCase()} à bien été ajouté')),
+                        '${controllerChampPrenom.text.toUpperCase()} a bien été ajouté')),
               )
             }
           else
             {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
-                    content: Text('Oups ! Une erreur sait produite =(')),
+                    content: Text('Oups ! Une erreur s\'est produite =(')),
               )
             }
         });
@@ -153,7 +153,7 @@ class DialogAjouterClientState extends State<DialogAjouterClient> {
                 Expanded(
                   flex: 4,
                   child:
-                      Text('''Les champs marqués avec (*) sont oblicatoire.'''),
+                      Text('''Les champs marqués avec (*) sont obligatoires.'''),
                 ),
               ],
             ),
@@ -180,7 +180,7 @@ class DialogAjouterClientState extends State<DialogAjouterClient> {
                       // The validator receives the text that the user has entered.
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Entrer un nom';
+                          return 'Entrez un nom';
                         }
                         return null;
                       },
@@ -203,7 +203,7 @@ class DialogAjouterClientState extends State<DialogAjouterClient> {
                           icon: Icon(Icons.account_box_outlined)),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Entrer un prénom';
+                          return 'Entrez un prénom';
                         }
                         return null;
                       },
@@ -226,7 +226,7 @@ class DialogAjouterClientState extends State<DialogAjouterClient> {
                     icon: Icon(Icons.person_pin_circle_outlined)),
                 /*validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Entrer une adresse';
+                    return 'Entrez une adresse';
                   }
                   return null;
                 },*/
@@ -247,10 +247,10 @@ class DialogAjouterClientState extends State<DialogAjouterClient> {
                           icon: Icon(Icons.domain_outlined)),
                       /*validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Entrer un code postal';
+                        return 'Entrez un code postal';
                       }
                       if (value.length != 5) {
-                        return 'Entrer un code postal valide';
+                        return 'Entrez un code postal valide';
                       }
                       return null;
                     },*/
@@ -273,7 +273,7 @@ class DialogAjouterClientState extends State<DialogAjouterClient> {
                           icon: Icon(Icons.location_city_outlined)),
                       /*validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Entrer une ville';
+                        return 'Entrez une ville';
                       }
                       return null;
                     },*/
@@ -296,7 +296,7 @@ class DialogAjouterClientState extends State<DialogAjouterClient> {
                     icon: Icon(Icons.phone_outlined)),
                 /*validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Entrer un numéro de téléphone';
+                    return 'Entrez un numéro de téléphone';
                   }
                   return null;
                 },*/
@@ -313,10 +313,10 @@ class DialogAjouterClientState extends State<DialogAjouterClient> {
                     icon: Icon(Icons.email_outlined)),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Entrer une email';
+                    return 'Entrez un email';
                   }
                   if (!EmailValidator.validate(value.trim())) {
-                    return 'Entrer une email valide';
+                    return 'Entrez un email valide';
                   }
                   return null;
                 },

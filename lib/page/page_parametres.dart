@@ -88,7 +88,7 @@ class _ParametresGlobauxState extends State<ParametresGlobaux> {
                 builder: (context, value, child) {
                   return SwitchListTile(
                     activeColor: Theme.of(context).colorScheme.primary,
-                    title: const Text("Theme sombre"),
+                    title: const Text("Thème sombre"),
                     value: value.darkTheme,
                     onChanged: (newValue) => value.toggleTheme(),
                   );
@@ -120,17 +120,17 @@ class _ParametresGlobauxState extends State<ParametresGlobaux> {
                 onTap: () => AppPsyUtils.afficherDialog(context: context,
                     titre: "Souhaitez-vous vous déconnecter ?",
                     corps:
-                        "Toutes vos factures et données seront supprimer. Si vous ne les avez pas enregistrer, nous ne pourrons rien pour vous. Agisser en ames et conscience.",
+                        "Toutes vos factures et données seront supprimées. Si vous ne les avez pas enregistrées, nous ne pourrons rien pour vous. Agissez en âme et conscience.",
                     buttonCancelTexte: "ANNULER",
-                    buttonValiderTexte: "DECONNEXION",
+                    buttonValiderTexte: "DÉCONNEXION",
                     buttonCancelCallback: () =>
                         Navigator.pop(context, 'Cancel'),
                     buttonValiderCallback: () {
                       Navigator.pop(context, 'Cancel');
                       AppPsyUtils.afficherDialog(context: context,
-                          titre: "Etes-vous certain ?",
+                          titre: "Êtes-vous certain ?",
                           corps:
-                              "Cette action est irréversible pour le moment. Si vous vous déconnecter vos données disparaitrons.",
+                              "Cette action est irréversible pour le moment. Si vous vous déconnectez vos données disparaîtront.",
                           buttonCancelTexte: "NON",
                           buttonValiderTexte: "OUI",
                           buttonCancelCallback: () =>
@@ -144,7 +144,7 @@ class _ParametresGlobauxState extends State<ParametresGlobaux> {
               ListTile(
                   title: const Text("Supprimer son compte"),
                   onTap: () => AppPsyUtils.afficherDialog(context: context,
-                      titre: "Etes vous sur de vouloir supprimer votre compte ?",
+                      titre: "Êtes-vous sûr de vouloir supprimer votre compte ?",
                       corps:
                           "Vous ne pourrez plus vous reconnecter à nos services.",
                       buttonCancelTexte: "ANNULER",
@@ -165,7 +165,7 @@ class _ParametresGlobauxState extends State<ParametresGlobaux> {
                     controller: controllerMotDePasse,
                     decoration: const InputDecoration(
                       labelText: 'Saisissez votre mot de passe (6 lettres ou plus)',
-                      helperText: "Etape bligatoire pour supprimer votre compte"
+                      helperText: "Étape oligatoire pour supprimer votre compte"
                     ),
                     autovalidateMode: AutovalidateMode.onUserInteraction,
                     validator: (value) {
@@ -198,7 +198,7 @@ class _ParametresGlobauxState extends State<ParametresGlobaux> {
       } else if (value == FireAuth.erreurType1) {
         _afficherProbleme("Votre mot de passe n'est pas le bon.");
       } else {
-        _afficherProbleme("Une erreur est survenue, contacter le support pour que nous puissions vous aidez.");
+        _afficherProbleme("Une erreur est survenue, contactez le support pour que nous puissions vous aider.");
       }
     });
 

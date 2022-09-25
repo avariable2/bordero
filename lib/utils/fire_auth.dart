@@ -32,17 +32,17 @@ class FireAuth {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
               content:
-                  Text("Mots de passe trop faible ajouter des caractères.")),
+                  Text("Mot de passe trop faible, veuillez ajouter des caractères.")),
         );
       } else if (e.code == 'email-already-in-use') {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Email déjà utiliser.")),
+          const SnackBar(content: Text("Email déjà utilisé.")),
         );
       }
     } catch (exception, stackTrace) {
       await Sentry.captureException(exception, stackTrace: stackTrace);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Une erreur c'est produite.")),
+        const SnackBar(content: Text("Une erreur s'est produite.")),
       );
     }
     return user;
@@ -65,7 +65,7 @@ class FireAuth {
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Cette email n'est pas reconue.")),
+          const SnackBar(content: Text("Cet email n'est pas reconnu.")),
         );
       } else if (e.code == 'wrong-password') {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -75,7 +75,7 @@ class FireAuth {
     } catch (exception, stackTrace) {
       await Sentry.captureException(exception, stackTrace: stackTrace);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Une erreur c'est produite.")),
+        const SnackBar(content: Text("Une erreur s'est produite.")),
       );
     }
 
@@ -96,17 +96,17 @@ class FireAuth {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
             content: Text(
-                "Un email de reinitialisation à été envoyer. Verifier vos spam.")),
+                "Un email de réinitialisation a été envoyé. Vérifiez vos spams.")),
       );
       Navigator.of(context).popUntil((route) => route.isFirst);
     } on FirebaseAuthException catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Désolé, une erreur est survenu.")),
+        const SnackBar(content: Text("Désolé, une erreur est survenue.")),
       );
     } catch (exception, stackTrace) {
       await Sentry.captureException(exception, stackTrace: stackTrace);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Une erreur c'est produite.")),
+        const SnackBar(content: Text("Une erreur s'est produite.")),
       );
     }
   }

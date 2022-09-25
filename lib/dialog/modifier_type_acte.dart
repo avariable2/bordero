@@ -33,7 +33,7 @@ class FullScreenDialogModifierTypeActe extends StatelessWidget {
       context: context,
       builder: (BuildContext context) =>
           AlertDialog(
-            title: Text("Attention : êtes-vous sur de vouloir supprimer se type de séance ?",
+            title: Text("Attention : êtes-vous sûr de vouloir supprimer ce type de séance ?",
                 style:
                 TextStyle(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.primary,fontSize: 22.0,)),
             actions: [
@@ -62,11 +62,11 @@ class FullScreenDialogModifierTypeActe extends StatelessWidget {
     // Le client a bien été modifier
     if (value > 0) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("'${typeActe.nom.trim()}' à bien été supprimer")),
+        SnackBar(content: Text("'${typeActe.nom.trim()}' a bien été supprimé")),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Oups ! Une erreur sait produite =(')),
+        const SnackBar(content: Text('Oups ! Une erreur s\'est produite =(')),
       );
     }
     // 2 fois car on ferme le dialog et la fenetre avant
@@ -120,11 +120,11 @@ class DialogModifierTypeActeState extends State<DialogModifierTypeActe> {
   void _afficherResultatSnackbarPuisRetourEnArriere(BuildContext context, int value) {
     if (value > 0) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Le type de séance à bien été modifier')),
+        const SnackBar(content: Text('Le type de séance a bien été modifiée')),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Oups ! Une erreur sait produite =(')),
+        const SnackBar(content: Text('Oups ! Une erreur s\'est produite =(')),
       );
     }
 
@@ -151,7 +151,7 @@ class DialogModifierTypeActeState extends State<DialogModifierTypeActe> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: const [
                   Expanded(flex: 1, child: Icon(Icons.info_outline)),
-                  Expanded(flex: 4, child: Text('''Toutes les informations sont nécessaire pour la modification d'un type de séance.'''), ),
+                  Expanded(flex: 4, child: Text('''Toutes les informations sont nécessaires pour la modification d'un type de séance.'''), ),
                 ],
               ),
 
@@ -173,7 +173,7 @@ class DialogModifierTypeActeState extends State<DialogModifierTypeActe> {
                   // The validator receives the text that the user has entered.
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Entrer un nom de séance';
+                      return 'Entrez un nom de séance';
                     }
                     return null;
                   },
@@ -198,7 +198,7 @@ class DialogModifierTypeActeState extends State<DialogModifierTypeActe> {
                   // The validator receives the text that the user has entered.
                   validator: (value) {
                     if (value == null || value.isEmpty || !AppPsyUtils.isNumeric(value)) {
-                      return 'Entrer un prix vraisemblable';
+                      return 'Entrez un prix vraisemblable';
                     }
                     return null;
                   },

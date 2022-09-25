@@ -65,7 +65,7 @@ class PreviewPdf extends StatelessWidget {
                   fontSize: 22.0,
                 )),
         content: Text(estFacture
-            ? "Vous avez une obligation légales de garder pendant 5 ans vos factures. Nous esquivons toutes responsabilités en cas de litige."
+            ? "Vous avez une obligation légale de garder pendant 5 ans vos factures. Nous esquivons toutes responsabilités en cas de litige."
             : ""),
         actions: [
           TextButton(
@@ -110,7 +110,7 @@ class PreviewPdf extends StatelessWidget {
 
   void affichageErreur(BuildContext context) {
     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text("Une erreur sait produite. Nous en sommes désolé.")));
+        content: Text("Une erreur s'est produite. Nous en sommes désolé.")));
   }
 
   void _onShare(BuildContext context) async {
@@ -155,7 +155,7 @@ class _AffichageInfoPdfState extends State<AffichageInfoPdf> {
               const Expanded(
                 flex: 4,
                 child: Text(
-                    '''Ce document n'est pas enregistrer sur une base de donnée externe. Penser à la sauvegarder (Drive, vous l'envoyez par mail, ...) !'''),
+                    '''Ce document n'est pas enregistré sur une base de données externe. Pensez à la sauvegarder (Drive, vous l'envoyez par mail, ...) !'''),
               ),
             ],
           ),
@@ -210,14 +210,14 @@ class _AffichageInfoPdfState extends State<AffichageInfoPdf> {
     showDialog(
       context: this.context,
       builder: (BuildContext context) => AlertDialog(
-        title: Text("Les données personnels de vos clients sont une priorité",
+        title: Text("Les données personnelles de vos clients sont une priorité",
             style: TextStyle(
               fontWeight: FontWeight.bold,
               color: Theme.of(context).colorScheme.primary,
             )),
         content: const Text(
-            "Cette application ne possède pas de serveur pour sauvegarder vos factures et devis tout en protegeant celle-ci."
-            "\nN'hesitez pas à contribuer pour que nous puissions vous apporter toujours plus d'outils pour votre entreprise."),
+            "Cette application ne possède pas de serveur pour sauvegarder vos factures et devis tout en protégeant celle-ci."
+            "\nN'hésitez pas à contribuer pour que nous puissions vous apporter toujours plus d'outils pour votre entreprise."),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, 'RETOUR'),

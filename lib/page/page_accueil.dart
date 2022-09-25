@@ -104,7 +104,7 @@ class _MonAccueilState extends State<MonAccueil> {
           titre: 'Clients',
           icon: Icons.account_circle_sharp,
           labelTitreRecherche: 'Recherche client',
-          labelHintRecherche: 'Essayer le nom ou prénom du client',
+          labelHintRecherche: 'Essayez le nom ou prénom du client',
           labelListVide: '🤔​ Aucun client enregistré',
           list: listClients,
           onSelectedItem: (dynamic item) {
@@ -127,7 +127,7 @@ class _MonAccueilState extends State<MonAccueil> {
           height: 10,
         ),
         ListRechercheEtAction(
-          titre: "Type d'actes",
+          titre: "Type d'acte",
           icon: Icons.work_outline,
           labelListVide: '🤔​ Aucun type de séance enregistré',
           list: listTypeActes,
@@ -164,7 +164,7 @@ class _MonAccueilState extends State<MonAccueil> {
                   ),
                   Center(
                     child: Text(textAlign: TextAlign.center,
-                        "Actuellement la premiere version !\nDu chemin nous attends."),
+                        "Actuellement la premiere version !\nDu chemin nous attend."),
                   ),
                 ],
               ),

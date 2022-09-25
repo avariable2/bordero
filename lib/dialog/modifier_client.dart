@@ -35,7 +35,7 @@ class FullScreenDialogModifierClient extends StatelessWidget {
       context: context,
       builder: (BuildContext context) =>
           AlertDialog(
-            title: Text("Attention : êtes-vous sur de vouloir supprimer se client ?",
+            title: Text("Attention : êtes-vous sûr de vouloir supprimer ce client ?",
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 22.0,
@@ -68,11 +68,11 @@ class FullScreenDialogModifierClient extends StatelessWidget {
     // Le client a bien été modifier
     if (value > 0) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('${client.prenom.toUpperCase()} à bien été supprimer')),
+        SnackBar(content: Text('${client.prenom.toUpperCase()} a bien été supprimé')),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Oups ! Une erreur sait produite =(')),
+        const SnackBar(content: Text('Oups ! Une erreur s\'est produite =(')),
       );
     }
     // 2 fois car on ferme le dialog et la fenetre avant
@@ -121,7 +121,7 @@ class DialogModifierClientState extends State<DialogModifierClient> {
             title: Text("Ce client existe déjà !",style: TextStyle(fontWeight: FontWeight.bold,
               fontSize: 22.0,
               color: Theme.of(context).colorScheme.primary,),),
-            content: const Text("Voulez-vous vraiment l'ajouter (il se peut que 2 clients possède le meme nom et prenom)."),
+            content: const Text("Voulez-vous vraiment l'ajouter (il se peut que 2 clients possèdent le même nom et prénom)."),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context, 'Cancel'),
@@ -160,11 +160,11 @@ class DialogModifierClientState extends State<DialogModifierClient> {
     // Le client a bien été modifier
     if (value > 0) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('${_controllerChampPrenom.text.trim().toUpperCase()} à bien été modifier')),
+        SnackBar(content: Text('${_controllerChampPrenom.text.trim().toUpperCase()} a bien été modifié')),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Oups ! Une erreur sait produite =(')),
+        const SnackBar(content: Text('Oups ! Une erreur s\'est produite =(')),
       );
     }
   }
@@ -214,7 +214,7 @@ class DialogModifierClientState extends State<DialogModifierClient> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: const [
                 Expanded(flex: 1, child: Icon(Icons.info_outline)),
-                Expanded(flex: 4, child: Text('''Les champs marqués avec (*) sont oblicatoire.'''), ),
+                Expanded(flex: 4, child: Text('''Les champs marqués avec (*) sont obligatoires.'''), ),
               ],
             ),
 
@@ -262,7 +262,7 @@ class DialogModifierClientState extends State<DialogModifierClient> {
                         icon: Icon(Icons.account_box_outlined)),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Entrer un prénom';
+                        return 'Entrez un prénom';
                       }
                       return null;
                     },
@@ -287,7 +287,7 @@ class DialogModifierClientState extends State<DialogModifierClient> {
                     icon: Icon(Icons.person_pin_circle_outlined)),
                 /*validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Entrer une adresse';
+                    return 'Entrez une adresse';
                   }
                   return null;
                 },*/
@@ -310,10 +310,10 @@ class DialogModifierClientState extends State<DialogModifierClient> {
                       icon: Icon(Icons.domain_outlined)),
                   /*validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Entrer un code postal';
+                      return 'Entrez un code postal';
                     }
                     if (value.length != 5) {
-                      return 'Entrer un code postal valide';
+                      return 'Entrez un code postal valide';
                     }
                     return null;
                   },*/
@@ -338,7 +338,7 @@ class DialogModifierClientState extends State<DialogModifierClient> {
                         icon: Icon(Icons.location_city_outlined)),
                     /*validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Entrer une ville';
+                        return 'Entrez une ville';
                       }
                       return null;
                     },*/
@@ -362,7 +362,7 @@ class DialogModifierClientState extends State<DialogModifierClient> {
                     icon: Icon(Icons.phone_outlined)),
                 /*validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Entrer un numéro de téléphone';
+                    return 'Entrez un numéro de téléphone';
                   }
                   return null;
                 },*/
@@ -380,10 +380,10 @@ class DialogModifierClientState extends State<DialogModifierClient> {
                     icon: Icon(Icons.email_outlined)),
                 validator: (value) {
                   if (value == null || value.isEmpty ) {
-                    return 'Entrer une email';
+                    return 'Entrez un email';
                   }
                   if (!EmailValidator.validate(value)) {
-                    return 'Entrer une email valide';
+                    return 'Entrez un email valide';
                   }
                   return null;
                 },

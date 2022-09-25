@@ -26,7 +26,7 @@ class AppPsyUtils {
     String res = "";
     if (user.payementCheque == 1) res += "Chèque, ";
     if (user.payementCarteBleu == 1) res += "Carte bleu, ";
-    if (user.payementLiquide == 1) res += "Liquide, ";
+    if (user.payementLiquide == 1) res += "Espèces, ";
     if (user.payementVirementBancaire == 1) res += "Virement bancaire,";
     return res;
   }

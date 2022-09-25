@@ -51,6 +51,7 @@ class MyApp extends StatelessWidget {
       child: Consumer<ThemeSettings>(
         builder: (context, value, child) {
           return MaterialApp(
+            debugShowCheckedModeBanner: false,
               title: "Bordero",
               localizationsDelegates: const [
                 GlobalMaterialLocalizations.delegate,

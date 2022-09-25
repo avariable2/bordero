@@ -71,10 +71,10 @@ class _PageConnexionState extends State<PageConnexion> {
                   autovalidateMode: AutovalidateMode.onUserInteraction,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return "Saisir un email";
+                      return "Saisissez un email";
                     }
                     if (!EmailValidator.validate(value)) {
-                      return "Saisir un email valide";
+                      return "Saisissez un email valide";
                     }
                     return null;
                   },
@@ -92,7 +92,7 @@ class _PageConnexionState extends State<PageConnexion> {
                   autovalidateMode: AutovalidateMode.onUserInteraction,
                   validator: (value) {
                     if (value == null || value.isEmpty && value.length < 6) {
-                      return "Saisir un mot de passe de minimum 6 lettres";
+                      return "Saisissez un mot de passe de minimum 6 lettres";
                     }
                     return null;
                   },
@@ -128,7 +128,7 @@ class _PageConnexionState extends State<PageConnexion> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   const SizedBox(height: 20,),
-                  const Text('Vous ne possèder pas de compte ?'),
+                  const Text('Vous ne possèdez pas de compte ?'),
                   TextButton(
                     child: const Text(
                       'S\'inscrire',
@@ -183,10 +183,10 @@ class _PageConnexionState extends State<PageConnexion> {
                     controller: _emailInscrireController,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return "Entree un email";
+                        return "Entrez un email";
                       }
                       if (!EmailValidator.validate(value)) {
-                        return 'Entrer un email valide';
+                        return 'Entrez un email valide';
                       }
                       return null;
                     },
@@ -206,7 +206,7 @@ class _PageConnexionState extends State<PageConnexion> {
                     ),
                     validator: (String? value) {
                       if (value == null || value.isEmpty) {
-                        return "Entree un bon mot de passe";
+                        return "Entrez un bon mot de passe";
                       }
                       return null;
                     },
@@ -228,7 +228,7 @@ class _PageConnexionState extends State<PageConnexion> {
                       if (value == null ||
                           value.isEmpty ||
                           value != _motDePasseInscrireController.text) {
-                        return "Entree le même mot de passe";
+                        return "Entrez le même mot de passe";
                       }
                       return null;
                     },
@@ -265,7 +265,7 @@ class _PageConnexionState extends State<PageConnexion> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     const SizedBox(height: 20,),
-                    const Text('Vous possèder un compte ?'),
+                    const Text('Vous possèdez un compte ?'),
                     TextButton(
                       child: const Text(
                         'Se connecter',

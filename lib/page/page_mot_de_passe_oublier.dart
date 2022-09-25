@@ -24,7 +24,7 @@ class _MotDePasseOublierState extends State<MotDePasseOublier> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Reinitialiser votre mot de passe"),
+        title: const Text("Réinitialiser votre mot de passe"),
       ),
       body: SingleChildScrollView(
           child: Form(

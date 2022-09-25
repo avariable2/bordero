@@ -188,7 +188,7 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> {
           titre: 'Sélectionner client(s)',
           icon: Icons.account_circle_sharp,
           labelTitreRecherche: 'Recherche client',
-          labelHintRecherche: 'Essayer le nom ou prénom du client',
+          labelHintRecherche: 'Essayez le nom ou prénom du client',
           labelListVide: '🤔​ Aucun client enregistré',
           list: _listClients,
           onSelectedItem: (dynamic item) {
@@ -237,7 +237,7 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> {
                         return null;
                       },
                       hint: const Text(
-                          "Le service que vous avez rendu a votre client"),
+                          "Le service que vous avez rendu à votre client"),
                       isExpanded: true,
                       decoration: const InputDecoration(
                           border: OutlineInputBorder(),
@@ -275,7 +275,7 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> {
                       // The validator receives the text that the user has entered.
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Entrer un prix HT';
+                          return 'Entrez un prix HT';
                         }
                         return null;
                       },
@@ -301,7 +301,7 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> {
                       },
                       decoration: const InputDecoration(
                           border: OutlineInputBorder(),
-                          labelText: "Date d'emission",
+                          labelText: "Date d'émission",
                           icon: Icon(Icons.date_range_outlined)),
                     ),
                   ),
@@ -321,7 +321,7 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> {
                       // The validator receives the text that the user has entered.
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Entrer un nombre valide';
+                          return 'Entrez un nombre valide';
                         }
                         return null;
                       },
@@ -411,12 +411,12 @@ class _FormulaireCreationFactureState extends State<FormulaireCreationFacture> {
                     inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                     decoration: const InputDecoration(
                         border: OutlineInputBorder(),
-                        labelText: 'Numero du documents',
+                        labelText: 'Numéro du document',
                         icon: Icon(Icons.numbers_outlined)),
                     // The validator receives the text that the user has entered.
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Entrer un numéro pour votre documents';
+                        return 'Entrez un numéro pour votre document';
                       }
                       return null;
                     },

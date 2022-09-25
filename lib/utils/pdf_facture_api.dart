@@ -66,7 +66,7 @@ class PdfFactureApi {
         children: [
           Text(
               document.estFacture
-                  ? "NOTE D'HONORAIRE"
+                  ? "NOTE D'HONORAIRES"
                   : "DEVIS N°${document.id}",
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
           SizedBox(height: 0.6 * PdfPageFormat.cm),

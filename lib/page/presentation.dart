@@ -46,7 +46,7 @@ class _PresentationPageState extends State<PresentationPage> {
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    'Créer vos factures et devis simplement avec la gestion améliorer de vos clients.',
+                    'Créer vos factures et devis simplement avec la gestion améliorée de vos clients.',
                     style: pageInfoStyle,
                     textAlign: TextAlign.left,
                   ),
@@ -78,7 +78,7 @@ class _PresentationPageState extends State<PresentationPage> {
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    'MODIFICATION ET PRISE EN MAIN SIMPLIFIER',
+                    'MODIFICATION ET PRISE EN MAIN SIMPLIFIÉES',
                     style: pageTitleStyle,
                     textAlign: TextAlign.left,
                   ),
@@ -89,7 +89,7 @@ class _PresentationPageState extends State<PresentationPage> {
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    'Il est très facile d\'ajouter de nouveau clients et préstations.',
+                    'Il est très facile d\'ajouter de nouveaux clients et prestations.',
                     style: pageInfoStyle,
                     textAlign: TextAlign.left,
                   ),
@@ -132,7 +132,7 @@ class _PresentationPageState extends State<PresentationPage> {
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    'Aucune fuite de données possible car l\'intégralité des données personnelles sont stockés dans votre téléphone.',
+                    'Aucune fuite de données possible car l\'intégralité des données personnelles sont stockées dans votre téléphone.',
                     style: pageInfoStyle,
                     textAlign: TextAlign.left,
                   ),

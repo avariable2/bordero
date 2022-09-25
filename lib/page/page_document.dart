@@ -52,7 +52,7 @@ class _ViewFacturesState extends State<WidgetDocuments> {
                 context: context,
                 builder: (BuildContext context) {
                   return SimpleDialog(
-                    title: const Text("Quel type de documents"),
+                    title: const Text("Quel type de document"),
                     children: [
                       SimpleDialogItem(
                           icon: Icons.description_outlined,
@@ -136,8 +136,8 @@ class _ViewFacturesState extends State<WidgetDocuments> {
               var file = await getFileFromDBB(item);
               ouvrirPdf(item, file);
             },
-            labelTitreRecherche: "Recherche d'un documents",
-            labelHintRecherche: "Essayer le nom ou le prénom du client ",
+            labelTitreRecherche: "Recherche d'un document",
+            labelHintRecherche: "Essayez le nom ou le prénom du client ",
             needRecherche: true,
             needTousEcran: true,
             needChips: true,
