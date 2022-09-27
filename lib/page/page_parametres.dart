@@ -34,6 +34,7 @@ class ParametresGlobaux extends StatefulWidget {
 class _ParametresGlobauxState extends State<ParametresGlobaux> {
   final controllerMotDePasse = TextEditingController();
   static const _urlString = "https://docs.google.com/forms/d/e/1FAIpQLSfjLRAybQuL7fdgk1HqG257yNGOgGlab1kRnxwucySyQGmN-w/viewform?usp=pp_url";
+  static const _urlEngagementConfidentialite = "https://docs.google.com/document/d/1mB4VnSXrD1JjiEjF1bBlhdyFPwZQNyUdx2dBSWEgBhM/edit?usp=sharing";
 
   @override
   void initState() {
@@ -97,23 +98,24 @@ class _ParametresGlobauxState extends State<ParametresGlobaux> {
               ListTile(
                 title: const Text("Support"),
                 onTap: () async {
-                  var url = Uri.parse(_urlString);
-                  await launchUrl(url);
+                  await launchUrl(Uri.parse(_urlString));
                 },
               ),
               const Divider(),
-              ListTile(
+              /*ListTile(
                 title: const Text("Conditions d'utilisation"),
                 onTap: () {},
-              ),
+              ),*/
               ListTile(
-                title: const Text("Confidentialité"),
-                onTap: () {},
+                title: const Text("Engagement de confidentialité"),
+                onTap: () async {
+                  await launchUrl(Uri.parse(_urlEngagementConfidentialite));
+                },
               ),
-              ListTile(
+              /*ListTile(
                 title: const Text("Mentions légales"),
                 onTap: () {},
-              ),
+              ),*/
               const Divider(),
               ListTile(
                 title: const Text("Déconnexion"),
