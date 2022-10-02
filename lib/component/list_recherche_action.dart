@@ -54,6 +54,9 @@ class ListRechercheEtActionState extends State<ListRechercheEtAction> {
   @override
   void initState() {
     super.initState();
+
+    _listItemsSelectionners =
+        List.generate(widget.list.length, (index) => false);
   }
 
   @override
@@ -164,8 +167,6 @@ class ListRechercheEtActionState extends State<ListRechercheEtAction> {
   }
 
   Widget buildListTile(List<dynamic> list, int index) {
-    _listItemsSelectionners =
-        List.generate(widget.list.length, (index) => false);
     return ListTile(
         title: Text(
           buildText(list[index]),
@@ -173,12 +174,14 @@ class ListRechercheEtActionState extends State<ListRechercheEtAction> {
         leading: Icon(widget.icon),
         selected: _listItemsSelectionners[index],
         tileColor: Theme.of(context).colorScheme.surfaceVariant,
+        selectedTileColor:Theme.of(context).colorScheme.surface,
         onTap: () => {
               widget.onSelectedItem(widget.list[index]),
               if (widget.needSelectedItem)
                 {
                   _listItemsSelectionners[index] =
-                      !_listItemsSelectionners[index]
+                      !_listItemsSelectionners[index],
+                  setState(() {})
                 }
             });
   }
