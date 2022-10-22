@@ -55,10 +55,15 @@ dependencies:
   shared_preferences: ^2.0.15
   animations: ^2.0.3
   url_launcher: ^6.1.5
+  flutter_native_splash: ^2.0.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+
+flutter_native_splash:
+  image: assets/images/icon.png
+  color: "#2a2b28"
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
