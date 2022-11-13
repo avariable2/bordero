@@ -43,7 +43,7 @@ class ListRechercheEtAction extends StatefulWidget {
   State<ListRechercheEtAction> createState() => ListRechercheEtActionState();
 }
 
-class ListRechercheEtActionState extends State<ListRechercheEtAction> {
+class ListRechercheEtActionState extends State<ListRechercheEtAction> with WidgetsBindingObserver {
   final _controllerChampRecherche = TextEditingController();
   List<dynamic> _listTrier = [];
   late List<dynamic> _listItemsSelectionners;
@@ -55,8 +55,14 @@ class ListRechercheEtActionState extends State<ListRechercheEtAction> {
   void initState() {
     super.initState();
 
-    _listItemsSelectionners =
-        List.generate(widget.list.length, (index) => false);
+    refreshItemSeclectionner();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      refreshItemSeclectionner();
+    }
   }
 
   @override
@@ -149,20 +155,19 @@ class ListRechercheEtActionState extends State<ListRechercheEtAction> {
   }
 
   Widget buildListView(List<dynamic> list) {
-    var listview = ListView.builder(
-        scrollDirection: Axis.vertical,
-        shrinkWrap: true,
-        padding: const EdgeInsets.all(5),
-        itemCount: list.length,
-        itemBuilder: (context, index) {
-          return Card(
-            child: buildListTile(list, index),
-          );
-        });
     return SizedBox(
       height:
           widget.needTousEcran ? MediaQuery.of(context).size.height / 2 : 150,
-      child: listview,
+      child: ListView.builder(
+          scrollDirection: Axis.vertical,
+          shrinkWrap: true,
+          padding: const EdgeInsets.all(5),
+          itemCount: list.length ,
+          itemBuilder: (context, index) {
+            return Card(
+              child: buildListTile(list, index),
+            );
+          }),
     );
   }
 
@@ -182,7 +187,9 @@ class ListRechercheEtActionState extends State<ListRechercheEtAction> {
                   _listItemsSelectionners[index] =
                       !_listItemsSelectionners[index],
                   setState(() {})
-                }
+                } else {
+                refreshItemSeclectionner()
+              }
             });
   }
 
@@ -253,5 +260,9 @@ class ListRechercheEtActionState extends State<ListRechercheEtAction> {
     }
 
     return listFinal;
+  }
+
+  void refreshItemSeclectionner() {
+    _listItemsSelectionners = List.generate(widget.list.length, (index) => false);
   }
 }
