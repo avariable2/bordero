@@ -139,6 +139,10 @@ class AffichageInfoPdf extends StatefulWidget {
 class _AffichageInfoPdfState extends State<AffichageInfoPdf> {
   @override
   Widget build(BuildContext context) {
+
+    double height = MediaQuery.of(context).size.height;
+    double width = MediaQuery.of(context).size.width;
+
     return SingleChildScrollView(
       child: Column(children: [
         Padding(
@@ -176,9 +180,9 @@ class _AffichageInfoPdfState extends State<AffichageInfoPdf> {
           height: 10,
         ),
         Center(
-          child: SizedBox(
-            width: 270,
-            height: 380,
+          child: Container(
+            width: height * 0.4,
+            height: width * 0.9,
             child: PdfView(path: widget.fichier.path),
           ),
         ),

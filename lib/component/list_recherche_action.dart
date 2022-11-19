@@ -172,6 +172,7 @@ class ListRechercheEtActionState extends State<ListRechercheEtAction> with Widge
   }
 
   Widget buildListTile(List<dynamic> list, int index) {
+    refreshItemSeclectionner();
     return ListTile(
         title: Text(
           buildText(list[index]),
