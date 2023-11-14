@@ -19,7 +19,7 @@ Bordero est une application conçue pour faciliter la gestion des clients, des d
 
 1. **Installation :** Clonez le dépôt GitHub et installez toutes les dépendances nécessaires.
 ```
-git clone [URL du dépôt]
+git clone git@github.com:avariable2/bordero.git
 npm install
 ```
 2. **Lancement de l'application :** Démarrez l'application en utilisant la commande suivante.
