@@ -25,6 +25,8 @@ npm install
 npm start
 ```
 
+![Icon of an mobile.](https://github.com/avariable2/bordero/blob/main/assets/images/iPhone.png
+)
 ## Utilisation
 
 - **Ajout d'un client :** Accédez à la section 'Clients' pour ajouter de nouveaux clients.
