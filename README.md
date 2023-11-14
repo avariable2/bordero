@@ -4,6 +4,12 @@
 
 Bordero est une application conçue pour faciliter la gestion des clients, des devis et des factures pour les professionnels. Elle offre une interface intuitive permettant de créer, gérer et suivre facilement les différents éléments liés à la gestion clientèle.
 
+<object data="https://github.com/avariable2/bordero/App-psy.pdf" type="application/pdf" width="700px" height="700px">
+    <embed src="http://yoursite.com/the.pdf">
+        <p>This browser does not support PDFs. Please download the PDF to view it: <a href="http://yoursite.com/the.pdf">Download PDF</a>.</p>
+    </embed>
+</object>
+
 ## Fonctionnalités principales
 
 - **Gestion des clients :** Ajoutez, recherchez et modifiez les informations des clients.
