@@ -1,40 +1,40 @@
 # Bordero
-**Je vous invite fortement à regarder la maquette dans 'App-psy.pdf'**
+**Strongly recommended: review the mockup in `App-psy.pdf`**
 
 ![Icon of the app.](https://github.com/avariable2/bordero/blob/main/assets/images/icon.png)
 
-## À propos de Bordero
+## About Bordero
 
-Bordero est une application conçue pour faciliter la gestion des clients, des devis et des factures pour les professionnels. Elle offre une interface intuitive permettant de créer, gérer et suivre facilement les différents éléments liés à la gestion clientèle.
+Bordero is an application designed to streamline client, quote, and invoice management for professionals. It offers an intuitive interface to easily create, manage, and track all aspects of client relations.
 
 
-## Fonctionnalités principales
+## Key Features
 
-- **Gestion des clients :** Ajoutez, recherchez et modifiez les informations des clients.
-- **Création de devis :** Générez des devis personnalisés et envoyez-les directement à vos clients.
-- **Gestion des factures :** Créez et suivez vos factures, avec la possibilité d'envoyer par e-mail ou de sauvegarder dans Google Drive.
-- **Interface intuitive :** Une interface utilisateur claire et facile à naviguer.
+- **Client Management:** Add, search, and update client information.
+- **Quote Creation:** Generate custom quotes and send them directly to clients.
+- **Invoice Management:** Create and track invoices, with options to email them or save to Google Drive.
+- **Intuitive Interface:** A clean, easy-to-navigate user interface.
 
-## Comment commencer ?
+## Getting Started
 
-1. **Installation :** Clonez le dépôt GitHub et installez toutes les dépendances nécessaires.
+1. **Installation :** Clone the repository and install all required dependencies.
 ```
 git clone git@github.com:avariable2/bordero.git
 npm install
 ```
-2. **Lancement de l'application :** Démarrez l'application en utilisant la commande suivante.
+2. **Run the Application: :** Start the app with:
 ```
 npm start
 ```
 
 ![Icon of an mobile.](https://github.com/avariable2/bordero/blob/main/assets/images/iPhone.png
 )
-## Utilisation
+## Usage
 
-- **Ajout d'un client :** Accédez à la section 'Clients' pour ajouter de nouveaux clients.
-- **Création d'un devis :** Utilisez l'onglet 'Devis' pour créer et personnaliser un devis.
-- **Génération d'une facture :** Dans l'onglet 'Factures', créez et gérez vos factures.
+- **Add a Client :** Go to the 'Clients' section to add new clients.
+- **Create a Quote :** Use the 'Quotes' tab to compose and customize a quote.
+- **Generate an Invoice :** In the 'Invoices' tab, create and manage your invoices.
 
-## Licence
+## License
 
-Ce projet est sous licence MIT. Voir le fichier `LICENSE` pour plus de détails.
+This project is licensed under the MIT License. See the LICENSE file for details.
